@@ -25,7 +25,6 @@ const Navbar = () => {
                         <span className="transition duration-150 uppercase animate-ping animation-delay-700">A</span>
                     </div>
                 </div>
-
             </div>
         </div>
         <div className="flex flex-col w-full">
@@ -45,7 +44,7 @@ const Navbar = () => {
                 <Link href={`/leaderboard`} >
                     <div className="flex items-center gap-2">
                         <CoinIcon />
-                        <span className="text-sm font-medium uppercase bg-gradient-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe] bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
+                        <span className="uppercase bg-gradient-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe] bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
                     </div>
                 </Link>
                 <PrimaryButton>Connect</PrimaryButton>
