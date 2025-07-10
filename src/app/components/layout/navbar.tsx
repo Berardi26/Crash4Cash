@@ -47,7 +47,7 @@ const Navbar = () => {
                         <span className="uppercase bg-gradient-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe] bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
                     </div>
                 </Link>
-                <PrimaryButton>Connect</PrimaryButton>
+                <PrimaryButton onClick={()=>{}}>Connect</PrimaryButton>
             </div>
         </div>
     </div>;

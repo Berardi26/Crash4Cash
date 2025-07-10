@@ -17,7 +17,8 @@ export function useGameController() {
   }, []);
 
   const triggerCrash = useCallback(() => {
-    gameRef.current?.events.emit('crash');
+    console.log("crash triggered");
+    gameRef.current?.scene.getScene('MainScene').events.emit('crash');
     setCrashed(true);
   }, []);
 

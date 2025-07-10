@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
 
 export default class MainScene extends Phaser.Scene {
-    rocket!: Phaser.Physics.Arcade.Sprite;
+    rocket!: Phaser.GameObjects.Image;
     sky!: Phaser.GameObjects.TileSprite;
     station!: Phaser.GameObjects.Image;
     smokey!: Phaser.GameObjects.Particles.ParticleEmitter;
@@ -10,13 +10,15 @@ export default class MainScene extends Phaser.Scene {
     private startTime!: number;
     private scrollSpeed: number = 2;
     private launched = false;
-    
+
     constructor() {
         super('MainScene');
     }
 
 
-    
+
+
+
     preload() {
         this.load.setPath("assets/game");
         this.load.image('station', 'image/station.png');
@@ -28,13 +30,25 @@ export default class MainScene extends Phaser.Scene {
         // });
         this.load.atlas('rocket', 'animations/rocket.png', 'animations/rocket.json');
         this.load.atlas('flares', 'particles/flares.png', 'particles/flares.json');
+        this.load.spritesheet('boom', 'sprites/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
     }
 
     create() {
+        this.crashed = false;
+        this.launched = false;
+        this.startTime = this.time.now;
         this.events.on('launch', this.triggerLaunch, this);
+        this.events.on('crash', this.triggerCrash, this);
         this.sky = this.add.tileSprite(400, 300, 800, 600, 'sky');
 
         this.anims.create({ key: 'trail', frames: this.anims.generateFrameNames('rocket', { prefix: 'trail_', start: 0, end: 12, zeroPad: 2 }), repeat: -1 });
+        this.anims.create({
+            key: 'explode',
+            frames: 'boom',
+            frameRate: 20,
+            showOnStart: true,
+            hideOnComplete: true
+        });
 
         const container = this.add.container(400, 300);
 
@@ -43,6 +57,7 @@ export default class MainScene extends Phaser.Scene {
         container.setInteractive({ draggable: true });
 
         const trail = this.add.sprite(-125, 0, 'trail').play('trail');
+        const smokeyManager = this.add.particles(0, -180, 'flares');
         const smokey = this.add.particles(0, -180, 'flares',
             {
                 frame: 'white',
@@ -58,28 +73,43 @@ export default class MainScene extends Phaser.Scene {
         this.smokey = smokey;
         this.station = this.add.image(this.cameras.main.width / 2, this.cameras.main.height, 'station', 'station');
         this.station.setOrigin(0.5, 1);
-        const rocket = this.add.image(0, 0, 'airship', 'airship');
-        rocket.setOrigin(0.5, 1);
-        container.add([smokey, rocket]);
+        this.station.setScale(0.7);
+        this.rocket = this.add.image(0, 0, 'airship', 'airship');
+        this.rocket.setOrigin(0.5, 1);
+        container.add([smokey, this.rocket]);
 
         container.on('drag', (pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => container.setPosition(dragX, dragY));
         container.setRotation(Phaser.Math.DegToRad(-180));
-        this.startTime = this.time.now;
-
     }
 
     triggerCrash() {
         if (this.crashed) return;
         this.crashed = true;
 
-        // Stop rocket and explode
-        this.rocket.setVelocity(0);
-        const explosion = this.add.sprite(this.rocket.x, this.rocket.y, 'explosion');
-        explosion.play('explode');
+        // Hide the rocket
         this.rocket.setVisible(false);
+        const { x, y } = this.rocket.parentContainer;
+        console.log("crash triggered", x, y);
 
-        // You can notify React via a custom event here
+        // Add explosion at rocket's position
+        const explosion = this.add.sprite(x, y, 'boom');
+        explosion.setBlendMode('ADD');
+        explosion.setScale(6);
+        explosion.setOrigin(0.5);
+        explosion.play('explode');
+        this.smokey.stop(); // stop emission
+        // Optional: remove explosion after animation
+        explosion.on('animationcomplete', () => {
+            explosion.destroy();
+            // Optional: slight delay before restart
+            this.time.delayedCall(1000, () => {
+                this.scene.restart();
+            });
+        });
+
+        // Notify React if needed
         this.events.emit('gameOver');
+
     }
 
     triggerLaunch() {
@@ -97,7 +127,7 @@ export default class MainScene extends Phaser.Scene {
 
     update() {
         if (!this.launched) return;
-
+        if (this.crashed) return;
         const elapsed = (this.time.now - this.startTime) / 1000;
         let speed = 2 + elapsed * 0.3;
         speed = Math.min(speed, 12);
