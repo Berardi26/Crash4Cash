@@ -16,6 +16,7 @@ const Crash = () => {
         startGame,
         triggerCrash,
         triggerLaunch,
+        triggerEscape,
         score,
         crashed,
     } = useGameController();
@@ -27,9 +28,10 @@ const Crash = () => {
                     <div className="w-[800px] h-[600px] relative">
                         <PhaserGame onReady={setGameInstance} />
                     </div>
-                    <div className='flex'>
+                    <div className='flex gap-2'>
                         <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
                         <PrimaryButton onClick={() => triggerCrash()}>crash</PrimaryButton>
+                        <PrimaryButton onClick={() => triggerEscape()}>Escape</PrimaryButton>
                     </div>
                 </div>
             </div>

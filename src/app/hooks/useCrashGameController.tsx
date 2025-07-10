@@ -27,11 +27,17 @@ export function useGameController() {
     gameRef.current?.scene.getScene('MainScene').events.emit('launch');
   }, []);
 
+  const triggerEscape = useCallback(() => {
+    console.log("escape triggered");
+    gameRef.current?.scene.getScene('MainScene').events.emit('escape');
+  }, []);
+
   return {
     setGameInstance,
     startGame,
     triggerCrash,
     triggerLaunch,
+    triggerEscape,
     score,
     crashed,
   };

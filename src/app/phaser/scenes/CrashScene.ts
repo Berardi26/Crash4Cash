@@ -28,6 +28,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.image('station', 'image/station.png');
         this.load.image('airship', 'image/rocket.png');
         this.load.image('sky', 'image/sky.png');
+        this.load.image('umbrella', 'image/umbrella.png');
         // this.load.spritesheet('explosion', 'explosion.png', {
         //   frameWidth: 64,
         //   frameHeight: 64,
@@ -35,6 +36,10 @@ export default class MainScene extends Phaser.Scene {
         this.load.atlas('rocket', 'animations/rocket.png', 'animations/rocket.json');
         this.load.atlas('flares', 'particles/flares.png', 'particles/flares.json');
         this.load.spritesheet('boom', 'sprites/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
+
+
+        this.load.image('avatar', 'https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreid4ll2lcgjtqokssv3robexiscbo52jjljshutb3bbpwfmrmogz74');
+        this.load.start();
     }
 
     create() {
@@ -47,6 +52,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.events.on('launch', this.triggerLaunch, this);
         this.events.on('crash', this.triggerCrash, this);
+        this.events.on('escape', this.triggerEscape, this);
         this.sky = this.add.tileSprite(400, 300, 800, 600, 'sky');
 
         this.anims.create({ key: 'trail', frames: this.anims.generateFrameNames('rocket', { prefix: 'trail_', start: 0, end: 12, zeroPad: 2 }), repeat: -1 });
@@ -142,7 +148,91 @@ export default class MainScene extends Phaser.Scene {
         // });
     }
 
+    triggerEscape() {
+        if (!this.launched) return;
 
+        // Use current rocket position
+        const worldPos = this.rocket.getWorldTransformMatrix().decomposeMatrix();
+
+        // Alternate direction for fun (left or right)
+        const direction = Phaser.Math.Between(0, 1) === 0 ? 'left' : 'right';
+
+        this.escapeAstronaut(worldPos.translateX, worldPos.translateY, direction as 'left' | 'right', "avatar");
+    }
+
+
+    escapeAstronaut(x: number, y: number, direction: 'left' | 'right', textureKey: string) {
+        const offsetX = direction === 'left' ? -50 : 50;
+
+        const astronaut = this.add.sprite(0, 30, textureKey);
+        astronaut.setDisplaySize(30, 30);
+
+        // Corrected circular mask creation
+        const maskGraphics = this.make.graphics({ x: 0, y: 0, add: false } as any);
+        maskGraphics.fillStyle(0xffffff);
+        maskGraphics.fillCircle(15, 15, 15); // center at (15,15) in graphics
+
+        const mask = maskGraphics.createGeometryMask();
+        // astronaut.setMask(mask);
+
+
+        const umbrella = this.add.image(0, -10, 'umbrella').setDisplaySize(40, 55).setVisible(false);
+
+        const group = this.add.container(x + offsetX, y, [umbrella, astronaut]);
+
+        const velocity = 250;
+        const gravity = 300;
+        const angle = direction === 'left' ? Phaser.Math.DegToRad(-140) : Phaser.Math.DegToRad(-40);
+
+        const vx = velocity * Math.cos(angle);
+        const vy = velocity * Math.sin(angle);
+
+        let elapsed = 0;
+        const duration = 3000;
+        let hasPeaked = false;
+
+        const loop = this.time.addEvent({
+            delay: 16,
+            callback: () => {
+                elapsed += 16;
+                const t = elapsed / 1000;
+
+                const currentY = y + vy * t + 0.5 * gravity * t * t;
+                const verticalVelocity = vy + gravity * t;
+
+                group.x = x + vx * t;
+                group.y = currentY;
+                // Show umbrella when falling (after peak)
+                if (!hasPeaked && verticalVelocity > 250) {
+                    umbrella.setVisible(true);
+                    hasPeaked = true;
+                }
+
+                if (t >= duration / 1000) {
+                    group.destroy();
+                    this.time.removeEvent(loop);
+                }
+            },
+            loop: true
+        });
+
+        this.tweens.add({
+            targets: astronaut,
+            angle: { from: -10, to: 10 },
+            yoyo: true,
+            repeat: -1,
+            duration: 400,
+            ease: 'Sine.easeInOut'
+        });
+        this.tweens.add({
+            targets: umbrella,
+            angle: { from: 10, to: -10 },
+            yoyo: true,
+            repeat: -1,
+            duration: 400,
+            ease: 'Sine.easeInOut'
+        });
+    }
 
     update() {
         if (!this.launched) return;
@@ -153,7 +243,7 @@ export default class MainScene extends Phaser.Scene {
 
         this.sky.tilePositionY -= speed;
         this.station.y += speed;
-        
+
         this.vibrationOffset = Math.min(this.vibrationOffset, 2);
 
         if (this.launched && this.vibrationOffset > 0) {
@@ -171,7 +261,7 @@ export default class MainScene extends Phaser.Scene {
             const redProgress = Math.min(elapsed / 50, 1); // fully red after 5 seconds
 
             // Interpolate from white (0xFFFFFF) to red (0xFF0000)
-            if(redProgress === 1){
+            if (redProgress === 1) {
                 this.vibrationOffset += 0.01; // reset vibration offset when fully red
             }
             const r = 255;
