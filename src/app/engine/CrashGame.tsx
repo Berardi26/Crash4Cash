@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useRef } from 'react';
-import Phaser from 'phaser';
+import * as Phaser from 'phaser';
 import MainScene from '../phaser/scenes/CrashScene';
 
 export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) => void }) {
