@@ -44,7 +44,7 @@ const Navbar = () => {
                 <Link href={`/leaderboard`} >
                     <div className="flex items-center gap-2">
                         <CoinIcon />
-                        <span className="uppercase bg-gradient-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe] bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
+                        <span className="uppercase bg-gradient-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
                     </div>
                 </Link>
                 <PrimaryButton onClick={()=>{}}>Connect</PrimaryButton>

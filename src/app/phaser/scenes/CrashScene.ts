@@ -6,9 +6,13 @@ export default class MainScene extends Phaser.Scene {
     station!: Phaser.GameObjects.Image;
     smokey!: Phaser.GameObjects.Particles.ParticleEmitter;
     crashed = false;
-
+    rocketContainer!: Phaser.GameObjects.Container;
     private startTime!: number;
     private scrollSpeed: number = 2;
+
+    private baseX!: number;
+    private vibrationOffset!: number;
+
     private launched = false;
 
     constructor() {
@@ -37,6 +41,10 @@ export default class MainScene extends Phaser.Scene {
         this.crashed = false;
         this.launched = false;
         this.startTime = this.time.now;
+
+
+
+
         this.events.on('launch', this.triggerLaunch, this);
         this.events.on('crash', this.triggerCrash, this);
         this.sky = this.add.tileSprite(400, 300, 800, 600, 'sky');
@@ -50,11 +58,11 @@ export default class MainScene extends Phaser.Scene {
             hideOnComplete: true
         });
 
-        const container = this.add.container(400, 300);
+        this.rocketContainer = this.add.container(400, 300);
 
         //  A container must have a size in order to receive input
-        container.setSize(120, 80);
-        container.setInteractive({ draggable: true });
+        this.rocketContainer.setSize(120, 80);
+        this.rocketContainer.setInteractive({ draggable: true });
 
         const trail = this.add.sprite(-125, 0, 'trail').play('trail');
         const smokeyManager = this.add.particles(0, -180, 'flares');
@@ -76,10 +84,12 @@ export default class MainScene extends Phaser.Scene {
         this.station.setScale(0.7);
         this.rocket = this.add.image(0, 0, 'airship', 'airship');
         this.rocket.setOrigin(0.5, 1);
-        container.add([smokey, this.rocket]);
+        this.rocketContainer.add([smokey, this.rocket]);
+        this.rocketContainer.setRotation(Phaser.Math.DegToRad(-180));
 
-        container.on('drag', (pointer: Phaser.Input.Pointer, dragX: number, dragY: number) => container.setPosition(dragX, dragY));
-        container.setRotation(Phaser.Math.DegToRad(-180));
+
+        this.baseX = this.rocketContainer.x;
+        this.vibrationOffset = 2;
     }
 
     triggerCrash() {
@@ -121,6 +131,15 @@ export default class MainScene extends Phaser.Scene {
 
         this.smokey.setVisible(true); // show trail
         this.smokey.start(); // start emission
+        // this.tweens.add({
+        //     targets: this.rocketContainer,
+        //     x: this.rocketContainer.x + 2,
+        //     y: this.rocketContainer.y + 2,
+        //     duration: 50,
+        //     yoyo: true,
+        //     repeat: 40,
+        //     ease: 'Sine.easeInOut',
+        // });
     }
 
 
@@ -129,10 +148,38 @@ export default class MainScene extends Phaser.Scene {
         if (!this.launched) return;
         if (this.crashed) return;
         const elapsed = (this.time.now - this.startTime) / 1000;
-        let speed = 2 + elapsed * 0.3;
+        let speed = 0.5 + elapsed * 0.3;
         speed = Math.min(speed, 12);
 
         this.sky.tilePositionY -= speed;
         this.station.y += speed;
+        
+        this.vibrationOffset = Math.min(this.vibrationOffset, 2);
+
+        if (this.launched && this.vibrationOffset > 0) {
+            const offsetX = Phaser.Math.Between(-this.vibrationOffset, this.vibrationOffset);
+            const offsetY = Phaser.Math.Between(-this.vibrationOffset, this.vibrationOffset);
+            this.rocketContainer.x = this.baseX + offsetX;
+
+            this.vibrationOffset -= 0.003;
+            this.vibrationOffset = Math.max(this.vibrationOffset, 0);
+        }
+
+        if (this.launched && !this.crashed) {
+            // Compute progress of red effect (0 to 1)
+            const elapsed = (this.time.now - this.startTime) / 1000;
+            const redProgress = Math.min(elapsed / 50, 1); // fully red after 5 seconds
+
+            // Interpolate from white (0xFFFFFF) to red (0xFF0000)
+            if(redProgress === 1){
+                this.vibrationOffset += 0.01; // reset vibration offset when fully red
+            }
+            const r = 255;
+            const g = Math.floor(255 * (1 - redProgress));
+            const b = Math.floor(255 * (1 - redProgress));
+            const tintColor = (r << 16) + (g << 8) + b;
+
+            this.rocket.setTint(tintColor);
+        }
     }
 }
