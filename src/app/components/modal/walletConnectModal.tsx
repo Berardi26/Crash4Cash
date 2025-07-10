@@ -15,9 +15,9 @@ import PrimaryButton from '../button/primary';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },
-    { name: 'Backpack', icon: '/assets/images/icons/backpack.svg', adapterName: 'Backpack' },
+    { name: 'Backpack', icon: '/assets/images/icons/backpack.png', adapterName: 'Backpack' },
     { name: 'Solflare', icon: '/assets/images/icons/solflare.svg', adapterName: 'Solflare' },
-    { name: 'Glow', icon: '/assets/images/icons/glow.svg', adapterName: 'Glow' },
+    { name: 'Glow', icon: '/assets/images/icons/glow.png', adapterName: 'Glow' },
 ];
 
 
@@ -54,19 +54,13 @@ const WalletConnectModal = () => {
                                             className="flex items-center justify-start gap-4 py-2 bg-black/40  font-bold text-white text-base h-14"
                                             onPress={() => handleConnect(wallet.adapterName)}
                                         >
-                                            <Image src={wallet.icon} alt={wallet.name} className="w-8 h-8 rounded-none" />
+                                            <Image src={wallet.icon} alt={wallet.name} className="w-8 h-8 rounded-md" />
                                             {wallet.name}
                                         </Button>
                                     ))}
                                 </div>
                             </ModalBody>
                             <ModalFooter>
-                                <Button color="danger" variant="light" onPress={onClose}>
-                                    Close
-                                </Button>
-                                <Button color="primary" onPress={onClose}>
-                                    Action
-                                </Button>
                             </ModalFooter>
                         </>
                     )}
