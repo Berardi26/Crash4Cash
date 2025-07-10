@@ -1,4 +1,5 @@
 /** @type {import('tailwindcss').Config} */
+const {heroui} = require("@heroui/react");
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -7,6 +8,7 @@ module.exports = {
 
     // Or if using `src` directory:
     "./src/**/*.{js,ts,jsx,tsx,mdx}",
+    "./node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}",
   ],
   theme: {
     extend: {
@@ -31,8 +33,10 @@ module.exports = {
       }
     },
   },
+  darkMode: "class",
   plugins: [
     require("tailwindcss-animation-delay"),
+    heroui()
   ],
 }
 

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist,  Nova_Square } from "next/font/google";
+import { Geist, Nova_Square } from "next/font/google";
 import "./globals.css";
+import Provider from "./providers/provider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +26,9 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${geistSans.variable} ${geistNova.className}`}>
-        {children}
+        <Provider>
+          {children}
+        </Provider>
       </body>
     </html>
   );
