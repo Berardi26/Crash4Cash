@@ -53,7 +53,7 @@ export default class MainScene extends Phaser.Scene {
         this.events.on('launch', this.triggerLaunch, this);
         this.events.on('crash', this.triggerCrash, this);
         this.events.on('escape', this.triggerEscape, this);
-        this.sky = this.add.tileSprite(400, 300, 800, 600, 'sky');
+        this.sky = this.add.tileSprite(400, 474, 800, 948, 'sky');
 
         this.anims.create({ key: 'trail', frames: this.anims.generateFrameNames('rocket', { prefix: 'trail_', start: 0, end: 12, zeroPad: 2 }), repeat: -1 });
         this.anims.create({

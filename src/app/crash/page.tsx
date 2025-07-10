@@ -25,8 +25,13 @@ const Crash = () => {
         <Layout className="bg-crash bg-cover bg-center">
             <div className="flex flex-col w-full bg-opacity-15 flex-1">
                 <div className="flex flex-col w-full h-full bg-black/70 items-center justify-center">
-                    <div className="w-[800px] h-[600px] relative">
-                        <PhaserGame onReady={setGameInstance} />
+                    <div className='flex'>
+                        <div className='flex flex-col gap-2 items-center justify-center'>
+                            {}
+                        </div>
+                        <div className="w-[800px] h-[600px] relative">
+                            <PhaserGame onReady={setGameInstance} />
+                        </div>
                     </div>
                     <div className='flex gap-2'>
                         <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
