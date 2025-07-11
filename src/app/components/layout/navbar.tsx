@@ -2,13 +2,8 @@
 import Link from "next/link";
 import { CoinIcon, XIcon } from "../icos/svg";
 import { DiscordLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
-import Image from "next/image";
-import PrimaryButton from "../button/primary";
-import { useEffect, useState } from "react";
-import { useConnection, useWallet } from "@solana/wallet-adapter-react";
-import { useWalletModal, WalletConnectButton, WalletModalButton, WalletMultiButton } from "@solana/wallet-adapter-react-ui";
-import { LAMPORTS_PER_SOL } from "@solana/web3.js";
 import WalletConnectModal from "../modal/walletConnectModal";
+import { Image } from "@heroui/react";
 
 const Navbar = () => {
     
@@ -17,7 +12,7 @@ const Navbar = () => {
     return <div className="flex w-full">
         <div className="w-20 sm:w-32 lg:w-52 min-w-[320px] bg-black/80 flex items-center justify-center flex-col">
             <div className="flex items-center gap-2">
-                <Image src="/logo.png" alt="logo" width={40} height={40} />
+                <Image src="/logo.png" alt="logo" className="w-20 h-20" />
                 <div className="relative">
                     <div className="text-2xl font-bold italic">
                         <span className="uppercase text-primary-400">futuresea</span>

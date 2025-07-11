@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
-import Chatbox from "./Chatbox";
 import Navbar from "./navbar";
+import Chatbox from '../chatbox/chatbox';
 
 type LayoutProps = {
   children: ReactNode;
