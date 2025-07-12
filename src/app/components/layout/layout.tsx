@@ -3,16 +3,18 @@ import Navbar from "./navbar";
 import Chatbox from '../chatbox/chatbox';
 
 type LayoutProps = {
-  children: ReactNode;
-  className?: string;
+    children: ReactNode;
+    className?: string;
 };
 
 const Layout = ({ children, className }: LayoutProps) => {
-    return <div className={`flex flex-col w-full h-full ${className} min-h-screen`}>
+    return <div className={`flex flex-col w-full h-full ${className} min-h-screen `}>
         <Navbar />
-        <div className="flex ">
+        <div className="flex w-full">
             <Chatbox />
-            {children}
+            <div className='mx-auto w-full max-w-screen-2xl pt-24'>
+                {children}
+            </div>
         </div>
     </div>;
 };

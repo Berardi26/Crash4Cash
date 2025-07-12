@@ -72,7 +72,7 @@ const WalletConnectModal = () => {
                 {connected ? <div className='flex items-center gap-2 '>
 
                     <Popover classNames={{
-                        content: "bg-black/30 backdrop-blur-sm"
+                        content: "bg-black/60 backdrop-blur-sm"
                     }} placement={"bottom"}>
                         <PopoverTrigger>
                             <Button className='bg-transparent'>
@@ -100,7 +100,7 @@ const WalletConnectModal = () => {
                     </Popover>
 
                     <Popover classNames={{
-                        content: "bg-black/30 backdrop-blur-sm"
+                        content: "bg-black/60 backdrop-blur-sm"
                     }} placement={"bottom-end"}>
                         <PopoverTrigger>
                             <Button className='flex items-center min-w-0 bg-transparent px-1'>
@@ -122,7 +122,7 @@ const WalletConnectModal = () => {
                                             </div>
                                             <div>
                                                 <div className='flex flex-col'>
-                                                    <p className='text-white/30'>{`Ada`}</p>
+                                                    <p className='text-white/60'>{`Ada`}</p>
                                                     <p className='text-xs'>Level 12</p>
                                                 </div>
                                             </div>

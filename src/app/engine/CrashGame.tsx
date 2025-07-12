@@ -8,31 +8,27 @@ export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) 
 
     useEffect(() => {
         const config: Phaser.Types.Core.GameConfig = {
-            type: Phaser.AUTO,
-            width: 800,
-            height: 600,
+            type: Phaser.WEBGL,
             parent: 'phaser-container',
-            backgroundColor: '#000',
+            backgroundColor: '#FFFF0000',
             physics: {
                 default: 'arcade',
                 arcade: {
-                    gravity: { x: 0, y: 0 },
                     debug: false,
                 },
             },
             scale: {
-                mode: Phaser.Scale.FIT,
+                mode: Phaser.Scale.ScaleModes.RESIZE,
                 autoCenter: Phaser.Scale.CENTER_BOTH,
-                width: '100%',
-                height: '100%',
+                parent: 'phaser-container',
             },
             scene: [MainScene],
         };
 
         gameRef.current = new Phaser.Game(config);
-
         if (onReady) {
             onReady(gameRef.current);
+            window.game = gameRef.current
         }
 
         return () => {
@@ -40,5 +36,25 @@ export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) 
         };
     }, []);
 
-    return <div id="phaser-container" className="w-full h-full" />;
+    window.sizeChanged = () => {
+        if (window.game.isBooted) {
+            const parent = document.getElementById('phaser-container');
+            if (!parent) return;
+
+            const width = parent.clientWidth;
+            const height = parent.clientHeight;
+
+            console.log(width, height)
+            if (width > 0) {
+                // window.game.scale.resize(width, height);
+                // OPTIONAL: force canvas size for rare edge cases
+                window.game.canvas.setAttribute(
+                    'style',
+                    `display: block; width: ${width}px; height: ${height}px;`
+                );
+            }
+        }
+    };
+    window.onresize = () => window.sizeChanged();
+    return <div id="phaser-container" className='w-[500px] aspect-square' />;
 }

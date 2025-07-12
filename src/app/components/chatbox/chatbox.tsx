@@ -8,7 +8,7 @@ import { radialGradient } from "framer-motion/client";
 const Chatbox = () => {
     const { messages, sendMessage } = useChatMessages();
     const [input, setInput] = useState("");
-    const [visible, setVisible] = useState(false);
+    const [visible, setVisible] = useState(true);
     const [absolute, setAbsolute] = useState(false)
 
     const handleSend = () => {

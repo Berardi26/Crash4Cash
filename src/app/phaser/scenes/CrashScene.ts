@@ -36,8 +36,6 @@ export default class MainScene extends Phaser.Scene {
         this.load.atlas('rocket', 'animations/rocket.png', 'animations/rocket.json');
         this.load.atlas('flares', 'particles/flares.png', 'particles/flares.json');
         this.load.spritesheet('boom', 'sprites/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
-
-
         this.load.image('avatar', 'https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreid4ll2lcgjtqokssv3robexiscbo52jjljshutb3bbpwfmrmogz74');
         this.load.start();
     }
@@ -46,14 +44,15 @@ export default class MainScene extends Phaser.Scene {
         this.crashed = false;
         this.launched = false;
         this.startTime = this.time.now;
-
-
-
-
+        const { width, height } = this.scale;
+        this.events.once(Phaser.Scenes.Events.SHUTDOWN, () => {
+            this.events.off('escape', this.triggerEscape, this);
+            this.events.off('launch', this.triggerLaunch, this);
+            this.events.off('crash', this.triggerCrash, this);
+        });
         this.events.on('launch', this.triggerLaunch, this);
         this.events.on('crash', this.triggerCrash, this);
         this.events.on('escape', this.triggerEscape, this);
-        this.sky = this.add.tileSprite(400, 474, 800, 948, 'sky');
 
         this.anims.create({ key: 'trail', frames: this.anims.generateFrameNames('rocket', { prefix: 'trail_', start: 0, end: 12, zeroPad: 2 }), repeat: -1 });
         this.anims.create({
@@ -64,7 +63,12 @@ export default class MainScene extends Phaser.Scene {
             hideOnComplete: true
         });
 
-        this.rocketContainer = this.add.container(400, 300);
+        this.sky = this.add.tileSprite(width / 2,
+            height / 2,
+            width,
+            height,
+            "sky");
+        this.rocketContainer = this.add.container(width / 2, height - 300);
 
         //  A container must have a size in order to receive input
         this.rocketContainer.setSize(120, 80);
@@ -94,8 +98,35 @@ export default class MainScene extends Phaser.Scene {
         this.rocketContainer.setRotation(Phaser.Math.DegToRad(-180));
 
 
-        this.baseX = this.rocketContainer.x;
         this.vibrationOffset = 2;
+
+        let resizeTimeout: NodeJS.Timeout;
+        this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
+            // clearTimeout(resizeTimeout);
+            // resizeTimeout = setTimeout(() => {
+                this.resizeHandler();
+            // }, 100);
+        })
+        this.resizeHandler();
+    }
+
+    resizeHandler() {
+        const parent = this.scale.parent as HTMLElement;
+        const width = parent.clientWidth;
+        const height = parent.clientHeight;
+        console.log("resize", width)
+        // Re-center sky           
+        this.sky.setSize(width, height);
+        this.sky.setPosition(width / 2, height / 2);
+        // Reposition rocket (e.g. center bottom)
+        if (this.rocketContainer) {
+            this.rocketContainer.setPosition(width / 2, height - 400); // adjust Y as needed
+            this.baseX = this.rocketContainer.x;
+        }
+
+        // Reposition station at bottom center
+        if (this.station && !this.launched)
+            this.station.setPosition(width / 2, height - 100); // adjust Y as needed
     }
 
     triggerCrash() {
@@ -150,6 +181,7 @@ export default class MainScene extends Phaser.Scene {
 
     triggerEscape() {
         if (!this.launched) return;
+        if (this.crashed) return;
 
         // Use current rocket position
         const worldPos = this.rocket.getWorldTransformMatrix().decomposeMatrix();
