@@ -1,7 +1,7 @@
 'use client';
 import { useEffect, useRef } from 'react';
 import * as Phaser from 'phaser';
-import MainScene from '../phaser/scenes/CrashScene';
+import MainScene from '../../phaser/scenes/CrashScene';
 
 export default function PhaserGame({ onReady }: { onReady?: (game: Phaser.Game) => void }) {
     const gameRef = useRef<Phaser.Game | null>(null);

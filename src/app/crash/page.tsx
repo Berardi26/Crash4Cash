@@ -1,9 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import Layout from "../components/layout/layout";
-import { useGameController } from "../hooks/useCrashGameController";
-import PrimaryButton from '../components/button/primary';
+import Layout from "../../components/layout/layout";
+import { useGameController } from "../../hooks/useCrashGameController";
+import PrimaryButton from '../../components/button/primary';
 
 // ✅ dynamically import PhaserGame with SSR disabled
 const PhaserGame = dynamic(() => import('../engine/CrashGame'), {

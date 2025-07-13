@@ -114,7 +114,7 @@ const WalletConnectModal = () => {
                         </PopoverTrigger>
                         <PopoverContent className='border rounded-md border-white/20 w-56 pt-2'>
                             <div className='flex flex-col w-full divide-y-1 divide-white/20 gap-1'>
-                                <Link href='/proifile' className='hover:bg-gradient-to-r from-primary-600 via-primary-200 to-primary-600 p-px rounded-lg flex  justify-between items-center w-full hover:bg-white/10'>
+                                <Link href='/profile' className='hover:bg-gradient-to-r from-primary-600 via-primary-200 to-primary-600 p-px rounded-lg flex  justify-between items-center w-full hover:bg-white/10'>
                                     <div className='flex items-center w-full rounded-lg justify-between bg-black'>
                                         <div className='flex items-center gap-2 bg-transparent min-w-0 '>
                                             <div className='bg-white/10 rounded-md p-px flex items-center justify-center flex-col'>

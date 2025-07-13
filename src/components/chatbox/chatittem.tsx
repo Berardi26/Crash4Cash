@@ -1,4 +1,4 @@
-import { ChatMessage } from "@/app/hooks/useChatMessages"
+import { ChatMessage } from "@/hooks/useChatMessages"
 import { Badge, Image } from "@heroui/react"
 
 

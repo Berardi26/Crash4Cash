@@ -12,7 +12,7 @@ const Layout = ({ children, className }: LayoutProps) => {
         <Navbar />
         <div className="flex w-full">
             <Chatbox />
-            <div className='mx-auto w-full max-w-screen-2xl pt-24'>
+            <div className='mx-auto w-full max-w-screen-lg pt-24'>
                 {children}
             </div>
         </div>

@@ -1,17 +1,17 @@
 import type { Metadata } from "next";
-// import { Geist, Nova_Square } from "next/font/google";
+import { Geist, Nova_Square } from "next/font/google";
 import "./globals.css";
-import Provider from "./providers/provider";
+import Provider from "../providers/provider";
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
+const geistSans = Geist({
+  variable: "--font-geist-sans",
+  subsets: ["latin"],
+});
 
-// const geistNova = Nova_Square({
-//   weight: "400",
-//   subsets: ["latin"],
-// });
+const geistNova = Nova_Square({
+  weight: "400",
+  subsets: ["latin"],
+});
 
 export const metadata: Metadata = {
   title: "Futuresea",
@@ -25,8 +25,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      {/* <body className={`${geistSans.variable} ${geistNova.className}`}> */}
-      <body className={``}>
+      <body className={`${geistSans.variable} ${geistNova.className}`}>
         <Provider>
           {children}
         </Provider>
