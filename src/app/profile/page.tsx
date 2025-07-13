@@ -11,11 +11,15 @@ import MenuButton from "@/components/button/menu"
 import ProtectedRoute from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/contexts/AuthContext"
 import { useWallet } from "@solana/wallet-adapter-react"
+import { useRouter } from "next/navigation"
+import LogoutConfirm from "@/components/auth/LogoutConfirm"
 
 const ProfilePage = () => {
     const { user, logout } = useAuth()
     const { disconnect } = useWallet()
+    const router = useRouter()
     const [selected, setSelected] = useState("options")
+    const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
     
     const options = [
         {
@@ -36,13 +40,17 @@ const ProfilePage = () => {
         {
             icon: <EnterIcon />,
             title: "Disconnect",
-            action: () => handleDisconnect()
+            action: () => setShowLogoutConfirm(true)
         },
     ]
 
-    const handleDisconnect = () => {
+    const handleLogoutConfirm = () => {
         logout()
-        disconnect()
+        // Router redirect is handled in the logout function
+    }
+
+    const handleLogoutCancel = () => {
+        setShowLogoutConfirm(false)
     }
 
     return (
@@ -75,6 +83,12 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </Layout>
+            
+            <LogoutConfirm
+                isOpen={showLogoutConfirm}
+                onConfirm={handleLogoutConfirm}
+                onCancel={handleLogoutCancel}
+            />
         </ProtectedRoute>
     )
 }

@@ -7,6 +7,7 @@ import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import { HeroUIProvider } from "@heroui/react";
 import { AuthProvider } from "@/contexts/AuthContext";
+import AuthDebug from "@/components/auth/AuthDebug";
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 const Provider = ({ children }: any) => {
@@ -28,6 +29,7 @@ const Provider = ({ children }: any) => {
                         <AuthProvider>
                             <main className="dark">
                                 {children}
+                                <AuthDebug />
                             </main>
                         </AuthProvider>
                     </HeroUIProvider>

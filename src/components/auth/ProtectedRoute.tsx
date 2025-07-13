@@ -15,15 +15,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   fallback 
 }) => {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
   const { connected } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && !isAuthenticated) {
-      router.push('/');
+    if (!isLoading && (!isAuthenticated || !user || !connected)) {
+      // Only redirect if we're not already on the home page
+      if (typeof window !== 'undefined' && window.location.pathname !== '/') {
+        router.push('/');
+      }
     }
-  }, [isAuthenticated, isLoading, router]);
+  }, [isAuthenticated, isLoading, user, connected, router]);
 
   // Show loading state
   if (isLoading) {
@@ -37,7 +40,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Show authentication required message
-  if (!isAuthenticated) {
+  if (!isAuthenticated || !user || !connected) {
     return (
       <div className="min-h-screen bg-crash bg-cover bg-center flex items-center justify-center">
         <div className="bg-black/70 p-8 rounded-lg backdrop-blur-sm text-center max-w-md">

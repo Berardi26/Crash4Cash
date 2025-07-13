@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
+import { useRouter } from 'next/navigation';
 
 interface User {
   id: string;
@@ -51,6 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
+  const router = useRouter();
 
   // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -58,23 +60,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // Check if user is authenticated
   const isAuthenticated = !!user && !!token;
 
-  // Initialize auth state from localStorage
+  // Initialize auth state from localStorage and validate with backend
   useEffect(() => {
-    const storedToken = localStorage.getItem('auth_token');
-    const storedUser = localStorage.getItem('auth_user');
-    
-    if (storedToken && storedUser) {
-      try {
-        setToken(storedToken);
-        setUser(JSON.parse(storedUser));
-      } catch (error) {
-        console.error('Error parsing stored user data:', error);
-        localStorage.removeItem('auth_token');
-        localStorage.removeItem('auth_user');
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem('auth_token');
+      const storedUser = localStorage.getItem('auth_user');
+      
+      if (storedToken && storedUser) {
+        try {
+          // Validate token with backend
+          const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${storedToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (response.ok) {
+            const data = await response.json();
+            setToken(storedToken);
+            setUser(data.user);
+          } else {
+            // Token is invalid, clear storage
+            localStorage.removeItem('auth_token');
+            localStorage.removeItem('auth_user');
+          }
+        } catch (error) {
+          console.error('Error validating token:', error);
+          localStorage.removeItem('auth_token');
+          localStorage.removeItem('auth_user');
+        }
       }
-    }
-    
-    setIsLoading(false);
+      
+      setIsLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   // Auto-connect wallet when connected
@@ -83,6 +105,43 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       handleWalletConnection();
     }
   }, [connected, publicKey, isAuthenticated]);
+
+  // Check if wallet is disconnected but user is still authenticated
+  useEffect(() => {
+    if (!connected && isAuthenticated) {
+      // Wallet disconnected but user still authenticated - force logout
+      forceLogout();
+    }
+  }, [connected, isAuthenticated]);
+
+  // Periodic token validation
+  useEffect(() => {
+    if (isAuthenticated && token) {
+      const validateToken = async () => {
+        try {
+          const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+            method: 'GET',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          if (!response.ok) {
+            // Token is invalid, logout
+            forceLogout();
+          }
+        } catch (error) {
+          console.error('Token validation error:', error);
+          forceLogout();
+        }
+      };
+
+      // Validate token every 5 minutes
+      const interval = setInterval(validateToken, 5 * 60 * 1000);
+      return () => clearInterval(interval);
+    }
+  }, [isAuthenticated, token]);
 
   const handleWalletConnection = async () => {
     if (!publicKey) return;
@@ -128,6 +187,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = () => {
+    setUser(null);
+    setToken(null);
+    localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
+    
+    // Redirect to home page after logout
+    router.push('/');
+  };
+
+  const forceLogout = () => {
+    // Force logout without redirect (used when wallet disconnects)
     setUser(null);
     setToken(null);
     localStorage.removeItem('auth_token');
