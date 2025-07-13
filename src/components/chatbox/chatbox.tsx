@@ -1,3 +1,4 @@
+'use client'
 import React, { useState } from "react";
 import { useChatMessages, ChatMessage } from "../../hooks/useChatMessages";
 import ChatItem from "./chatittem";
