@@ -9,7 +9,7 @@ const Navbar = () => {
     
 
 
-    return <div className="flex w-full">
+    return <div className="flex w-full fixed top-0 left-0 z-50">
         <div className="w-20 sm:w-32 lg:w-52 min-w-[320px] bg-black/80 flex items-center justify-center flex-col">
             <div className="flex items-center gap-2">
                 <Image src="/logo.png" alt="logo" className="w-20 h-20" />

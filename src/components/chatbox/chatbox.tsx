@@ -51,7 +51,7 @@ const Chatbox = () => {
                     ${visible ? 'translate-x-0 opacity-100 pointer-events-auto' : '-translate-x-full opacity-0 pointer-events-none'}
                     transform duration-150 ease-in-out
                     left-0 right-0 z-40
-                    lg:w-80 h-[calc(100vh-60px)] lg:h-[calc(100vh-100px)]
+                    lg:w-80 h-[calc(100vh-60px)] lg:h-[calc(100vh-100px)] fixed bottom-0
                     flex flex-col bg-black/90 backdrop-blur-md shadow-lg  min-w-[320px] sm:max-w-[350px] border border-[#23232a]
                     transition-all
                 `}

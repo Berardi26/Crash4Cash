@@ -10,7 +10,7 @@ type LayoutProps = {
 const Layout = ({ children, className }: LayoutProps) => {
     return <div className={`flex flex-col w-full h-full ${className} min-h-screen `}>
         <Navbar />
-        <div className="flex w-full">
+        <div className="flex w-full pt-20">
             <Chatbox />
             <div className='mx-auto w-full max-w-screen-lg pt-24'>
                 {children}

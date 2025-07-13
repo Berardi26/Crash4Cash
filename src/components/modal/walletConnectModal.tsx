@@ -84,10 +84,10 @@ const WalletConnectModal = () => {
                                 <div className=' flex justify-between items-center w-full'>
                                     <div className='flex items-center gap-2'>
                                         <BellIcon />
-                                        <p>Notifications</p>
+                                        <p className='text-white/30'>Notifications</p>
                                     </div>
                                     <div>
-                                        <span className='px-2 flex items-center h-8 border rounded-md border-white/20'>
+                                        <span className='px-2 flex items-center h-8 border rounded-md border-white/20 text-white/30'>
                                             {0}
                                         </span>
                                     </div>
