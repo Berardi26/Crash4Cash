@@ -8,10 +8,15 @@ import TransactionsPanel from "./transactions"
 import { option } from "framer-motion/client"
 import { Button } from "@heroui/react"
 import MenuButton from "@/components/button/menu"
+import ProtectedRoute from "@/components/auth/ProtectedRoute"
+import { useAuth } from "@/contexts/AuthContext"
+import { useWallet } from "@solana/wallet-adapter-react"
 
 const ProfilePage = () => {
-
+    const { user, logout } = useAuth()
+    const { disconnect } = useWallet()
     const [selected, setSelected] = useState("options")
+    
     const options = [
         {
             icon: <GearIcon />,
@@ -36,33 +41,42 @@ const ProfilePage = () => {
     ]
 
     const handleDisconnect = () => {
-
+        logout()
+        disconnect()
     }
 
-
     return (
-        <Layout className="bg-crash bg-cover bg-center">
-            <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm">
-                <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
-                <div className="flex gap-8 w-full">
-                    <div className="flex flex-col gap-2">
-                        {options.map((option, idx) => (
-                            <MenuButton key={idx} onPress={option.action} className={`w-full ${selected === option.title.toLocaleLowerCase() ? "bg-white/10 text-white" : ""}`} >
-                                {option.icon}
-                                {option.title}
-                            </MenuButton>
-                        ))}
+        <ProtectedRoute>
+            <Layout className="bg-crash bg-cover bg-center">
+                <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm">
+                    <div className="flex items-center justify-between">
+                        <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
+                        {user && (
+                            <div className="text-right">
+                                <p className="text-white text-sm">Welcome, {user.username}!</p>
+                                <p className="text-gray-400 text-xs">{user.walletAddress.slice(0, 4)}...{user.walletAddress.slice(-4)}</p>
+                            </div>
+                        )}
                     </div>
-                    <div className="flex flex-col w-full">
-                        {selected === "options" && <OptionPanel />}
-                        {selected === "statistics" && <StatisticsPanel />}
-                        {selected === "transactions" && <TransactionsPanel />}
+                    <div className="flex gap-8 w-full">
+                        <div className="flex flex-col gap-2">
+                            {options.map((option, idx) => (
+                                <MenuButton key={idx} onPress={option.action} className={`w-full ${selected === option.title.toLocaleLowerCase() ? "bg-white/10 text-white" : ""}`} >
+                                    {option.icon}
+                                    {option.title}
+                                </MenuButton>
+                            ))}
+                        </div>
+                        <div className="flex flex-col w-full">
+                            {selected === "options" && <OptionPanel />}
+                            {selected === "statistics" && <StatisticsPanel />}
+                            {selected === "transactions" && <TransactionsPanel />}
+                        </div>
                     </div>
                 </div>
-            </div>
-        </Layout>
+            </Layout>
+        </ProtectedRoute>
     )
 }
-
 
 export default ProfilePage

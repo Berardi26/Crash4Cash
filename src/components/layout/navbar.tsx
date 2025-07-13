@@ -4,10 +4,12 @@ import { CoinIcon, XIcon } from "../icos/svg";
 import { DiscordLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
 import WalletConnectModal from "../modal/walletConnectModal";
 import { Image } from "@heroui/react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useWallet } from "@solana/wallet-adapter-react";
 
 const Navbar = () => {
-    
-
+    const { user, isAuthenticated } = useAuth();
+    const { connected } = useWallet();
 
     return <div className="flex w-full fixed top-0 left-0 z-50">
         <div className="w-20 sm:w-32 lg:w-52 min-w-[320px] bg-black/80 flex items-center justify-center flex-col">
@@ -45,12 +47,24 @@ const Navbar = () => {
                 </div>
             </div>
             <div className="flex items-center h-[60px] justify-end md:justify-between w-full px-6 grow bg-black/80">
-                <Link href={`/leaderboard`} >
-                    <div className="flex items-center gap-2">
-                        <CoinIcon />
-                        <span className="uppercase bg-gradient-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
-                    </div>
-                </Link>
+                <div className="flex items-center gap-4">
+                    <Link href={`/leaderboard`} >
+                        <div className="flex items-center gap-2">
+                            <CoinIcon />
+                            <span className="uppercase bg-gradient-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
+                        </div>
+                    </Link>
+                    {isAuthenticated && user && (
+                        <Link href="/profile" className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg hover:bg-white/20 transition-colors">
+                            <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                                {user.username.charAt(0).toUpperCase()}
+                            </div>
+                            <span className="text-white text-sm font-medium hidden sm:block">
+                                {user.username}
+                            </span>
+                        </Link>
+                    )}
+                </div>
                 <WalletConnectModal />
             </div>
         </div>

@@ -6,9 +6,8 @@ import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adap
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
 import { HeroUIProvider } from "@heroui/react";
+import { AuthProvider } from "@/contexts/AuthContext";
 require("@solana/wallet-adapter-react-ui/styles.css");
-
-
 
 const Provider = ({ children }: any) => {
     const network = WalletAdapterNetwork.Devnet;
@@ -26,9 +25,11 @@ const Provider = ({ children }: any) => {
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
                     <HeroUIProvider>
-                        <main className="dark">
-                            {children}
-                        </main>
+                        <AuthProvider>
+                            <main className="dark">
+                                {children}
+                            </main>
+                        </AuthProvider>
                     </HeroUIProvider>
                 </WalletModalProvider>
             </WalletProvider>
