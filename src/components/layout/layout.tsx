@@ -1,6 +1,6 @@
 import { ReactNode } from 'react';
 import Navbar from "./navbar";
-import Chatbox from '../chatbox/chatbox';
+import Sidebar from './sidebar';
 
 type LayoutProps = {
     children: ReactNode;
@@ -11,7 +11,7 @@ const Layout = ({ children, className }: LayoutProps) => {
     return <div className={`flex flex-col w-full h-full ${className} min-h-screen `}>
         <Navbar />
         <div className="flex w-full pt-20">
-            <Chatbox />
+            <Sidebar />
             <div className='mx-auto w-full max-w-screen-lg pt-24'>
                 {children}
             </div>

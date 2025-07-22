@@ -16,9 +16,7 @@ import { BellIcon, CaretRightIcon, DotIcon, DrawingPinFilledIcon, DrawingPinIcon
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },
-    { name: 'Backpack', icon: '/assets/images/icons/backpack.png', adapterName: 'Backpack' },
     { name: 'Solflare', icon: '/assets/images/icons/solflare.svg', adapterName: 'Solflare' },
-    { name: 'Glow', icon: '/assets/images/icons/glow.png', adapterName: 'Glow' },
 ];
 
 

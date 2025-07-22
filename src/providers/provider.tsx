@@ -8,6 +8,8 @@ import { clusterApiUrl } from "@solana/web3.js";
 import { HeroUIProvider } from "@heroui/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AuthDebug from "@/components/auth/AuthDebug";
+import { SettingProvider } from "@/contexts/SettingContext";
+import ContextProvider from "./contextprovider";
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 const Provider = ({ children }: any) => {
@@ -26,12 +28,12 @@ const Provider = ({ children }: any) => {
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
                     <HeroUIProvider>
-                        <AuthProvider>
+                        <ContextProvider>
                             <main className="dark">
                                 {children}
                                 <AuthDebug />
                             </main>
-                        </AuthProvider>
+                        </ContextProvider>
                     </HeroUIProvider>
                 </WalletModalProvider>
             </WalletProvider>
