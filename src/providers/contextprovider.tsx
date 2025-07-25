@@ -1,11 +1,14 @@
 import { AuthProvider } from "@/contexts/AuthContext"
 import { SettingProvider } from "@/contexts/SettingContext"
+import { UserDataProvider } from "@/contexts/userDataContext"
 
 const ContextProvider = ({ children }: any) => {
-    return(
+    return (
         <SettingProvider>
             <AuthProvider>
-                {children}
+                <UserDataProvider>
+                    {children}
+                </UserDataProvider>
             </AuthProvider>
         </SettingProvider>
     )

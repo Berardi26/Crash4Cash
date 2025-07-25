@@ -19,7 +19,7 @@ const games = [
   },
   {
     name: "Rocket",
-    icon: "/assets/images/icons/rocket.png",
+    icon: "/assets/assets/images/icons/rocket.png",
     emoji: null,
     href: "/crash",
     bg: "from-blue-400 to-purple-600"
@@ -38,7 +38,7 @@ export default function Home() {
                   <div className="flex bg-gradient-border p-[1px] w-full h-full rounded-[10px]">
                     <div className="flex flex-col w-full h-full bg-gradient-color gap-4 rounded-[10px]">
                       <div className="flex flex-col w-full h-full rounded-t-[10px] relative gap-3">
-                        <img src="/images/download.webp" className="object-cover object-center w-full rounded-t-[10px] absolute top-0 left-0" alt=""></img>
+                        <img src="/assets/images/download.webp" className="object-cover object-center w-full rounded-t-[10px] absolute top-0 left-0" alt=""></img>
                         <div className="rounded-t-[10px] px-3 py-[6px] z-[3]">
                           <div className="flex justify-between uppercase text-xs text-light-grey">
                             <p>Round</p>
@@ -54,16 +54,16 @@ export default function Home() {
                         </div>
                         <div className="flex flex-col items-center gap-1">
                           {/* <p className="font-inter text-sm font-semibold max-w-[75px] truncate text-white text-center">{latestWinner.user_id.username}</p> */}
-                          <img src="/images/winner.svg" className="object-cover object-center w-full px-10" alt=""></img>
+                          <img src="/assets/images/winner.svg" className="object-cover object-center w-full px-10" alt=""></img>
                         </div>
                       </div>
                       <div className="w-full bg-layer2 rounded-b-[10px] relative py-2 px-3">
-                        <img src="/images/static/grid.bb6dda07.webp" className="object-cover object-center w-full h-full rounded-b-[10px] absolute top-0 left-0" alt=""></img>
+                        <img src="/assets/images/static/grid.bb6dda07.webp" className="object-cover object-center w-full h-full rounded-b-[10px] absolute top-0 left-0" alt=""></img>
                         <div className="flex flex-col gap-[2px]">
                           <div className="flex items-center w-full justify-between z-[3]">
                             <p className="font-inter text-xs text-light-grey">Won</p>
                             <div className="flex items-center gap-1.5">
-                              <img src="/images/solana.png" alt="" className="w-3 h-3" />
+                              <img src="/assets/images/solana.png" alt="" className="w-3 h-3" />
                               {/* <p className="font-inter text-sm font-semibold text-white">{latestWinner.won.toFixed(4)}</p> */}
                             </div>
                           </div>
@@ -84,7 +84,7 @@ export default function Home() {
                   <div className="flex bg-gradient-border p-[1px] w-full h-full rounded-[10px]">
                     <div className="flex flex-col w-full h-full bg-gradient-color gap-4 rounded-[10px]">
                       <div className="flex flex-col w-full h-full rounded-t-[10px] relative gap-3">
-                        <img src="/images/download.webp" className="object-cover object-center w-full rounded-t-[10px] absolute top-0 left-0" alt=""></img>
+                        <img src="/assets/images/download.webp" className="object-cover object-center w-full rounded-t-[10px] absolute top-0 left-0" alt=""></img>
                         <div className="rounded-t-[10px] px-3 py-[6px] z-[3]">
                           <div className="flex justify-between uppercase text-xs text-light-grey">
                             <p>Round</p>
@@ -100,16 +100,16 @@ export default function Home() {
                         </div>
                         <div className="flex flex-col items-center gap-1">
                           {/* <p className="font-inter text-sm font-semibold max-w-[75px] truncate text-white text-center">{luckyUser.user_id.username}</p> */}
-                          <img src="/images/luck.svg" className="object-cover object-center w-full px-10" alt=""></img>
+                          <img src="/assets/images/luck.svg" className="object-cover object-center w-full px-10" alt=""></img>
                         </div>
                       </div>
                       <div className="w-full bg-layer2 rounded-b-[10px] relative py-2 px-3">
-                        <img src="/images/static/grid.bb6dda07.webp" className="object-cover object-center w-full h-full rounded-b-[10px] absolute top-0 left-0" alt=""></img>
+                        <img src="/assets/images/static/grid.bb6dda07.webp" className="object-cover object-center w-full h-full rounded-b-[10px] absolute top-0 left-0" alt=""></img>
                         <div className="flex flex-col gap-[2px]">
                           <div className="flex items-center w-full justify-between z-[3]">
                             <p className="font-inter text-xs text-light-grey">Won</p>
                             <div className="flex items-center gap-1.5">
-                              <img src="/images/solana.png" alt="" className="w-3 h-3" />
+                              <img src="/assets/images/solana.png" alt="" className="w-3 h-3" />
                               {/* <p className="font-inter text-sm font-semibold text-white">{luckyUser.won.toFixed(4)}</p> */}
                             </div>
                           </div>

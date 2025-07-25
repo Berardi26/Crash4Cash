@@ -11,6 +11,7 @@ export const useChatSocket = () => {
     const [isCConnected, setIsConnected] = useState(false);
 
     useEffect(() => {
+        console.log("socket", SOCKET_URL)
         const socketInstance = io(`${SOCKET_URL}${ESOCKET_NAMESPACE.chat}`, {
             withCredentials: true,
             autoConnect: true,

@@ -1,1 +1,1 @@
-export const SOCKET_URL = process.env.SOCKET_URL || ""
+export const SOCKET_URL = process.env.SOCKET_URL || "localhost:3001/"

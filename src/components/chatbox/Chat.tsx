@@ -1,11 +1,11 @@
 import { useEffect, useRef } from "react";
 import ChatItem from "./ChatItem";
-import { useUserProvider } from "@/contexts/UserContext";
-import { useChatSocket } from "@/hooks/useChatSocket";
 import { EChatEvent } from "@/types/socket";
+import { useChatSocket } from "@/hooks/useChatSocket";
+import { useUserData } from "@/contexts/userDataContext";
 
 const Chat = () => {
-    const { userInfo, messages, setOnlineUsers, setMessages } = useUserProvider();
+    const { user, messages, setMessages } = useUserData();
     const { chatSocket } = useChatSocket();
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const initialLoad = useRef(true);
@@ -22,8 +22,8 @@ const Chat = () => {
     useEffect(() => {
         if (!chatSocket) return;
 
-        if (userInfo) {
-            chatSocket.emit(EChatEvent.JOIN, userInfo._id);
+        if (user && typeof user === "object" && "_id" in user) {
+            chatSocket.emit(EChatEvent.JOIN, (user as { _id: string })._id);
         }
 
         chatSocket.on(EChatEvent.MESSAGE_HISTORY, (data: IChatItem[]) => {
@@ -34,9 +34,9 @@ const Chat = () => {
             setMessages(prev => [...prev, message]);
         });
 
-        chatSocket.on(EChatEvent.USER_LIST, (userList) => {
-            setOnlineUsers(userList.length);
-        });
+        // chatSocket.on(EChatEvent.USER_LIST, (userList) => {
+        //     setOnlineUsers(userList.length);
+        // });
 
         return () => {
             chatSocket.off(EChatEvent.MESSAGE_HISTORY);

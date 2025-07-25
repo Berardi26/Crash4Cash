@@ -1,10 +1,12 @@
-import { useUserProvider } from "@/contexts/UserContext"
+import { useModal } from "@/contexts/modalContext";
+import { useUserData } from "@/contexts/userDataContext";
 
 const ChatItem: React.FC<IChatItem> = (data) => {
-    const { setIsProfileModal, setSelectedUser } = useUserProvider();
+    const { setShowProfileModal } = useModal();
+    const { setSelectedUser } = useUserData();
 
     return (
-        <div className="animate-popup-enter" onClick={() => { setIsProfileModal(true); setSelectedUser(data.user_id!) }}>
+        <div className="animate-popup-enter" onClick={() => { setShowProfileModal(true); setSelectedUser(data.user_id!) }}>
             <div className="relative bg-[#162135]/70 hover:bg-[#162135] p-3 pl-8 rounded-lg cursor-pointer transition-colors duration-200">
                 <div
                     className="w-9 h-9 rounded-[8px] overflow-hidden aspect-square hover:brightness-125 transition-[filter] duration-300 cursor-pointer absolute -left-3 dropShadow-samll bg-layer2 p-[1px] border-none"

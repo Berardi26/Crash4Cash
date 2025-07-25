@@ -1,5 +1,6 @@
 // import { useUserProvider } from "@/contexts/UserContext";
 // import { useChatSocket } from "@/hooks/useChatSocket";
+import { useUserData } from "@/contexts/userDataContext";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { EChatEvent } from "@/types/socket";
 // import { Icon } from "@iconify-icon/react";
@@ -9,15 +10,15 @@ import { useState } from "react";
 const SendChat = () => {
     const [input, setInput] = useState<string>("");
 
-    const { userInfo, messages } = useUserProvider()
+    const { user, messages } = useUserData()
     const { chatSocket } = useChatSocket();
     const { connected } = useWallet();
 
     const sendMessage = () => {
-        if (input.trim() && chatSocket && userInfo) {
+        if (input.trim() && chatSocket && user) {
             chatSocket.emit(EChatEvent.MESSAGE, {
                 content: input,
-                sender: userInfo._id
+                sender: user?._id
             });
             setInput('');
         }
@@ -36,13 +37,13 @@ const SendChat = () => {
             <div className="flex flex-col justify-between p-4 pt-3 shrink-0 gap-2">
                 <div className="relative w-full bg-layer2 p-[1px] font-inter rounded-lg">
                     <textarea
-                        disabled={connected && userInfo ? false : true}
+                        disabled={connected && user ? false : true}
                         name="message"
                         id="sendMsg"
                         placeholder="Type Message Here..."
                         maxLength={160}
                         value={input}
-                        className={`bg-transparent bg-layer transition-colors duration-300 px-3 ${connected && userInfo ? "" : "cursor-not-allowed"} rounded-lg w-full text-sm focus:outline-none focus:border-none min-h-[40px] py-2.5 align-bottom resize-none overflow-hidden h-auto focus:placeholder:text-white/10 placeholder:transition-colors placeholder:duration-300 pr-10`}
+                        className={`bg-transparent bg-layer transition-colors duration-300 px-3 ${connected && user ? "" : "cursor-not-allowed"} rounded-lg w-full text-sm focus:outline-none focus:border-none min-h-[40px] py-2.5 align-bottom resize-none overflow-hidden h-auto focus:placeholder:text-white/10 placeholder:transition-colors placeholder:duration-300 pr-10`}
                         style={{
                             height: "42px"
                         }}
@@ -53,8 +54,8 @@ const SendChat = () => {
                         onClick={() => sendMessage()}
                     >
                         <button
-                            disabled={connected && userInfo ? false : true}
-                            className={`w-8 h-8 flex items-center justify-center ${connected && userInfo ? "" : "cursor-not-allowed"} outline-none bg-transparent hover:bg-[#446ab1]/15 transition-colors duration-300 rounded-full p-1`}
+                            disabled={connected && user ? false : true}
+                            className={`w-8 h-8 flex items-center justify-center ${connected && user ? "" : "cursor-not-allowed"} outline-none bg-transparent hover:bg-[#446ab1]/15 transition-colors duration-300 rounded-full p-1`}
                             type="button"
                             aria-expanded="false"
                             id="headlessui-popover-button-:rk9:"

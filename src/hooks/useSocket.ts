@@ -31,6 +31,7 @@ export const useSocket = () => {
 
   useEffect(() => {
     // Initialize Game Socket
+    console.log("Initialize socket", SOCKET_URL)
     sockets.current.game = io(`${SOCKET_URL}${ESOCKET_NAMESPACE.game}`, {
       withCredentials: true,
       autoConnect: true,
