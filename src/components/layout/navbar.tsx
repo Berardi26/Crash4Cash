@@ -54,7 +54,7 @@ const Navbar = () => {
                             <span className="uppercase bg-gradient-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
                         </div>
                     </Link>
-                    {isAuthenticated && user && (
+                    {/* {isAuthenticated && user && (
                         <Link href="/profile" className="flex items-center gap-2 bg-white/10 px-3 py-1 rounded-lg hover:bg-white/20 transition-colors">
                             <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-xs font-bold text-white">
                                 {user.username.charAt(0).toUpperCase()}
@@ -63,7 +63,7 @@ const Navbar = () => {
                                 {user.username}
                             </span>
                         </Link>
-                    )}
+                    )} */}
                 </div>
                 <WalletConnectModal />
             </div>

@@ -1,65 +1,145 @@
 import PrimaryButton from "@/components/button/primary"
-import { Image, Input } from "@heroui/react"
+import { useAuth } from "@/contexts/AuthContext"
+import { addToast, Image, Input, Spinner, toast, user } from "@heroui/react"
 import { CheckIcon, Link1Icon, LinkBreak1Icon } from "@radix-ui/react-icons"
-import { useRef, useState } from "react"
+import { useEffect, useRef, useState } from "react"
+import React from "react"
+import { useProfile } from "@/hooks/useProfile"
+import LoadingSpinner from "@/components/auth/LoadingSpinner";
 
 const EditName = () => {
     const [focused, setFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const handleEdit = () => {
-        // Handle edit logic here
-        if (focused) {
+    const { user } = useAuth();
+    const [userName, setUserName] = useState(user?.username);
+    const { updateProfile, loading, error, success } = useProfile();
 
+    // Sync input with user changes
+    useEffect(() => {
+        setUserName(user?.username);
+    }, [user?.username]);
+
+    // Reset to default state after update
+    useEffect(() => {
+        if (!loading && focused) {
+            setFocused(false);
         }
-        else {
-            inputRef.current?.focus();
-            setFocused(true);
+    }, [loading]);
+
+    const handleEdit = async () => {
+        console.log("A")
+        if (userName && userName !== user?.username) {
+            console.log("B")
+            const result = await updateProfile({ username: userName });
+            addToast({
+                title: result ? "Success" : "Failed",
+                description: result ? "User name updated successfully" : "Updating username failed",
+                color: result ? "success" : "danger",
+                variant:"bordered",
+                classNames:{
+                    base:"text-white",
+                    title:"text-white",
+                    description:"text-white"
+                }
+            })
+            setFocused(false)
         }
-    }
+        // Spinner will show while loading, then useEffect will reset focus
+    };
 
     return (
         <div className="flex gap-3 items-end">
-            <Input ref={inputRef} label="Name" type="text" value={"Ada"} labelPlacement="outside" className="max-w-lg" onFocusChange={(e) => setFocused(e)} classNames={{
-                label: "!text-white/30",
-                inputWrapper: "rounded-lg",
-                base: ""
-            }} />
-            <PrimaryButton onClick={handleEdit} className="min-w-0">
-                {focused ? <CheckIcon className="scale-150" /> :
-                    "Edit"}</PrimaryButton>
+            <Input
+                ref={inputRef}
+                label="Name"
+                type="text"
+                value={userName}
+                labelPlacement="outside"
+                className="max-w-lg"
+                onValueChange={setUserName}
+                onFocusChange={setFocused}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(); }}
+                classNames={{
+                    label: "!text-white/30",
+                    inputWrapper: "rounded-lg",
+                    base: ""
+                }}
+            />
+            <PrimaryButton onMouseDown={handleEdit} className="min-w-0" disabled={loading}>
+                {loading ? <Spinner size="sm" color="white" /> : (focused ? <CheckIcon className="scale-150" /> : "Edit")}
+            </PrimaryButton>
         </div>
-    )
-}
+    );
+};
 
 const EditEmail = () => {
     const [focused, setFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const handleEdit = () => {
-        // Handle edit logic here
-        if (focused) {
+    const { user } = useAuth();
+    const [email, setEmail] = useState(user?.email || "");
+    const { updateProfile, loading, error, success } = useProfile();
 
+    // Sync input with user changes
+    useEffect(() => {
+        setEmail(user?.email || "");
+    }, [user?.email]);
+
+    // Reset to default state after update
+    useEffect(() => {
+        if (!loading && focused) {
+            setFocused(false);
         }
-        else {
-            inputRef.current?.focus();
-            setFocused(true);
+    }, [loading]);
+
+
+    const handleEdit = async () => {
+        console.log("A")
+        if (email !== user?.email) {
+            console.log("B")
+            const result = await updateProfile({ email: email || null });
+            addToast({
+                title: result ? "Success" : "Failed",
+                description: result ? "Email updated successfully. Verify now" : "Updating Email failed",
+                color: result ? "success" : "danger",
+                variant:"bordered",
+                classNames:{
+                    base:"text-white",
+                    title:"text-white",
+                    description:"text-white"
+                }
+            })
+            setFocused(false)
         }
-    }
+        // Spinner will show while loading, then useEffect will reset focus
+    };
 
     return (
         <div className="flex gap-3 items-end">
-            <Input ref={inputRef} label="Email" type="Email" value={"Ada"} labelPlacement="outside" className="max-w-lg" onFocusChange={(e) => setFocused(e)} classNames={{
-                label: "!text-white/30",
-                inputWrapper: "rounded-lg",
-                base: ""
-            }} />
-            <PrimaryButton onClick={handleEdit} className="min-w-0">
-                {focused ? <CheckIcon className="scale-150" /> :
-                    "Edit"}</PrimaryButton>
+            <Input
+                ref={inputRef}
+                label="Email"
+                type="Email"
+                value={email}
+                onValueChange={setEmail}
+                labelPlacement="outside"
+                className="max-w-lg"
+                onFocusChange={setFocused}
+                onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(); }}
+                classNames={{
+                    label: "!text-white/30",
+                    inputWrapper: "rounded-lg",
+                    base: ""
+                }}
+            />
+            <PrimaryButton onMouseDown={handleEdit} className="min-w-0" disabled={loading}>
+                {loading ? <Spinner size="sm" color="white" /> : (focused ? <CheckIcon className="scale-150" /> : "Edit")}
+            </PrimaryButton>
         </div>
-    )
-}
+    );
+};
 
 const OptionPanel = () => {
+    const { user, isAuthenticated } = useAuth()
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex gap-8">
@@ -71,12 +151,14 @@ const OptionPanel = () => {
                 <div className="flex flex-col gap-2 justify-between">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
-                            <p className="text-xl text-white">Cornan</p>
-                            <p className="px-2 rounded-md border border-white/30 bg-white/10 text-white/40">3</p>
+                            <p className="text-xl text-white">{user?.username}</p>
+                            <p className="px-2 rounded-md border border-white/30 bg-white/10 text-white/40">{user?.level ?? 0}</p>
                         </div>
-                        <p className="text-sm text-white/40">Joined <span>July 12th, 2025</span></p>
+                        <p className="text-sm text-white/40">
+                            Joined <span>{user?.createdAt?.toString() ?? new Date().getUTCDate()}</span>
+                        </p>
                     </div>
-                    <p className="text-sm text-white/30">Exp: <span>3340/5000</span></p>
+                    <p className="text-sm text-white/30">Exp: <span>{user?.exp}/5000</span></p>
                 </div>
             </div>
 
@@ -122,7 +204,6 @@ const OptionPanel = () => {
                     </div>
                 </div>
             </div>
-
         </div>
     )
 }

@@ -5,7 +5,7 @@ import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
 import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
 import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
 import { clusterApiUrl } from "@solana/web3.js";
-import { HeroUIProvider } from "@heroui/react";
+import { HeroUIProvider, ToastProvider } from "@heroui/react";
 import { AuthProvider } from "@/contexts/AuthContext";
 import AuthDebug from "@/components/auth/AuthDebug";
 import { SettingProvider } from "@/contexts/SettingContext";
@@ -27,9 +27,10 @@ const Provider = ({ children }: any) => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <HeroUIProvider>
+                    <HeroUIProvider >
                         <ContextProvider>
-                            <main className="dark">
+                            <main className="dark text-foreground bg-background">
+                                <ToastProvider placement="top-right" />
                                 {children}
                                 <AuthDebug />
                             </main>

@@ -13,6 +13,7 @@ import {
 import { Button, Image, Link, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import PrimaryButton from '../button/primary';
 import { BellIcon, CaretRightIcon, DotIcon, DrawingPinFilledIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
+import { useAuth } from '@/contexts/AuthContext';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },
@@ -23,6 +24,7 @@ const walletsList = [
 const WalletConnectModal = () => {
 
     const { wallets, select, connect, connected, disconnect } = useWallet();
+    const { user, isAuthenticated } = useAuth();
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
     const handleConnect = async (adapterName: string) => {
         console.log("adapter", adapterName)
@@ -67,7 +69,7 @@ const WalletConnectModal = () => {
     return (
         <>
             <div className='flex'>
-                {connected ? <div className='flex items-center gap-2 '>
+                {connected && isAuthenticated && user? <div className='flex items-center gap-2 '>
 
                     <Popover classNames={{
                         content: "bg-black/60 backdrop-blur-sm"
@@ -120,8 +122,8 @@ const WalletConnectModal = () => {
                                             </div>
                                             <div>
                                                 <div className='flex flex-col'>
-                                                    <p className='text-white/60'>{`Ada`}</p>
-                                                    <p className='text-xs'>Level 12</p>
+                                                    <p className='text-white/60'>{user.username}</p>
+                                                    <p className='text-xs'>Level {user.level}</p>
                                                 </div>
                                             </div>
                                         </div>

@@ -36,7 +36,10 @@ module.exports = {
   darkMode: "class",
   plugins: [
     require("tailwindcss-animation-delay"),
-    heroui()
+    heroui({
+      defaultTheme:"dark",
+      defaultExtendTheme:"dark"
+    })
   ],
 }
 

@@ -19,6 +19,9 @@ interface User {
   totalWon: number;
   winRate: string;
   profitLoss: number;
+  exp: number;
+  level: number;
+  createdAt: Date;
 }
 
 interface AuthContextType {
@@ -65,7 +68,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const initializeAuth = async () => {
       const storedToken = localStorage.getItem('auth_token');
       const storedUser = localStorage.getItem('auth_user');
-      
+
       if (storedToken && storedUser) {
         try {
           // Validate token with backend
@@ -92,7 +95,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           localStorage.removeItem('auth_user');
         }
       }
-      
+
       setIsLoading(false);
     };
 
@@ -145,7 +148,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const handleWalletConnection = async () => {
     if (!publicKey) return;
-    
+
     try {
       setIsLoading(true);
       await login(publicKey.toString());
@@ -171,14 +174,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       }
 
       const data = await response.json();
-      
+
       setToken(data.token);
       setUser(data.user);
-      
+
       // Store in localStorage
       localStorage.setItem('auth_token', data.token);
       localStorage.setItem('auth_user', JSON.stringify(data.user));
-      
+
       console.log('Login successful:', data);
     } catch (error) {
       console.error('Login error:', error);
@@ -191,7 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setToken(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
-    
+
     // Redirect to home page after logout
     router.push('/');
   };
