@@ -145,7 +145,7 @@ const OptionPanel = () => {
             <div className="flex gap-8">
                 <div className="flex flex-col gap-2">
                     <div className="p-1 border border-white/10 rounded-xl">
-                        <Image src={"/assets/images/avatar/ada.jpg"} alt="Avatar" className="w-24 h-24 rounded-lg" />
+                        <Image src={"/assets/images/avatar/default.webp"} alt="Avatar" className="w-24 h-24 rounded-lg" />
                     </div>
                 </div>
                 <div className="flex flex-col gap-2 justify-between">

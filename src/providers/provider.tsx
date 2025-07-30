@@ -10,6 +10,9 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import AuthDebug from "@/components/auth/AuthDebug";
 import { SettingProvider } from "@/contexts/SettingContext";
 import ContextProvider from "./contextprovider";
+import { AbstractWalletProvider } from "@abstract-foundation/agw-react";
+import { abstractTestnet, abstract } from "viem/chains"; 
+
 require("@solana/wallet-adapter-react-ui/styles.css");
 
 const Provider = ({ children }: any) => {
@@ -26,17 +29,19 @@ const Provider = ({ children }: any) => {
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
-                <WalletModalProvider>
-                    <HeroUIProvider >
-                        <ContextProvider>
-                            <main className="dark text-foreground bg-background">
-                                <ToastProvider placement="top-right" />
-                                {children}
-                                <AuthDebug />
-                            </main>
-                        </ContextProvider>
-                    </HeroUIProvider>
-                </WalletModalProvider>
+                {/* <AbstractWalletProvider chain={abstractTestnet}> */}
+                    <WalletModalProvider>
+                        <HeroUIProvider >
+                            <ContextProvider>
+                                <main className="dark text-foreground bg-background">
+                                    <ToastProvider placement="top-right" />
+                                    {children}
+                                    <AuthDebug />
+                                </main>
+                            </ContextProvider>
+                        </HeroUIProvider>
+                    </WalletModalProvider>
+                {/* </AbstractWalletProvider> */}
             </WalletProvider>
         </ConnectionProvider>
     )

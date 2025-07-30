@@ -6,6 +6,7 @@ import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import SendChat from "../chatbox/SendChat";
 import { FaEject } from "react-icons/fa";
 import Chat from "../chatbox/Chat";
+import { FaRegComment, FaRocketchat } from "react-icons/fa6";
 
 const Sidebar = () => {
   const { messages, sendMessage, loading, typingUsers, onlineCount, startTyping, stopTyping, isAuthenticated } = useChatMessages();
@@ -101,7 +102,7 @@ const Sidebar = () => {
         onClick={() => setSidebarOpen(true)}
       >
         {/* <Icon icon="tabler:message-filled" width="28" height="28" style={{ color: "#cecece" }} /> */}
-        <ChatBubbleIcon />
+        <FaRocketchat size={20} />
       </button>
     </div>
   );

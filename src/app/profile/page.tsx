@@ -56,7 +56,7 @@ const ProfilePage = () => {
     return (
         <ProtectedRoute>
             <Layout className="bg-crash bg-cover bg-center">
-                <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm">
+                <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm sm:h-[70vh] overflow-auto">
                     <div className="flex items-center justify-between">
                         <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
                         {user && (

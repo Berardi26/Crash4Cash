@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import Navbar from "./navbar";
 import Sidebar from './sidebar';
+import { useSetting } from '@/contexts/SettingContext';
 
 type LayoutProps = {
     children: ReactNode;
@@ -12,7 +13,7 @@ const Layout = ({ children, className }: LayoutProps) => {
         <Navbar />
         <div className="flex w-full pt-20">
             <Sidebar />
-            <div className='mx-auto w-full max-w-screen-lg pt-24'>
+            <div className={`mx-auto w-full duration-150 max-w-screen-lg pt-24 `}>
                 {children}
             </div>
         </div>
