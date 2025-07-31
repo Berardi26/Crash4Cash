@@ -105,7 +105,7 @@ const CoinflipPage = () => {
         {/* Game List */}
         <div className="w-full max-w-4xl flex flex-col gap-4">
           {mockGames.map(game => (
-            <div key={game.id} className="flex items-center justify-between bg-gradient-to-br from-[#181A20] to-[#23232a] rounded-2xl px-6 py-4 shadow-lg border border-[#23232a]">
+            <div key={game.id} className="flex items-center justify-between bg-linear-to-br from-[#181A20] to-[#23232a] rounded-2xl px-6 py-4 shadow-lg border border-[#23232a]">
               <CoinflipItem {...game} />
               <div className="flex items-center gap-2 ml-4">
                 {game.status === "joinable" && (

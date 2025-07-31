@@ -60,7 +60,7 @@ const EditName = () => {
                 onFocusChange={setFocused}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(); }}
                 classNames={{
-                    label: "!text-white/30",
+                    label: "text-white/30!",
                     inputWrapper: "rounded-lg",
                     base: ""
                 }}
@@ -126,7 +126,7 @@ const EditEmail = () => {
                 onFocusChange={setFocused}
                 onKeyDown={(e) => { if (e.key === 'Enter') handleEdit(); }}
                 classNames={{
-                    label: "!text-white/30",
+                    label: "text-white/30!",
                     inputWrapper: "rounded-lg",
                     base: ""
                 }}
@@ -167,7 +167,7 @@ const OptionPanel = () => {
                 <EditEmail />
                 <div className="flex gap-3 items-end">
                     <Input label="Conneted Account" type="address" disabled value={"5rdfasd...asd"} labelPlacement="outside" className="max-w-lg" classNames={{
-                        label: "!text-white/30",
+                        label: "text-white/30!",
                         inputWrapper: "rounded-lg",
                         base: ""
                     }} />
@@ -177,7 +177,7 @@ const OptionPanel = () => {
                     <div className="flex gap-4 items-start justify-start">
                         <div className="rounded-lg flex border border-white/20 p-4  w-full max-w-[250px]">
                             <div>
-                                <Image src={"/assets/images/icons/discord.png"} alt="Discord" className="flex-shrink-0 w-20 object-cover rounded-lg" />
+                                <Image src={"/assets/images/icons/discord.png"} alt="Discord" className="shrink-0 w-20 object-cover rounded-lg" />
                             </div>
                             <div className="flex flex-col items-center w-full gap-2">
                                 <p className="text-xs">Airgear1336</p>
@@ -190,7 +190,7 @@ const OptionPanel = () => {
                         </div>
                         <div className="rounded-lg flex border border-white/20 p-4  w-full max-w-[250px]">
                             <div>
-                                <Image src={"/assets/images/icons/x.png"} alt="Discord" className="border border-white/20 rounded-full flex-shrink-0 w-20 object-cover shadow-md" />
+                                <Image src={"/assets/images/icons/x.png"} alt="Discord" className="border border-white/20 rounded-full shrink-0 w-20 object-cover shadow-md" />
                             </div>
                             <div className="flex flex-col items-center w-full gap-2">
                                 <p className="text-xs">Twitter</p>

@@ -141,7 +141,7 @@ const StyledWrapper = styled.div`
   }
 
   .space {
-    flex-grow: 1;
+    grow: 1;
   }
 
   .icon {

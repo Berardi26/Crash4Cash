@@ -20,7 +20,7 @@ const CoinflipItem: React.FC<CoinflipItemProps> = ({
   chance,
 }) => {
   return (
-    <div className="flex items-center w-full max-w-xl bg-gradient-to-br from-[#181A20] to-[#23232a] rounded-2xl px-4 py-2 shadow-lg border border-[#23232a] relative overflow-hidden">
+    <div className="flex items-center w-full max-w-xl bg-linear-to-br from-[#181A20] to-[#23232a] rounded-2xl px-4 py-2 shadow-lg border border-[#23232a] relative overflow-hidden">
       {/* Avatar */}
       <div className="flex items-center justify-center w-12 h-12 rounded-xl bg-[#23232a] mr-4">
         {avatarUrl ? (
@@ -47,7 +47,7 @@ const CoinflipItem: React.FC<CoinflipItemProps> = ({
         <span className="text-white font-bold text-lg">{(chance * 100).toFixed(2)}%</span>
         <div className="w-12 h-1 bg-[#23232a] rounded mt-1 overflow-hidden">
           <div
-            className="h-full bg-gradient-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe]"
+            className="h-full bg-linear-to-r from-[#7858fe] via-[#bd74ff] to-[#7858fe]"
             style={{ width: `${Math.max(6, Math.min(100, chance * 100))}%` }}
           />
         </div>

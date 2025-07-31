@@ -26,7 +26,7 @@ const SendChat = () => {
 
     return (
         <div className="relative opacity-100 animate-fade-in">
-            <div className="absolute hidden bg-gradient-to-b from-[#223150] to-[#0f1823] p-[1px] w-[calc(100%-1rem)] mx-auto bottom-full inset-x-0 z-[5] rounded-md transition-[transform,opacity] duration-300 cursor-pointer shadow-md opacity-100 translate-y-0">
+            <div className="absolute hidden bg-linear-to-b from-[#223150] to-[#0f1823] p-px w-[calc(100%-1rem)] mx-auto bottom-full inset-x-0 z-5 rounded-md transition-[transform,opacity] duration-300 cursor-pointer shadow-md opacity-100 translate-y-0">
                 <div className="flex items-center justify-between bg-[#162135] text-[#919191] pointer-events-none w-full h-max px-3 py-2 backdrop-blur-xl rounded-md">
                     <div className="flex items-center gap-1.5 text-sm text-[#E3E3E3]">
                         {/* <Icon icon="material-symbols-light:pause-rounded" width="24" height="24" style={{ color: "#E3E3E3" }} /> */}
@@ -35,7 +35,7 @@ const SendChat = () => {
                 </div>
             </div>
             <div className="flex flex-col justify-between p-4 pt-3 shrink-0 gap-2">
-                <div className="relative w-full bg-layer2 p-[1px] font-inter rounded-lg">
+                <div className="relative w-full bg-layer2 p-px font-inter rounded-lg">
                     <textarea
                         disabled={connected && user ? false : true}
                         name="message"
