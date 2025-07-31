@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Layout from "@/components/layout/layout";
 import { Image } from "@heroui/react";
+import Crash from "./crash/page";
 
 const games = [
   {
@@ -31,7 +32,6 @@ export default function Home() {
     <Layout className="bg-gradient-to-br from-black via-gray-900 to-gray-800">
       <div className="flex items-center justify-center min-h-[70vh] py-12">
         <div className="flex-1 flex flex-col">
-
         </div>
         <div className="flex md:flex-col gap-6 w-[210px] xs:w-[430px] lg:w-[210px] h-fit flex-wrap m-auto md:m-0 shrink-0">
           <div className="flex flex-col xs:mx-auto xs:flex-row lg:flex-col gap-6 w-full zoom-80 2xl:zoom-100">

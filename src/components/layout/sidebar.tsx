@@ -54,7 +54,7 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="flex w-fit h-full z-10 duration-300">
+    <div className="absolute top-[68px] z-[100] flex h-[calc(100%-68px)] w-[300px] flex-col gap-0.5 transition-transform duration-500 max-lg:bg-[#0B0A0A] md:top-[73px] lg:h-[calc(100%-73px)] lgxl:relative lgxl:top-0 lgxl:h-full max-lgxl:-translate-x-full">
       {sidebarOpen && (
         <div
           className={`

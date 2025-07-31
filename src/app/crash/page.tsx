@@ -32,11 +32,11 @@ const Crash = () => {
 
     return (
         <Layout className="bg-crash bg-cover bg-center">
-            <div className="flex md:flex-row flex-col w-full bg-opacity-15 flex-1">
+            <div className="flex flex-col w-full bg-opacity-15 flex-1">
                 <div className='flex-1 relative'>
-                    {/* <div className="w-7/12 relative">
+                    <div className="relative">
                         <PhaserGame onReady={setGameInstance} />
-                    </div> */}
+                    </div>
                 </div>
 
                 <div className='w-[400px] flex flex-col gap-2'>
