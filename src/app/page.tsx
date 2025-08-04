@@ -30,11 +30,72 @@ const games = [
 export default function Home() {
   return (
     <Layout className="bg-linear-to-br from-black via-gray-900 to-gray-800">
-      <div className="flex items-center justify-center min-h-[70vh] py-12">
-        <div className="flex-1 flex flex-col">
+      <div className="flex items-start justify-center min-h-[70vh] py-12 gap-8">
+        <div className="flex-1 flex flex-col ">
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
+          <br/>
         </div>
         <div className="flex md:flex-col gap-6 w-[210px] xs:w-[430px] lg:w-[210px] h-fit flex-wrap m-auto md:m-0 shrink-0">
-          <div className="flex flex-col xs:mx-auto xs:flex-row lg:flex-col gap-6 w-full zoom-80 2xl:zoom-100">
+          <div className="flex flex-col xs:mx-auto xs:flex-row lg:flex-col gap-6 w-full items-start zoom-80 2xl:zoom-100">
             <div className="relative h-full w-full" style={{ animationDelay: "0s" }}>
               <div className="backface-hidden preserve-3d" style={{ transform: "translateZ(-5px)" }}>
                 <div className="flex w-full bg-layer2 rounded-[10px] p-[2px] border border-[#2E3E5A]">

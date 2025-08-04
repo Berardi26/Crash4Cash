@@ -1,9 +1,8 @@
 @import "tailwindcss";
 @plugin '../../hero.ts';
 @config "../../tailwind.config.js";
-/* Note: You may need to change the path to fit your project structure */
-@source '../../node_modules/@heroui/theme/dist/**/*.{js,ts,jsx,tsx}';
-@custom-variant dark (&:is(.dark *));
+/*  */
+
 :root {
   --background: #ffffff;
   --foreground: #171717;
@@ -32,7 +31,6 @@ body {
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
 }
 

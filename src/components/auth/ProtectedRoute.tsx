@@ -3,7 +3,6 @@ import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import LoadingSpinner from './LoadingSpinner';
 
 interface ProtectedRouteProps {
@@ -15,18 +14,18 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   children, 
   fallback 
 }) => {
-  const { isAuthenticated, isLoading, user } = useAuth();
+  const { isAuthenticated, isLoading, userProfile } = useAuth();
   const { connected } = useWallet();
   const router = useRouter();
 
   useEffect(() => {
-    if (!isLoading && (!isAuthenticated || !user || !connected)) {
+    if (!isLoading && (!isAuthenticated || !userProfile || !connected)) {
       // Only redirect if we're not already on the home page
       if (typeof window !== 'undefined' && window.location.pathname !== '/') {
         router.push('/');
       }
     }
-  }, [isAuthenticated, isLoading, user, connected, router]);
+  }, [isAuthenticated, isLoading, userProfile, connected, router]);
 
   // Show loading state
   if (isLoading) {
@@ -40,7 +39,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
   }
 
   // Show authentication required message
-  if (!isAuthenticated || !user || !connected) {
+  if (!isAuthenticated || !userProfile || !connected) {
     return (
       <div className="min-h-screen bg-crash bg-cover bg-center flex items-center justify-center">
         <div className="bg-black/70 p-8 rounded-lg backdrop-blur-sm text-center max-w-md">
@@ -51,7 +50,6 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({
           
           {!connected ? (
             <div className="space-y-4">
-              <WalletMultiButton className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-lg transition-colors" />
               <button
                 onClick={() => router.push('/')}
                 className="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-3 px-6 rounded-lg transition-colors"

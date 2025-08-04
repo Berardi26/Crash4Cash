@@ -1,8 +1,8 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useWallet } from '@solana/wallet-adapter-react';
 import { useConnection } from '@solana/wallet-adapter-react';
 import { useRouter } from 'next/navigation';
+import { useLogin, usePrivy } from '@privy-io/react-auth';
 
 interface User {
   id: string;
@@ -25,11 +25,11 @@ interface User {
 }
 
 interface AuthContextType {
-  user: User | null;
+  userProfile: User | null;
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  login: (walletAddress: string) => Promise<void>;
+  loginServer: (walletAddress: string) => Promise<void>;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshToken: () => Promise<void>;
@@ -50,12 +50,26 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-  const [user, setUser] = useState<User | null>(null);
+  const [userProfile, setUserProfile] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const { publicKey, connected } = useWallet();
   const { connection } = useConnection();
   const router = useRouter();
+
+  const { login } = useLogin({
+    onComplete: () => console.log("connected"),
+  });
+
+  const {
+    ready,
+    authenticated,
+    user,
+    logout,
+  } = usePrivy();
+
+  const email = user?.email;
+  const phone = user?.phone;
+  const wallet = user?.wallet;
 
   // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -83,7 +97,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           if (response.ok) {
             const data = await response.json();
             setToken(storedToken);
-            setUser(data.user);
+            setUserProfile(data.user);
           } else {
             // Token is invalid, clear storage
             localStorage.removeItem('auth_token');
@@ -104,18 +118,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Auto-connect wallet when connected
   useEffect(() => {
-    if (connected && publicKey && !isAuthenticated) {
+    if (ready && wallet?.address && !isAuthenticated) {
       handleWalletConnection();
     }
-  }, [connected, publicKey, isAuthenticated]);
+  }, [ready, wallet?.address, isAuthenticated]);
 
   // Check if wallet is disconnected but user is still authenticated
   useEffect(() => {
-    if (!connected && isAuthenticated) {
+    if (!isAuthenticated ) {
       // Wallet disconnected but user still authenticated - force logout
       forceLogout();
     }
-  }, [connected, isAuthenticated]);
+  }, [isAuthenticated]);
 
   // Periodic token validation
   useEffect(() => {
@@ -147,11 +161,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, [isAuthenticated, token]);
 
   const handleWalletConnection = async () => {
-    if (!publicKey) return;
+    if (!wallet?.address) return;
 
     try {
       setIsLoading(true);
-      await login(publicKey.toString());
+      await loginServer(wallet?.address.toString());
     } catch (error) {
       console.error('Wallet connection failed:', error);
     } finally {
@@ -159,7 +173,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const login = async (walletAddress: string): Promise<void> => {
+  const loginServer = async (walletAddress: string): Promise<void> => {
     try {
       const response = await fetch(`${API_BASE_URL}/auth/connect-wallet`, {
         method: 'POST',
@@ -176,7 +190,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       const data = await response.json();
 
       setToken(data.token);
-      setUser(data.user);
+      setUserProfile(data.user);
 
       // Store in localStorage
       localStorage.setItem('auth_token', data.token);
@@ -189,8 +203,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     }
   };
 
-  const logout = () => {
-    setUser(null);
+  const logoutServer = () => {
+    setUserProfile(null);
     setToken(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
@@ -201,16 +215,16 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const forceLogout = () => {
     // Force logout without redirect (used when wallet disconnects)
-    setUser(null);
+    setUserProfile(null);
     setToken(null);
     localStorage.removeItem('auth_token');
     localStorage.removeItem('auth_user');
   };
 
   const updateUser = (userData: Partial<User>) => {
-    if (user) {
-      const updatedUser = { ...user, ...userData };
-      setUser(updatedUser);
+    if (userProfile) {
+      const updatedUser = { ...userProfile, ...userData };
+      setUserProfile(updatedUser);
       localStorage.setItem('auth_user', JSON.stringify(updatedUser));
     }
   };
@@ -230,7 +244,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (response.ok) {
         const data = await response.json();
         setToken(data.token);
-        setUser(data.user);
+        setUserProfile(data.user);
         localStorage.setItem('auth_token', data.token);
         localStorage.setItem('auth_user', JSON.stringify(data.user));
       } else {
@@ -244,11 +258,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const value: AuthContextType = {
-    user,
+    userProfile,
     token,
     isLoading,
     isAuthenticated,
-    login,
+    loginServer,
     logout,
     updateUser,
     refreshToken,

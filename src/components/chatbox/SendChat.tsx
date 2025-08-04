@@ -15,13 +15,13 @@ const SendChat = () => {
     const { connected } = useWallet();
 
     const sendMessage = () => {
-        if (input.trim() && chatSocket && user) {
-            chatSocket.emit(EChatEvent.MESSAGE, {
-                content: input,
-                sender: user?._id
-            });
-            setInput('');
-        }
+        // if (input.trim() && chatSocket && user) {
+        //     chatSocket.emit(EChatEvent.MESSAGE, {
+        //         content: input,
+        //         // sender: user?._id
+        //     });
+        //     setInput('');
+        // }
     };
 
     return (

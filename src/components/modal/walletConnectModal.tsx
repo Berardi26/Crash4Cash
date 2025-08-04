@@ -1,7 +1,6 @@
 'use client'
 import { useState } from 'react';
-import { WalletName } from '@solana/wallet-adapter-base';
-import { useWallet } from '@solana/wallet-adapter-react';
+import { useLogin, usePrivy } from "@privy-io/react-auth";
 import {
     Modal,
     ModalContent,
@@ -14,6 +13,7 @@ import { Button, Image, Link, Popover, PopoverContent, PopoverTrigger } from '@h
 import PrimaryButton from '../button/primary';
 import { BellIcon, CaretRightIcon, DotIcon, DrawingPinFilledIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
 import { useAuth } from '@/contexts/AuthContext';
+import { disconnect } from 'process';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },
@@ -23,25 +23,32 @@ const walletsList = [
 
 const WalletConnectModal = () => {
 
-    const { wallets, select, connect, connected, disconnect } = useWallet();
-    const { user, isAuthenticated } = useAuth();
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const handleConnect = async (adapterName: string) => {
-        console.log("adapter", adapterName)
-        select(adapterName as WalletName);
-        // Wait until the selected wallet updates
-        setTimeout(async () => {
-            try {
-                await connect();
-            } catch (err) {
-                console.error("Connection error:", err);
-            }
-        }, 100);
-    };
+    const { login } = useLogin({
+        onComplete: () => console.log("connected"),
+    });
+    const {
+        ready,
+        authenticated,
+        user,
+        logout,
+        linkEmail,
+        linkWallet,
+        unlinkEmail,
+        linkPhone,
+        unlinkPhone,
+        unlinkWallet,
+        linkGoogle,
+        unlinkGoogle,
+        linkTwitter,
+        unlinkTwitter,
+        linkDiscord,
+        unlinkDiscord,
+    } = usePrivy();
 
-    const handleDisconnect = async () => {
-        await disconnect()
-    }
+    const email = user?.email;
+    const phone = user?.phone;
+    const wallet = user?.wallet;
 
     const quickLinks = [
         {
@@ -69,7 +76,7 @@ const WalletConnectModal = () => {
     return (
         <>
             <div className='flex'>
-                {connected && isAuthenticated && user? <div className='flex items-center gap-2 '>
+                {user?.wallet ? <div className='flex items-center gap-2 '>
 
                     <Popover classNames={{
                         content: "bg-black/60 backdrop-blur-sm"
@@ -122,8 +129,8 @@ const WalletConnectModal = () => {
                                             </div>
                                             <div>
                                                 <div className='flex flex-col'>
-                                                    <p className='text-white/60'>{user.username}</p>
-                                                    <p className='text-xs'>Level {user.level}</p>
+                                                    {/* <p className='text-white/60'>{user.username}</p>
+                                                    <p className='text-xs'>Level {user.level}</p> */}
                                                 </div>
                                             </div>
                                         </div>
@@ -142,7 +149,7 @@ const WalletConnectModal = () => {
                                     ))}
 
                                     <Button className='hover:bg-white/10 rounded-md flex gap-2 items-center bg-transparent text-white/40 hover:text-white justify-start'
-                                        onPress={() => handleDisconnect()}>
+                                        onPress={() => logout()}>
                                         <EnterIcon />
                                         <p>Disconnect</p>
                                     </Button>
@@ -154,39 +161,25 @@ const WalletConnectModal = () => {
                 </div>
                     : <PrimaryButton
                         className=""
-                        onClick={() => onOpen()}
+                        onClick={
+                            () => {
+                                if (authenticated) {
+                                    logout()
+                                }
+                                else {
+                                    if (user?.wallet) {
+                                        linkWallet()
+                                    }
+                                    else
+                                        login()
+                                }
+                            }
+                        }
                     >
-                        {connected ? 'Connected' : 'Connect'}
+                        {user?.wallet ? user?.wallet.address.slice(0, 5) + "..." + user?.wallet.address.slice(-4) : "Sign in"}
                     </PrimaryButton>
                 }
             </div>
-
-            <Modal isOpen={isOpen} onOpenChange={onOpenChange} className='dark' size='xs'>
-                <ModalContent>
-                    {(onClose) => (
-                        <>
-                            <ModalHeader className="flex flex-col gap-1 uppercase italic text-3xl">Connect</ModalHeader>
-                            <ModalBody>
-                                <div className="flex flex-col gap-2">
-                                    {walletsList.map((wallet) => (
-                                        <Button
-                                            key={wallet.adapterName}
-                                            variant="light"
-                                            className="flex items-center justify-start gap-4 py-2 bg-black/40  font-bold text-white text-base h-14"
-                                            onPress={async () => { await handleConnect(wallet.adapterName); onClose() }}
-                                        >
-                                            <Image src={wallet.icon} alt={wallet.name} className="w-8 h-8 rounded-md" />
-                                            {wallet.name}
-                                        </Button>
-                                    ))}
-                                </div>
-                            </ModalBody>
-                            <ModalFooter>
-                            </ModalFooter>
-                        </>
-                    )}
-                </ModalContent>
-            </Modal>
         </>
     )
 }

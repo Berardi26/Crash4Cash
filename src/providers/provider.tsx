@@ -1,49 +1,38 @@
 'use client'
 import React, { useMemo } from "react";
-import { ConnectionProvider, WalletProvider, } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { PhantomWalletAdapter, SolflareWalletAdapter } from "@solana/wallet-adapter-wallets";
-import { WalletModalProvider } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl } from "@solana/web3.js";
 import { HeroUIProvider, ToastProvider } from "@heroui/react";
-import { AuthProvider } from "@/contexts/AuthContext";
 import AuthDebug from "@/components/auth/AuthDebug";
-import { SettingProvider } from "@/contexts/SettingContext";
 import ContextProvider from "./contextprovider";
-import { AbstractWalletProvider } from "@abstract-foundation/agw-react";
-import { abstractTestnet, abstract } from "viem/chains"; 
-
-require("@solana/wallet-adapter-react-ui/styles.css");
+import { PrivyProvider } from "@privy-io/react-auth";
 
 const Provider = ({ children }: any) => {
-    const network = WalletAdapterNetwork.Devnet;
-    const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+    const appId = process.env.NEXT_PUBLIC_PRIVY_APP_ID
+    const clientId = process.env.NEXT_PUBLIC_PRIVY_CLIENT_ID
 
-    const wallets = useMemo(
-        () => [
-            new PhantomWalletAdapter(),
-            new SolflareWalletAdapter(),
-        ],
-        []
-    );
     return (
-        <ConnectionProvider endpoint={endpoint}>
-            <WalletProvider wallets={wallets} autoConnect>
-                {/* <AbstractWalletProvider chain={abstractTestnet}> */}
-                    <WalletModalProvider>
-                        <HeroUIProvider >
-                            <ContextProvider>
-                                <main className="dark text-foreground bg-background">
-                                    <ToastProvider placement="top-right" />
-                                    {children}
-                                    <AuthDebug />
-                                </main>
-                            </ContextProvider>
-                        </HeroUIProvider>
-                    </WalletModalProvider>
-                {/* </AbstractWalletProvider> */}
-            </WalletProvider>
-        </ConnectionProvider>
+        <PrivyProvider
+            appId={appId ?? ""}
+            clientId={clientId}
+            config={{
+                appearance: {
+                    logo: "/assets/logo.png"
+                },
+                // Create embedded wallets for users who don't have a wallet
+                embeddedWallets: {
+                    createOnLogin: 'all-users'
+                },
+                solanaClusters: [{ name: 'mainnet-beta', rpcUrl: 'https://api.mainnet-beta.solana.com' }]
+            }}>
+            <HeroUIProvider >
+                <ContextProvider>
+                    <main className="dark text-foreground bg-background">
+                        <ToastProvider placement="top-right" />
+                        {children}
+                        <AuthDebug />
+                    </main>
+                </ContextProvider>
+            </HeroUIProvider>
+        </PrivyProvider>
     )
 }
 

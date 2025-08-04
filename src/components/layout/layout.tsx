@@ -9,11 +9,13 @@ type LayoutProps = {
 };
 
 const Layout = ({ children, className }: LayoutProps) => {
-    return <div className={`flex h-dvh w-full overflow-hidden pt-[68px] text-white md:pt-[73px] lg:-mt-[73px] ${className}`}>
+    return <div className={`flex h-dvh w-full overflow-hidden pt-[100px] text-white ${className}`}>
         <Navbar />
         <Sidebar />
-        <div className={`ml-[300px] h-full min-h-[80vh] w-[calc(100vw-300px)] grow overflow-auto overflow-x-hidden scrollbar-hidden pt-24 `}>
+        <div className={`w-full pl-[300px] flex place-content-center`}>
+            <div className='max-w-7xl w-full px-2 xl:px-4 overflow-auto'>
             {children}
+            </div>
         </div>
     </div>;
 };
