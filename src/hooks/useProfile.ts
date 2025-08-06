@@ -16,7 +16,7 @@ export interface ChatMessage {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export function useProfile() {
-  const { user, token, updateUser } = useAuth();
+  const { userProfile, token, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -71,6 +71,6 @@ export function useProfile() {
     loading,
     error,
     success,
-    user,
+    userProfile,
   };
 } 

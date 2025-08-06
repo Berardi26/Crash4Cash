@@ -6,9 +6,9 @@ import { useLogin, usePrivy } from '@privy-io/react-auth';
 
 interface User {
   id: string;
-  walletAddress: string;
+  walletAddress: string | undefined;
   username: string;
-  email?: string;
+  email?: string | undefined;
   avatar?: string;
   isVerified: boolean;
   balance: number;
@@ -29,7 +29,7 @@ interface AuthContextType {
   token: string | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  loginServer: (walletAddress: string) => Promise<void>;
+  login: () => void;
   logout: () => void;
   updateUser: (userData: Partial<User>) => void;
   refreshToken: () => Promise<void>;
@@ -56,8 +56,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const { connection } = useConnection();
   const router = useRouter();
 
+
+
   const { login } = useLogin({
-    onComplete: () => console.log("connected"),
+    onComplete: () => loginServer(user?.wallet?.address || ''),
   });
 
   const {
@@ -70,6 +72,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const email = user?.email;
   const phone = user?.phone;
   const wallet = user?.wallet;
+
 
   // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
@@ -125,8 +128,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Check if wallet is disconnected but user is still authenticated
   useEffect(() => {
-    if (!isAuthenticated ) {
+    if (!isAuthenticated) {
       // Wallet disconnected but user still authenticated - force logout
+      console.log("Wallet disconnected, forcing logout");
       forceLogout();
     }
   }, [isAuthenticated]);
@@ -262,7 +266,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     token,
     isLoading,
     isAuthenticated,
-    loginServer,
+    login,
     logout,
     updateUser,
     refreshToken,

@@ -10,14 +10,14 @@ import LoadingSpinner from "@/components/auth/LoadingSpinner";
 const EditName = () => {
     const [focused, setFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const { user } = useAuth();
-    const [userName, setUserName] = useState(user?.username);
+    const { userProfile } = useAuth();
+    const [userName, setUserName] = useState(userProfile?.username || "");
     const { updateProfile, loading, error, success } = useProfile();
 
     // Sync input with user changes
     useEffect(() => {
-        setUserName(user?.username);
-    }, [user?.username]);
+        setUserName(userProfile?.username ?? "");
+    }, [userProfile?.username]);
 
     // Reset to default state after update
     useEffect(() => {
@@ -28,7 +28,7 @@ const EditName = () => {
 
     const handleEdit = async () => {
         console.log("A")
-        if (userName && userName !== user?.username) {
+        if (userName && userName !== userProfile?.username) {
             console.log("B")
             const result = await updateProfile({ username: userName });
             addToast({
@@ -75,14 +75,14 @@ const EditName = () => {
 const EditEmail = () => {
     const [focused, setFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const { user } = useAuth();
-    const [email, setEmail] = useState(user?.email || "");
+    const { userProfile } = useAuth();
+    const [email, setEmail] = useState(userProfile?.email || "");
     const { updateProfile, loading, error, success } = useProfile();
 
-    // Sync input with user changes
+    // Sync input with userProfile changes
     useEffect(() => {
-        setEmail(user?.email || "");
-    }, [user?.email]);
+        setEmail(userProfile?.email || "");
+    }, [userProfile?.email]);
 
     // Reset to default state after update
     useEffect(() => {
@@ -94,7 +94,7 @@ const EditEmail = () => {
 
     const handleEdit = async () => {
         console.log("A")
-        if (email !== user?.email) {
+        if (email !== userProfile?.email) {
             console.log("B")
             const result = await updateProfile({ email: email || null });
             addToast({
@@ -139,7 +139,7 @@ const EditEmail = () => {
 };
 
 const OptionPanel = () => {
-    const { user, isAuthenticated } = useAuth()
+    const { userProfile, isAuthenticated } = useAuth()
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex gap-8">
@@ -151,14 +151,14 @@ const OptionPanel = () => {
                 <div className="flex flex-col gap-2 justify-between">
                     <div className="flex flex-col gap-2">
                         <div className="flex items-center gap-2">
-                            <p className="text-xl text-white">{user?.username}</p>
-                            <p className="px-2 rounded-md border border-white/30 bg-white/10 text-white/40">{user?.level ?? 0}</p>
+                            <p className="text-xl text-white">{userProfile?.username}</p>
+                            <p className="px-2 rounded-md border border-white/30 bg-white/10 text-white/40">{userProfile?.level ?? 0}</p>
                         </div>
                         <p className="text-sm text-white/40">
-                            Joined <span>{user?.createdAt?.toString() ?? new Date().getUTCDate()}</span>
+                            Joined <span>{userProfile?.createdAt?.toString() ?? new Date().getUTCDate()}</span>
                         </p>
                     </div>
-                    <p className="text-sm text-white/30">Exp: <span>{user?.exp}/5000</span></p>
+                    <p className="text-sm text-white/30">Exp: <span>{userProfile?.exp}/5000</span></p>
                 </div>
             </div>
 

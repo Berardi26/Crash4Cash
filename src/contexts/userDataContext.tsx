@@ -6,7 +6,6 @@ interface User {
   _id: string,
   username: string;
   avatar: string;
-  created_at: Date;
 }
 
 

@@ -1,11 +1,14 @@
 // import { useUserProvider } from "@/contexts/UserContext";
 // import { useChatSocket } from "@/hooks/useChatSocket";
 import { useUserData } from "@/contexts/userDataContext";
+import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { EChatEvent } from "@/types/socket";
+import { Button, Input, Textarea } from "@heroui/react";
 // import { Icon } from "@iconify-icon/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
+import { FaPaperPlane, FaShareNodes } from "react-icons/fa6";
 
 const SendChat = () => {
     const [input, setInput] = useState<string>("");
@@ -13,16 +16,7 @@ const SendChat = () => {
     const { user, messages } = useUserData()
     const { chatSocket } = useChatSocket();
     const { connected } = useWallet();
-
-    const sendMessage = () => {
-        // if (input.trim() && chatSocket && user) {
-        //     chatSocket.emit(EChatEvent.MESSAGE, {
-        //         content: input,
-        //         // sender: user?._id
-        //     });
-        //     setInput('');
-        // }
-    };
+    const { sendMessage } = useChatMessages();
 
     return (
         <div className="relative opacity-100 animate-fade-in">
@@ -35,34 +29,29 @@ const SendChat = () => {
                 </div>
             </div>
             <div className="flex flex-col justify-between p-4 pt-3 shrink-0 gap-2">
-                <div className="relative w-full bg-layer2 p-px font-inter rounded-lg">
-                    <textarea
-                        disabled={connected && user ? false : true}
+                <div className="relative w-full bg-layer2 p-px font-inter rounded-lg flex gap-2">
+                    <Input
                         name="message"
                         id="sendMsg"
                         placeholder="Type Message Here..."
                         maxLength={160}
                         value={input}
-                        className={`bg-transparent bg-layer transition-colors duration-300 px-3 ${connected && user ? "" : "cursor-not-allowed"} rounded-lg w-full text-sm focus:outline-none focus:border-none min-h-[40px] py-2.5 align-bottom resize-none overflow-hidden h-auto focus:placeholder:text-white/10 placeholder:transition-colors placeholder:duration-300 pr-10`}
-                        style={{
-                            height: "42px"
-                        }}
-                        onChange={(e) => setInput(e.target.value)}
-                    ></textarea>
-                    <div
-                        className="flex absolute top-[6px] right-2 items-center gap-1.5 cursor-pointer font-inter text-light-grey transition-colors"
-                        onClick={() => sendMessage()}
+                        className={` `}
+                        endContent={
+                            <div className="pointer-events-none flex items-center">
+                                <span className="text-default-400 text-xs">{input.length}/160</span>
+                            </div>
+                        }
+                        onChange={(e) => setInput(e.target.value)} />
+                    <Button
+                        variant="bordered"
+                        onPress={() => sendMessage(input)}
+                        className={`min-w-0`}
+                        type="button"
+                        aria-expanded="false"
                     >
-                        <button
-                            disabled={connected && user ? false : true}
-                            className={`w-8 h-8 flex items-center justify-center ${connected && user ? "" : "cursor-not-allowed"} outline-none bg-transparent hover:bg-[#446ab1]/15 transition-colors duration-300 rounded-full p-1`}
-                            type="button"
-                            aria-expanded="false"
-                            id="headlessui-popover-button-:rk9:"
-                        >
-                            {/* <Icon icon="iconoir:send-solid" width="20" height="20" className="p-2" style={{ color: "#09A0FC" }} /> */}
-                        </button>
-                    </div>
+                        <FaPaperPlane />
+                    </Button>
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] hover:text-white transition-colors">

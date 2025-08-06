@@ -13,7 +13,7 @@ const Layout = ({ children, className }: LayoutProps) => {
         <Navbar />
         <Sidebar />
         <div className={`w-full pl-[300px] flex place-content-center`}>
-            <div className='max-w-7xl w-full px-2 xl:px-4 overflow-auto'>
+            <div className='max-w-7xl w-full px-2 xl:px-4 overflow-auto scrollbar-hide'>
             {children}
             </div>
         </div>

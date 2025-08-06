@@ -24,32 +24,11 @@ const walletsList = [
 const WalletConnectModal = () => {
 
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-    const { login } = useLogin({
-        onComplete: () => console.log("connected"),
-    });
+
+    const { userProfile, token, isAuthenticated, login, logout } = useAuth();
     const {
-        ready,
-        authenticated,
-        user,
-        logout,
-        linkEmail,
         linkWallet,
-        unlinkEmail,
-        linkPhone,
-        unlinkPhone,
-        unlinkWallet,
-        linkGoogle,
-        unlinkGoogle,
-        linkTwitter,
-        unlinkTwitter,
-        linkDiscord,
-        unlinkDiscord,
     } = usePrivy();
-
-    const email = user?.email;
-    const phone = user?.phone;
-    const wallet = user?.wallet;
-
     const quickLinks = [
         {
             icon: <DrawingPinIcon />,
@@ -76,7 +55,7 @@ const WalletConnectModal = () => {
     return (
         <>
             <div className='flex'>
-                {user?.wallet ? <div className='flex items-center gap-2 '>
+                {userProfile?.walletAddress ? <div className='flex items-center gap-2 '>
 
                     <Popover classNames={{
                         content: "bg-black/60 backdrop-blur-sm"
@@ -163,11 +142,11 @@ const WalletConnectModal = () => {
                         className=""
                         onClick={
                             () => {
-                                if (authenticated) {
+                                if (isAuthenticated) {
                                     logout()
                                 }
                                 else {
-                                    if (user?.wallet) {
+                                    if (userProfile?.walletAddress) {
                                         linkWallet()
                                     }
                                     else
@@ -176,7 +155,7 @@ const WalletConnectModal = () => {
                             }
                         }
                     >
-                        {user?.wallet ? user?.wallet.address.slice(0, 5) + "..." + user?.wallet.address.slice(-4) : "Sign in"}
+                        {userProfile?.walletAddress ? userProfile?.walletAddress.slice(0, 5) + "..." + userProfile?.walletAddress.slice(-4) : "Sign in"}
                     </PrimaryButton>
                 }
             </div>

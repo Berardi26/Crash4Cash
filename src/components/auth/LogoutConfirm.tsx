@@ -14,7 +14,7 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
   onCancel, 
   isOpen 
 }) => {
-  const { user } = useAuth();
+  const { userProfile } = useAuth();
   const { disconnect } = useWallet();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
@@ -42,15 +42,15 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
           Are you sure you want to logout? You'll need to reconnect your wallet to access your profile.
         </p>
         
-        {user && (
+        {userProfile && (
           <div className="bg-white/10 p-3 rounded-lg mb-6">
             <p className="text-white text-sm">
               <span className="text-gray-400">Currently logged in as:</span>
               <br />
-              <span className="font-medium">{user.username}</span>
+              <span className="font-medium">{userProfile.username}</span>
               <br />
               <span className="text-xs text-gray-400">
-                {user.walletAddress.slice(0, 4)}...{user.walletAddress.slice(-4)}
+                {userProfile.walletAddress?.slice(0, 4)}...{userProfile.walletAddress?.slice(-4)}
               </span>
             </p>
           </div>

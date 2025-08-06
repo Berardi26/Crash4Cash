@@ -22,13 +22,13 @@ interface ILanguageItem {
   
   interface IChatItem {
     _id: string;
-    user_id: {
+    userId: {
       _id: string;
       username: string;
       avatar: string;
       created_at: Date;
     };
-    content: string;
+    message: string;
     timestamp: Date;
   }
   

@@ -7280,7 +7280,7 @@ viem@2.32.0:
     ox "0.8.1"
     ws "8.18.2"
 
-viem@2.x, viem@>=2.29.0, viem@^2.1.1, viem@^2.27.2, viem@^2.31.7:
+viem@>=2.29.0, viem@^2.1.1, viem@^2.27.2, viem@^2.31.7:
   version "2.33.1"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.33.1.tgz#47ae1de711a1052f03f0f585be224383de812b03"
   integrity sha512-++Dkj8HvSOLPMKEs+ZBNNcWbBRlUHcXNWktjIU22hgr6YmbUldV1sPTGLZa6BYRm06WViMjXj6HIsHt8rD+ZKQ==
@@ -7294,7 +7294,7 @@ viem@2.x, viem@>=2.29.0, viem@^2.1.1, viem@^2.27.2, viem@^2.31.7:
     ox "0.8.1"
     ws "8.18.2"
 
-viem@>=2.32.0, viem@^2, viem@^2.32.0:
+viem@>=2.32.0, viem@^2, viem@^2.32.0, viem@^2.33.2:
   version "2.33.2"
   resolved "https://registry.yarnpkg.com/viem/-/viem-2.33.2.tgz#039732775976efb821a2f7c6c6d4cd6029f5af4f"
   integrity sha512-/720OaM4dHWs8vXwNpyet+PRERhPaW+n/1UVSCzyb9jkmwwVfaiy/R6YfCFb4v+XXbo8s3Fapa3DM5yCRSkulA==

@@ -5,9 +5,12 @@ import { useAuth } from '@/contexts/AuthContext';
 // Define the shape of a chat message
 export interface ChatMessage {
   id: string;
-  user: string;
-  avatar?: string;
-  content: string;
+  user: {
+    _id:string
+    username: string;
+    avatar: string;  
+  };
+  message: string;
   timestamp: string;
   type?: string;
   level?: number;
@@ -17,7 +20,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 const WS_URL = API_URL.replace(/\/api$/, '');
 
 export function useChatMessages() {
-  const { user, token } = useAuth();
+  const { userProfile, token } = useAuth();
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [loading, setLoading] = useState(true);
   const [typingUsers, setTypingUsers] = useState<string[]>([]);
@@ -105,9 +108,8 @@ export function useChatMessages() {
         ...prev,
         {
           id: msg.id || msg._id,
-          user: msg.user?.username || 'Unknown',
-          avatar: msg.user?.avatar,
-          content: msg.message,
+          user: msg.user,
+          message: msg.message,
           timestamp: msg.createdAt,
           type: msg.type,
         },

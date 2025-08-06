@@ -15,7 +15,7 @@ import { useRouter } from "next/navigation"
 import LogoutConfirm from "@/components/auth/LogoutConfirm"
 
 const ProfilePage = () => {
-    const { user, logout } = useAuth()
+    const { userProfile, logout } = useAuth()
     const { disconnect } = useWallet()
     const router = useRouter()
     const [selected, setSelected] = useState("options")
@@ -59,10 +59,10 @@ const ProfilePage = () => {
                 <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm sm:h-[70vh] overflow-auto">
                     <div className="flex items-center justify-between">
                         <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
-                        {user && (
+                        {userProfile && (
                             <div className="text-right">
-                                <p className="text-white text-sm">Welcome, {user.username}!</p>
-                                <p className="text-gray-400 text-xs">{user.walletAddress.slice(0, 4)}...{user.walletAddress.slice(-4)}</p>
+                                <p className="text-white text-sm">Welcome, {userProfile.username}!</p>
+                                <p className="text-gray-400 text-xs">{userProfile.walletAddress?.slice(0, 4)}...{userProfile?.walletAddress?.slice(-4)}</p>
                             </div>
                         )}
                     </div>
