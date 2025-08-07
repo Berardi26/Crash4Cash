@@ -5,6 +5,7 @@ import { useChatMessages } from "@/hooks/useChatMessages";
 import { useChatSocket } from "@/hooks/useChatSocket";
 import { EChatEvent } from "@/types/socket";
 import { Button, Input, Textarea } from "@heroui/react";
+import { usePrivy } from "@privy-io/react-auth";
 // import { Icon } from "@iconify-icon/react";
 import { useWallet } from "@solana/wallet-adapter-react";
 import { useState } from "react";
@@ -13,10 +14,12 @@ import { FaPaperPlane, FaShareNodes } from "react-icons/fa6";
 const SendChat = () => {
     const [input, setInput] = useState<string>("");
 
-    const { user, messages } = useUserData()
+    const { messages } = useUserData()
     const { chatSocket } = useChatSocket();
     const { connected } = useWallet();
     const { sendMessage } = useChatMessages();
+
+    const { user } = usePrivy()
 
     return (
         <div className="relative opacity-100 animate-fade-in">
@@ -45,6 +48,7 @@ const SendChat = () => {
                         onChange={(e) => setInput(e.target.value)} />
                     <Button
                         variant="bordered"
+                        disabled={!connected || !user || input.length === 0}
                         onPress={() => sendMessage(input)}
                         className={`min-w-0`}
                         type="button"

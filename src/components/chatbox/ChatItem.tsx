@@ -13,7 +13,7 @@ const ChatItem: React.FC<ChatMessage> = (data) => {
         <div className="animate-popup-enter" onClick={() => { setShowProfileModal(true); setSelectedUser(data.user!) }}>
             <div className="relative bg-[#162135]/70 hover:bg-[#162135] p-3 pl-8 rounded-lg cursor-pointer transition-colors duration-200">
                 <div
-                    className="w-9 h-9 rounded-[8px] overflow-hidden aspect-square hover:brightness-125 transition-[filter] duration-300 cursor-pointer absolute -left-3 dropShadow-samll bg-layer2 p-px border-none top-0"
+                    className="w-9 h-9 rounded-[8px] overflow-hidden aspect-square hover:brightness-125 transition-[filter] duration-300 cursor-pointer absolute -left-3 dropShadow-samll bg-layer2 p-px border-none top-2"
                 >
                     <div className="w-full h-full rounded-[8px] border border-white/20 bg-layer2 p-px bg-primary/70">
                         <Image src={data.user.avatar ?? "/assets/images/avatar/default.webp"} className="object-cover object-center rounded-[8px]" alt="" />

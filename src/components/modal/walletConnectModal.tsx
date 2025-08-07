@@ -27,6 +27,8 @@ const WalletConnectModal = () => {
 
     const { userProfile, token, isAuthenticated, login, logout } = useAuth();
     const {
+        user,
+        authenticated,
         linkWallet,
     } = usePrivy();
     const quickLinks = [
@@ -142,11 +144,11 @@ const WalletConnectModal = () => {
                         className=""
                         onClick={
                             () => {
-                                if (isAuthenticated) {
+                                if (authenticated) {
                                     logout()
                                 }
                                 else {
-                                    if (userProfile?.walletAddress) {
+                                    if (user?.wallet) {
                                         linkWallet()
                                     }
                                     else
@@ -155,7 +157,7 @@ const WalletConnectModal = () => {
                             }
                         }
                     >
-                        {userProfile?.walletAddress ? userProfile?.walletAddress.slice(0, 5) + "..." + userProfile?.walletAddress.slice(-4) : "Sign in"}
+                        {user?.wallet?.address ? user?.wallet?.address.slice(0, 5) + "..." + user?.wallet?.address.slice(-4) : "Sign in"}
                     </PrimaryButton>
                 }
             </div>
