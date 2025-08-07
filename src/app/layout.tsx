@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Nova_Square } from "next/font/google";
 import "./globals.css";
 import Provider from "../providers/provider";
+import LoadingOverlay from "@/components/loading/loading";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -27,6 +28,7 @@ export default function RootLayout({
     <html lang="en" className="dark">
       <body className={`${geistSans.variable} ${geistNova.className}`}>
         <Provider>
+          <LoadingOverlay />
           {children}
         </Provider>
       </body>

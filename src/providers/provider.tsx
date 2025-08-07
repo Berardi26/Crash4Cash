@@ -24,13 +24,6 @@ const Provider = ({ children }: any) => {
                     "showWalletLoginFirst": false,
                     logo: "https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreifjiniza7k2btq5jzpu355k6qvpgqhpspmgvc5tm44couwo3ngiru",
                     "walletChainType": "solana-only",
-                    walletList: [
-                        "detected_solana_wallets",
-                        "phantom",
-                        "solflare",
-                        "backpack",
-                        "okx_wallet"
-                    ]
                 },
                 "loginMethods": [
                     "wallet"

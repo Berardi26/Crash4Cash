@@ -4,14 +4,14 @@ import { useAuth } from '@/contexts/AuthContext';
 
 // Define the shape of a chat message
 export interface ChatMessage {
-  id: string;
-  user: {
+  _id: string;
+  userId: {
     _id:string
     username: string;
     avatar: string;  
   };
   message: string;
-  timestamp: string;
+  createdAt: string;
   type?: string;
   level?: number;
 }
@@ -37,14 +37,7 @@ export function useChatMessages() {
         console.log("chat history", data)
         if (Array.isArray(data.messages)) {
           setMessages(
-            data.messages.map((msg: any) => ({
-              id: msg.id || msg._id,
-              user: msg.user?.username || 'Unknown',
-              avatar: msg.user?.avatar,
-              content: msg.message,
-              timestamp: msg.createdAt,
-              type: msg.type,
-            }))
+            data.messages
           );
         }
       } catch (e) {
@@ -106,13 +99,7 @@ export function useChatMessages() {
       console.log("new message")
       setMessages((prev) => [
         ...prev,
-        {
-          id: msg.id || msg._id,
-          user: msg.user,
-          message: msg.message,
-          timestamp: msg.createdAt,
-          type: msg.type,
-        },
+        msg,
       ]);
     });
 

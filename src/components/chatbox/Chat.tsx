@@ -35,7 +35,7 @@ const Chat = () => {
             <div className="flex-1 overflow-y-auto px-6 pt-[40px] pb-[40px]">
                 <div className="flex flex-col w-full gap-2.5">
                     {messages?.map((chat: ChatMessage, index: number) => (
-                        <ChatItem key={`${chat.id}`} {...chat} />
+                        <ChatItem key={`${chat._id}`} {...chat} />
                     ))}
                     {/* Scroll anchor (only used for initial scroll) */}
                     <div ref={messagesEndRef} />
