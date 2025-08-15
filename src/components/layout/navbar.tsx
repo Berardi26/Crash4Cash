@@ -30,7 +30,7 @@ const Navbar = () => {
             </div>
         </div>
         <div className="flex flex-col w-full">
-            <div className="items-center w-full h-[40px] bg-black/90 shrink-0 px-6 hidden lg:flex gap-2">
+            <div className="items-center w-full h-[40px] bg-black/90 flex shrink-0 px-6 gap-2">
                 <div className="flex gap-1 md:gap-2.5">
                     <Link href={"https://x.com/cornel_p"} target="_blank" className="group relative overflow-hidden transition duration-300 bg-[#303030]  text-sm font-medium h-6 w-6 p-0 min-w-0 flex items-center justify-center text-white/50 hover:text-white rounded-[6px] cursor-pointer">
                         <XIcon />

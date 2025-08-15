@@ -94,3 +94,17 @@ interface ILanguageItem {
     subtitle: string;
     content: string;
   }
+
+  // Define the shape of a chat message
+  export interface ChatMessage {
+    _id: string;
+    userId: {
+      _id: string
+      username: string;
+      avatar: string;
+    };
+    message: string;
+    createdAt: string;
+    type?: string;
+    level?: number;
+  }

@@ -8,19 +8,22 @@ import TransactionsPanel from "./transactions"
 import { option } from "framer-motion/client"
 import { Button } from "@heroui/react"
 import MenuButton from "@/components/button/menu"
-import ProtectedRoute from "@/components/auth/ProtectedRoute"
 import { useAuth } from "@/contexts/AuthContext"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useRouter } from "next/navigation"
 import LogoutConfirm from "@/components/auth/LogoutConfirm"
+import { usePrivy } from "@privy-io/react-auth"
 
 const ProfilePage = () => {
-    const { userProfile, logout } = useAuth()
+    const { userProfile } = useAuth()
     const { disconnect } = useWallet()
     const router = useRouter()
     const [selected, setSelected] = useState("options")
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
-    
+
+    const { 
+        logout,
+    } = usePrivy()
     const options = [
         {
             icon: <GearIcon />,
@@ -54,7 +57,7 @@ const ProfilePage = () => {
     }
 
     return (
-        <ProtectedRoute>
+        <>
             <Layout className="bg-crash bg-cover bg-center">
                 <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm sm:h-[70vh] overflow-auto">
                     <div className="flex items-center justify-between">
@@ -83,13 +86,13 @@ const ProfilePage = () => {
                     </div>
                 </div>
             </Layout>
-            
+
             <LogoutConfirm
                 isOpen={showLogoutConfirm}
                 onConfirm={handleLogoutConfirm}
                 onCancel={handleLogoutCancel}
             />
-        </ProtectedRoute>
+        </>
     )
 }
 

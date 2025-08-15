@@ -25,11 +25,13 @@ const WalletConnectModal = () => {
 
     const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
 
-    const { userProfile, token, isAuthenticated, login, logout } = useAuth();
+    const { userProfile } = useAuth();
     const {
         user,
         authenticated,
         linkWallet,
+        login,
+        logout
     } = usePrivy();
     const quickLinks = [
         {

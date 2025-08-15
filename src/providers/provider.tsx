@@ -50,7 +50,7 @@ const Provider = ({ children }: any) => {
                         <main className="dark text-foreground bg-background">
                             <ToastProvider placement="top-right" />
                             {children}
-                            <AuthDebug />
+                            {/* <AuthDebug /> */}
                         </main>
                     </ModalProvider>
                 </ContextProvider>

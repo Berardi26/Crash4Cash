@@ -1,15 +1,14 @@
 'use client'
 import React, { useState } from "react";
-import { useChatMessages } from "../../hooks/useChatMessages";
 import { useSetting } from "@/contexts/SettingContext";
 import { ChatBubbleIcon } from "@radix-ui/react-icons";
-import SendChat from "../chatbox/SendChat";
 import { FaEject } from "react-icons/fa";
 import Chat from "../chatbox/Chat";
 import { FaRegComment, FaRocketchat } from "react-icons/fa6";
+import { useChatMessages } from "@/contexts/ChatContext";
 
 const Sidebar = () => {
-  const { messages, sendMessage, loading, typingUsers, onlineCount, startTyping, stopTyping, isAuthenticated } = useChatMessages();
+  const {  sendMessage, loading, typingUsers, onlineCount, startTyping, stopTyping, isAuthenticated } = useChatMessages();
   const [input, setInput] = useState("");
   const [absolute, setAbsolute] = useState(false)
   const { sidebarOpen, setSidebarOpen } = useSetting()
@@ -93,7 +92,6 @@ const Sidebar = () => {
           </div>
         </div>
         <Chat />
-        <SendChat />
       </div>
       <button
         className={`left-0 items-center justify-center min-w-10 transition duration-300 px-3 bg-[#303030] hover:bg-[#393939]/75 text-sm font-medium text-white rounded-lg fixed top-[84px] lg:top-[124px] z-35 w-[56px] h-[56px] rounded-l-none border-r-2 border-[#3B3B3B] will-change-transform ${sidebarOpen ? "hidden xl:hidden" : "md:block hidden"} opacity-100 animate-fade-in cursor-pointer`}

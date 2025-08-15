@@ -1,4 +1,5 @@
 import { AuthProvider } from "@/contexts/AuthContext"
+import { ChatMessagesProvider } from "@/contexts/ChatContext"
 import { SettingProvider } from "@/contexts/SettingContext"
 import { UserDataProvider } from "@/contexts/userDataContext"
 
@@ -7,7 +8,9 @@ const ContextProvider = ({ children }: any) => {
         <SettingProvider>
             <AuthProvider>
                 <UserDataProvider>
-                    {children}
+                    <ChatMessagesProvider>
+                        {children}
+                    </ChatMessagesProvider>
                 </UserDataProvider>
             </AuthProvider>
         </SettingProvider>

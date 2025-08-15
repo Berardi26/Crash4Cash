@@ -13,7 +13,7 @@ module.exports = {
   theme: {
     extend: {
       backgroundImage: {
-        'crash': "url('/assets/images/bg/bg.jpg')",
+        'crash': "url('/assets/images/bg/bg_main.png')",
       },
       colors: {
         'primary': {
