@@ -95,7 +95,6 @@ export interface IWalletItem {
   content: string;
 }
 
-// Define the shape of a chat message
 export interface ChatMessage {
   _id: string;
   userId: {
