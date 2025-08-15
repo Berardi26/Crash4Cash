@@ -12,19 +12,11 @@ const AuthStatus: React.FC<AuthStatusProps> = ({
   showDetails = false, 
   className = '' 
 }) => {
-  const { userProfile, isAuthenticated, isLoading } = useAuth();
+  const { userProfile } = useAuth();
   const { connected } = useWallet();
 
-  if (isLoading) {
-    return (
-      <div className={`flex items-center gap-2 ${className}`}>
-        <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
-        <span className="text-white text-sm">Loading...</span>
-      </div>
-    );
-  }
 
-  if (isAuthenticated && userProfile) {
+  if (userProfile) {
     return (
       <div className={`flex items-center gap-2 ${className}`}>
         <div className="w-6 h-6 bg-primary-500 rounded-full flex items-center justify-center text-xs font-bold text-white">

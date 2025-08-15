@@ -139,7 +139,7 @@ const EditEmail = () => {
 };
 
 const OptionPanel = () => {
-    const { userProfile, isAuthenticated } = useAuth()
+    const { userProfile } = useAuth()
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex gap-8">

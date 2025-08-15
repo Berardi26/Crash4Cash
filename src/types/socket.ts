@@ -1,3 +1,5 @@
+import { IChatItem, IHistory, IPlayer, IUser } from "./types";
+
 export enum ESOCKET_NAMESPACE {
     chat = '/chat',
     game = '/game',

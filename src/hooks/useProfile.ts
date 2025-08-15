@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { io, Socket } from 'socket.io-client';
 import { useAuth } from '@/contexts/AuthContext';
+import { usePrivy } from '@privy-io/react-auth';
 
 // Define the shape of a chat message
 export interface ChatMessage {
@@ -16,11 +17,13 @@ export interface ChatMessage {
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
 export function useProfile() {
-  const { userProfile, token, updateUser } = useAuth();
+  const { userProfile, updateUser } = useAuth();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
 
+  const {getAccessToken} = usePrivy();
+  
   // Update profile API call
   const updateProfile = useCallback(async (profileData: {
     username?: string;
@@ -29,6 +32,7 @@ export function useProfile() {
     discordAvatar?: string;
     xUsername?: string;
   }) => {
+    const token = await getAccessToken();
     if (!token) {
       setError('Not authenticated');
       setSuccess(false);
@@ -64,7 +68,7 @@ export function useProfile() {
     } finally {
       setLoading(false);
     }
-  }, [token, updateUser]);
+  }, [updateUser]);
 
   return {
     updateProfile,
