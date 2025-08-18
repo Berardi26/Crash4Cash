@@ -11,9 +11,8 @@ import {
 } from "@heroui/modal";
 import { Button, Image, Link, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import PrimaryButton from '../button/primary';
-import { BellIcon, CaretRightIcon, DotIcon, DrawingPinFilledIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
+import { BellIcon, CaretRightIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
 import { useAuth } from '@/contexts/AuthContext';
-import { disconnect } from 'process';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },

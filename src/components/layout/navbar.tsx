@@ -1,7 +1,7 @@
 'use client'
 import Link from "next/link";
 import { CoinIcon, XIcon } from "../icos/svg";
-import { DiscordLogoIcon, TwitterLogoIcon } from "@radix-ui/react-icons";
+import { DiscordLogoIcon } from "@radix-ui/react-icons";
 import WalletConnectModal from "../modal/walletConnectModal";
 import { Image } from "@heroui/react";
 

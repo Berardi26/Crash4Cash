@@ -1,6 +1,7 @@
 import { AuthProvider } from "@/contexts/AuthContext"
 import { ChatMessagesProvider } from "@/contexts/ChatContext"
 import { SettingProvider } from "@/contexts/SettingContext"
+import { WSProvider } from "@/contexts/SocketContext"
 import { UserDataProvider } from "@/contexts/userDataContext"
 
 const ContextProvider = ({ children }: any) => {
@@ -8,9 +9,9 @@ const ContextProvider = ({ children }: any) => {
         <SettingProvider>
             <AuthProvider>
                 <UserDataProvider>
-                    <ChatMessagesProvider>
+                    <WSProvider>
                         {children}
-                    </ChatMessagesProvider>
+                    </WSProvider>
                 </UserDataProvider>
             </AuthProvider>
         </SettingProvider>

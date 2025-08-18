@@ -1,36 +1,34 @@
 import { useEffect, useRef, useState } from "react";
-import ChatItem from "./ChatItem";
 import ChatSkeleton from "./ChatSkeleton";
 import { ChatMessage } from "@/types/types";
 import { Button, Input } from "@heroui/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaPaperPlane } from "react-icons/fa6";
-import { useChatMessages } from "@/contexts/ChatContext";
+import { useWebSocket } from "@/contexts/SocketContext";
 
 const Chat = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
     const initialLoad = useRef(true);
     const [input, setInput] = useState<string>("");
-    const {
-        messages,
-        sendMessage,
-        loading,
-        typingUsers,
-        onlineCount,
-        startTyping,
-        stopTyping,
-        isAuthenticated
-    } = useChatMessages()
     const { userProfile } = useAuth()
+
+    const { ws, sendMessage } = useWebSocket()
 
     // Scroll to bottom only on initial load
     useEffect(() => {
-        console.log("messages", messages, onlineCount, loading);
-        if (initialLoad.current && messages.length > 0) {
-            messagesEndRef.current?.scrollIntoView();
-            initialLoad.current = false;
-        }
-    }, [messages, loading, onlineCount]);
+        // optional: listen to messages (overrides global handler if needed)
+        if (!ws) return;
+
+        const handleMessage = (e: MessageEvent) => {
+            console.log('Received in component:', e.data);
+        };
+
+        ws.addEventListener('message', handleMessage);
+
+        return () => {
+            ws.removeEventListener('message', handleMessage);
+        };
+    }, [ws]);
 
 
     return (
@@ -41,12 +39,12 @@ const Chat = () => {
             {/* Scrollable content area */}
             <div className="flex-1 overflow-y-auto px-6 pt-[40px] pb-[40px]">
                 <div className="flex flex-col w-full gap-2.5">
-                    {loading && new Array(5).fill(null).map((_, index) => (
+                    {/* {loading && new Array(5).fill(null).map((_, index) => (
                         <ChatSkeleton key={index} />
                     ))}
                     {messages?.map((chat: ChatMessage, index: number) => (
                         <ChatItem key={`${chat._id}`} {...chat} />
-                    ))}
+                    ))} */}
                     {/* Scroll anchor (only used for initial scroll) */}
                     <div ref={messagesEndRef} />
                 </div>
@@ -97,7 +95,7 @@ const Chat = () => {
                             </div>
                             <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] transition-colors">
                                 {/* <Icon icon="tabler:message-filled" width="16" height="16" style={{ color: "#A2A2A2" }} /> */}
-                                <p className="font-inter text-sm font-medium leading-[21px]">{messages.length}</p>
+                                {/* <p className="font-inter text-sm font-medium leading-[21px]">{messages.length}</p> */}
                             </div>
                         </div>
                     </div>

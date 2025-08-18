@@ -1,7 +1,7 @@
 // ChatMessagesContext.tsx
+"use client"
 import { createContext, useContext, useEffect, useRef, useState, useCallback } from "react";
 import { usePrivy } from "@privy-io/react-auth";
-import { socket } from "@/utils/socket";
 import { Socket } from "socket.io-client";
 import { ChatMessage } from "@/types/types";
 
@@ -33,7 +33,7 @@ export const ChatMessagesProvider = ({ children }: { children: React.ReactNode }
   // Fetch token once when authenticated
   useEffect(() => {
     if (authenticated) {
-      getAccessToken().then(setToken);
+      getAccessToken().then((token) => setToken(token));
     }
   }, [authenticated, getAccessToken]);
 
@@ -56,38 +56,40 @@ export const ChatMessagesProvider = ({ children }: { children: React.ReactNode }
 
   // Setup socket connection once
   useEffect(() => {
-    if (!token || socketRef.current) return;
+    // console.log("Connecting to socket with token:", token, socketRef.current, socket);
+    // if (!token || socketRef.current?.connected) return;
+    // console.log("Connecting to socket...");
+    // socketRef.current = socket;
 
-    socketRef.current = socket;
+    // socket.on("connect", () => {
+    //   console.log("✅ Socket connected");
+    // });
 
-    socket.on("connect", () => {
-      console.log("✅ Socket connected");
-    });
+    // socket.on("new_message", (msg: any) => {
+    //   setMessages((prev) => [...prev, msg]);
+    // });
 
-    socket.on("new_message", (msg: any) => {
-      setMessages((prev) => [...prev, msg]);
-    });
+    // socket.on("user_typing", ({ username }) => {
+    //   setTypingUsers((prev) => (prev.includes(username) ? prev : [...prev, username]));
+    // });
 
-    socket.on("user_typing", ({ username }) => {
-      setTypingUsers((prev) => (prev.includes(username) ? prev : [...prev, username]));
-    });
+    // socket.on("user_stopped_typing", ({ username }) => {
+    //   setTypingUsers((prev) => prev.filter((u) => u !== username));
+    // });
 
-    socket.on("user_stopped_typing", ({ username }) => {
-      setTypingUsers((prev) => prev.filter((u) => u !== username));
-    });
+    // socket.on("online_users_count", (count: number) => {
+    //   setOnlineCount(count);
+    // });
 
-    socket.on("online_users_count", (count: number) => {
-      setOnlineCount(count);
-    });
-
-    return () => {
-      socket.disconnect();
-      socketRef.current = null;
-    };
+    // return () => {
+    //   socket.disconnect();
+    //   socketRef.current = null;
+    // };
   }, [token]);
 
   const sendMessage = useCallback(
     (content: string) => {
+      console.log("Sending message:", content, socketRef.current, token);
       if (!socketRef.current || !token || !content.trim()) return;
       socketRef.current.emit("send_message", { message: content, type: "text" });
       stopTyping();

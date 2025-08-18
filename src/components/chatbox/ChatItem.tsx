@@ -9,7 +9,7 @@ const ChatItem: React.FC<ChatMessage> = (data) => {
 
     return (
         <div className="animate-popup-enter" onClick={() => { setShowProfileModal(true); setSelectedUser(data.userId!) }}>
-            <div className="relative border border-white hover:bg-[#162135] p-3 pl-8 rounded-lg cursor-pointer transition-colors duration-200">
+            <div className="relative border border-white/10 hover:bg-[#162135] p-3 pl-8 rounded-lg cursor-pointer transition-colors duration-200">
                 <div
                     className="w-9 h-9 rounded-[8px] overflow-hidden aspect-square hover:brightness-125 transition-[filter] duration-300 cursor-pointer absolute -left-3 dropShadow-samll bg-layer2 p-px border-none top-2"
                 >

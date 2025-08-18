@@ -17,6 +17,9 @@ const geistNova = Nova_Square({
 export const metadata: Metadata = {
   title: "Futuresea",
   description: "Casino web3 game on solana",
+  icons: {
+    icon: "/favicon.ico",
+  },
 };
 
 export default function RootLayout({

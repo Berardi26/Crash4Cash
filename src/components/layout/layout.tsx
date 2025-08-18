@@ -1,7 +1,6 @@
 import { ReactNode } from 'react';
 import Navbar from "./navbar";
 import Sidebar from './sidebar';
-import { useSetting } from '@/contexts/SettingContext';
 
 type LayoutProps = {
     children: ReactNode;

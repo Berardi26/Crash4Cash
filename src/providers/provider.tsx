@@ -21,7 +21,7 @@ const Provider = ({ children }: any) => {
                 "appearance": {
                     "accentColor": "#6A6FF5",
                     "theme": "#FFFFFF",
-                    "showWalletLoginFirst": false,
+                    "showWalletLoginFirst": true,
                     logo: "https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreifjiniza7k2btq5jzpu355k6qvpgqhpspmgvc5tm44couwo3ngiru",
                     "walletChainType": "solana-only",
                 },

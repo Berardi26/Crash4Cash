@@ -1,28 +1,25 @@
 'use client'
 import React, { useState } from "react";
 import { useSetting } from "@/contexts/SettingContext";
-import { ChatBubbleIcon } from "@radix-ui/react-icons";
 import { FaEject } from "react-icons/fa";
 import Chat from "../chatbox/Chat";
-import { FaRegComment, FaRocketchat } from "react-icons/fa6";
-import { useChatMessages } from "@/contexts/ChatContext";
+import {  FaRocketchat } from "react-icons/fa6";
 
 const Sidebar = () => {
-  const {  sendMessage, loading, typingUsers, onlineCount, startTyping, stopTyping, isAuthenticated } = useChatMessages();
   const [input, setInput] = useState("");
   const [absolute, setAbsolute] = useState(false)
   const { sidebarOpen, setSidebarOpen } = useSetting()
 
-  const handleSend = () => {
-    if (!isAuthenticated) {
-      alert("Please log in to send messages");
-      return;
-    }
-    if (input.trim()) {
-      sendMessage(input);
-      setInput("");
-    }
-  };
+  // const handleSend = () => {
+  //   if (!isAuthenticated) {
+  //     alert("Please log in to send messages");
+  //     return;
+  //   }
+  //   if (input.trim()) {
+  //     sendMessage(input);
+  //     setInput("");
+  //   }
+  // };
 
   // Show chatbox by default on large screens
   React.useEffect(() => {
@@ -39,18 +36,18 @@ const Sidebar = () => {
   }, []);
 
   // Typing event handlers
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setInput(e.target.value);
-    if (isAuthenticated) {
-      startTyping();
-    }
-  };
+  // const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //   setInput(e.target.value);
+  //   if (isAuthenticated) {
+  //     startTyping();
+  //   }
+  // };
 
-  const handleInputBlur = () => {
-    if (isAuthenticated) {
-      stopTyping();
-    }
-  };
+  // const handleInputBlur = () => {
+  //   if (isAuthenticated) {
+  //     stopTyping();
+  //   }
+  // };
 
   return (
     <div className="absolute left-0 top-[100px] z-100 flex h-[calc(100%-100px)] w-[300px] flex-col gap-0.5">

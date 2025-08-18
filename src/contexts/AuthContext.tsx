@@ -1,9 +1,7 @@
 'use client'
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { useRouter } from 'next/navigation';
-import { useLogin, usePrivy } from '@privy-io/react-auth';
-import { addToast, toast } from '@heroui/react';
+import { usePrivy } from '@privy-io/react-auth';
+import { addToast } from '@heroui/react';
 
 interface User {
   id: string;
@@ -46,14 +44,6 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
-
-  const { login } = useLogin({
-    onComplete: () => addToast({
-      title: 'Login successful!',
-      color: 'success',
-      timeout: 3000,
-    }),
-  });
 
   const {
     authenticated,

@@ -111,14 +111,6 @@ export async function mockFetchTransactions(
   page: number = 1,
   limit: number = 10
 ): Promise<TransactionsResponse> {
-  // Simulate network delay
-  await delay(500 + Math.random() * 1000);
-
-  // Simulate occasional errors
-  if (Math.random() < 0.1) {
-    throw new Error('Network error - please try again');
-  }
-
   const startIndex = (page - 1) * limit;
   const endIndex = startIndex + limit;
   const paginatedTransactions = mockTransactions.slice(startIndex, endIndex);
