@@ -56,6 +56,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
+  useEffect(() => {
+    console.log("Hey your mistake")
+  },[])
   // Initialize auth state from localStorage and validate with backend
   useEffect(() => {
     const initializeAuth = async () => {
@@ -74,6 +77,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         if (response.ok) {
           const data = await response.json();
           setUserProfile(data.user);
+          addToast({
+            title: 'Get User profile success.',
+            color: 'success',
+            timeout: 3000,
+          })
         } else {
           // Token is invalid, clear storage
           addToast({
@@ -108,6 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userProfile,
     updateUser
   };
+  
 
   return (
     <AuthContext.Provider value={value}>

@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
     config.externals['@solana/spl-token'] = 'commonjs @solana/spl-token';
     return config;
   },
+  reactStrictMode: false,
 };
 
 export default nextConfig;

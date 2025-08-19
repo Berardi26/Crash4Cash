@@ -5,7 +5,7 @@ import { FaEject } from "react-icons/fa";
 import Chat from "../chatbox/Chat";
 import {  FaRocketchat } from "react-icons/fa6";
 
-const Sidebar = () => {
+const Sidebar = React.memo(() => {
   const [input, setInput] = useState("");
   const [absolute, setAbsolute] = useState(false)
   const { sidebarOpen, setSidebarOpen } = useSetting()
@@ -99,6 +99,6 @@ const Sidebar = () => {
       </button>
     </div>
   );
-};
+});
 
 export default Sidebar;

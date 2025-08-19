@@ -1,5 +1,5 @@
 'use client'
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLogin, usePrivy } from "@privy-io/react-auth";
 import {
     Modal,
@@ -54,6 +54,10 @@ const WalletConnectModal = () => {
             path: "/transactions"
         },
     ]
+
+    useEffect(()=>{
+        console.log("User Profile:", userProfile);
+    },[userProfile])
 
     return (
         <>
@@ -145,6 +149,7 @@ const WalletConnectModal = () => {
                         className=""
                         onClick={
                             () => {
+                                console.log(user)
                                 if (authenticated) {
                                     logout()
                                 }
@@ -152,8 +157,10 @@ const WalletConnectModal = () => {
                                     if (user?.wallet) {
                                         linkWallet()
                                     }
-                                    else
+                                    else{
+                                        console.log("login?")
                                         login()
+                                    }
                                 }
                             }
                         }

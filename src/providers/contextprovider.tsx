@@ -1,3 +1,4 @@
+'use client'
 import { AuthProvider } from "@/contexts/AuthContext"
 import { ChatMessagesProvider } from "@/contexts/ChatContext"
 import { SettingProvider } from "@/contexts/SettingContext"

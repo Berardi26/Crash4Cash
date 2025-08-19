@@ -1,14 +1,17 @@
 import { WSMessage } from '@/types/socket';
+import { ChatMessage } from '@/types/types';
 import { usePrivy } from '@privy-io/react-auth';
-import { createContext, useContext, useEffect, useRef, ReactNode, useState } from 'react';
+import { createContext, useContext, useEffect, useRef, ReactNode, useState, useMemo } from 'react';
 
 interface WSContextType {
   ws: WebSocket | null;
-  sendMessage: (data: WSMessage) => void;
+  chatMessage: any;
+  sendMessage: (data: any) => void;
 }
 
 const WSContext = createContext<WSContextType>({
   ws: null,
+  chatMessage: [],
   sendMessage: () => { },
 });
 
@@ -16,11 +19,34 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
   const ws = useRef<WebSocket | null>(null);
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const reconnectTimeout = useRef<NodeJS.Timeout | null>(null);
+  const [chatMessage, setChatMessage] = useState<ChatMessage[]>([])
   const messageQueue = useRef<string[]>([]);
   const { authenticated, getAccessToken } = usePrivy()
   const intentionalClose = useRef(false);
 
+
+  useEffect(() => {
+    const fetchHistory = async () => {
+      try {
+        const res = await fetch(`/api/chat/messages`);
+        const data = await res.json();
+        if (Array.isArray(data.messages)) setChatMessage(data.messages);
+      } catch (e) {
+        console.error("Error fetching chat history:", e);
+      }
+    };
+    fetchHistory();
+  }, []);
+
   const connect = async () => {
+
+    if (ws.current &&
+      (ws.current.readyState === WebSocket.OPEN ||
+        ws.current.readyState === WebSocket.CONNECTING)) {
+      console.log("⚠️ Already connecting/open, skip");
+      return;
+    }
+
     intentionalClose.current = false;
 
     let WS_URL = 'ws://localhost:3001';
@@ -44,13 +70,16 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     ws.current.onmessage = (event) => {
       const msg: WSMessage = JSON.parse(event.data);
       console.log('📩 Incoming:', msg);
+      if(msg.type === 'chat') {
+        setChatMessage((prev) => [...(prev), msg.data as ChatMessage]);
+      }
     };
 
     ws.current.onclose = () => {
       console.log('❌ WebSocket closed');
       if (!intentionalClose.current) {
-        console.log('↻ Reconnecting in 2s...');
-        reconnectTimeout.current = setTimeout(connect, 2000);
+        console.log('↻ Reconnecting in 5s...');
+        reconnectTimeout.current = setTimeout(connect, 5000);
       }
     };
 
@@ -60,19 +89,30 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     };
   };
 
+
+
   useEffect(() => {
     console.log('🔌 trying to connect to WebSocket...');
+    intentionalClose.current = true;
+    if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
+    if (ws.current) {
+      ws.current.close();
+      ws.current = null;
+    }
+    intentionalClose.current = false;
+
     connect();
 
     return () => {
       intentionalClose.current = true; // mark as intentional
       if (reconnectTimeout.current) clearTimeout(reconnectTimeout.current);
       ws.current?.close();
+      ws.current = null;
     };
   }, [authenticated]);
 
 
-  const sendMessage = (msg: WSMessage) => {
+  const sendMessage = (msg: any) => {
     console.log("Sending message:", JSON.stringify(msg));
     if (ws.current?.readyState === WebSocket.OPEN) {
       ws.current.send(JSON.stringify(msg));
@@ -84,8 +124,13 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+
+  const value = useMemo(() => (
+      { ws: socket, chatMessage, sendMessage }
+    ), [socket, chatMessage, sendMessage]);
+
   return (
-    <WSContext.Provider value={{ ws: socket, sendMessage }}>
+    <WSContext.Provider value={value}>
       {children}
     </WSContext.Provider>
   );

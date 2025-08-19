@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import ChatSkeleton from "./ChatSkeleton";
 import { ChatMessage } from "@/types/types";
-import { Button, Input } from "@heroui/react";
+import { Button, Form, Input } from "@heroui/react";
 import { useAuth } from "@/contexts/AuthContext";
 import { FaPaperPlane } from "react-icons/fa6";
 import { useWebSocket } from "@/contexts/SocketContext";
+import ChatItem from "./ChatItem";
 
 const Chat = () => {
     const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -12,7 +13,18 @@ const Chat = () => {
     const [input, setInput] = useState<string>("");
     const { userProfile } = useAuth()
 
-    const { ws, sendMessage } = useWebSocket()
+    const { ws, chatMessage, sendMessage } = useWebSocket()
+
+
+    // Scroll to bottom when chatMessage updates
+    useEffect(() => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+            });
+        }
+    }, [chatMessage]);
 
     // Scroll to bottom only on initial load
     useEffect(() => {
@@ -37,14 +49,14 @@ const Chat = () => {
             <div className="absolute bg-gradient-primary w-full top-0 left-0 h-[40px] z-10" />
 
             {/* Scrollable content area */}
-            <div className="flex-1 overflow-y-auto px-6 pt-[40px] pb-[40px]">
+            <div className="flex-1 overflow-y-auto px-6 pt-[40px] pb-[40px] max-h-[calc(100vh-280px)]">
                 <div className="flex flex-col w-full gap-2.5">
                     {/* {loading && new Array(5).fill(null).map((_, index) => (
                         <ChatSkeleton key={index} />
-                    ))}
-                    {messages?.map((chat: ChatMessage, index: number) => (
+                    ))}*/}
+                    {chatMessage?.map((chat: ChatMessage) => (
                         <ChatItem key={`${chat._id}`} {...chat} />
-                    ))} */}
+                    ))}
                     {/* Scroll anchor (only used for initial scroll) */}
                     <div ref={messagesEndRef} />
                 </div>
@@ -63,7 +75,17 @@ const Chat = () => {
                         </div>
                     </div>
                     <div className="flex flex-col justify-between p-4 pt-3 shrink-0 gap-2">
-                        <div className="relative w-full bg-layer2 p-px font-inter rounded-lg flex gap-2">
+                        <Form className="relative w-full bg-layer2 p-px font-inter rounded-lg flex gap-2"
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (!userProfile || input.trim().length === 0) return;
+                                sendMessage({
+                                    type: "chat",
+                                    message: input,
+                                    user: userProfile?.username || "Guest",
+                                });
+                                setInput(""); // clear input after send
+                            }}>
                             <Input
                                 name="message"
                                 id="sendMsg"
@@ -80,18 +102,13 @@ const Chat = () => {
                             <Button
                                 variant="bordered"
                                 disabled={!userProfile || input.length === 0}
-                                onPress={() => sendMessage({
-                                    type: 'chat',
-                                    message: input,
-                                    user: userProfile?.username || 'Guest'
-                                })}
+                                type="submit"
                                 className={`min-w-0`}
-                                type="button"
                                 aria-expanded="false"
                             >
                                 <FaPaperPlane />
                             </Button>
-                        </div>
+                        </Form>
                         <div className="flex justify-between">
                             <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] hover:text-white transition-colors">
                                 {/* <Icon icon="icon-park-solid:info" width="12" height="12" style={{ color: "#A2A2A2" }} /> */}

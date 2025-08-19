@@ -105,7 +105,6 @@ const mockTransactions: Transaction[] = [
 ];
 
 // Simulate API delay
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 export async function mockFetchTransactions(
   page: number = 1,

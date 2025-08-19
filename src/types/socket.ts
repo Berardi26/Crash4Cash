@@ -57,10 +57,10 @@ export interface IGameServerToClientEvents {
 
 
 export type WSMessage =
-  | { type: 'chat'; user: string; message: string }
-  | { type: 'game'; status: string; data?: unknown };
+    | { type: 'chat'; data?: unknown }
+    | { type: 'game'; status: string; data?: unknown };
 
 export interface WSContextType {
-  sendMessage: (msg: WSMessage) => void;
-  isConnected: boolean;
+    sendMessage: (msg: any) => void;
+    isConnected: boolean;
 }

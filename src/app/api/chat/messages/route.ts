@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
+    console.log("NEXT_PUBLIC_API_URL",process.env.NEXT_PUBLIC_API_URL)
 
     const res = await fetch(`${API_URL}/chat/messages?limit=50`, {
       cache: 'no-store', // disable caching for fresh data

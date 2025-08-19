@@ -1,6 +1,8 @@
 import { ReactNode } from 'react';
 import Navbar from "./navbar";
 import Sidebar from './sidebar';
+import Link from 'next/link';
+import MemoComponent from '../button/memo';
 
 type LayoutProps = {
     children: ReactNode;
@@ -13,7 +15,7 @@ const Layout = ({ children, className }: LayoutProps) => {
         <Sidebar />
         <div className={`w-full pl-[300px] flex place-content-center`}>
             <div className='max-w-7xl w-full px-2 xl:px-4 overflow-auto scrollbar-hide'>
-            {children}
+                {children}
             </div>
         </div>
     </div>;
