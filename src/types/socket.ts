@@ -54,3 +54,13 @@ export interface IGameServerToClientEvents {
     [EGameEvent.WAGER]: (wager: number) => void;
     [EGameEvent.SOL_PRICE]: (solvalue: number) => void;
 }
+
+
+export type WSMessage =
+  | { type: 'chat'; user: string; message: string }
+  | { type: 'game'; status: string; data?: unknown };
+
+export interface WSContextType {
+  sendMessage: (msg: WSMessage) => void;
+  isConnected: boolean;
+}

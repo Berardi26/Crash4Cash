@@ -80,7 +80,11 @@ const Chat = () => {
                             <Button
                                 variant="bordered"
                                 disabled={!userProfile || input.length === 0}
-                                onPress={() => sendMessage(input)}
+                                onPress={() => sendMessage({
+                                    type: 'chat',
+                                    message: input,
+                                    user: userProfile?.username || 'Guest'
+                                })}
                                 className={`min-w-0`}
                                 type="button"
                                 aria-expanded="false"
