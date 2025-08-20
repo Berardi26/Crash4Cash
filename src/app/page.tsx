@@ -1,36 +1,18 @@
-import Link from "next/link";
+'use client'
 import Layout from "@/components/layout/layout";
-import { Image } from "@heroui/react";
-import Crash from "./crash/page";
-
-const games = [
-  {
-    name: "Jackpot",
-    icon: null, // Placeholder, can be replaced with an image
-    emoji: "🎰",
-    href: "/jackpot",
-    bg: "from-yellow-400 to-pink-500"
-  },
-  {
-    name: "Coinflip",
-    icon: "/assets/game/image/token.png",
-    emoji: null,
-    href: "/coinflip",
-    bg: "from-yellow-300 to-yellow-600"
-  },
-  {
-    name: "Rocket",
-    icon: "/assets/assets/images/icons/rocket.png",
-    emoji: null,
-    href: "/crash",
-    bg: "from-blue-400 to-purple-600"
-  },
-];
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function Home() {
+
+  const router = useRouter()
+  useEffect(() => {
+    router.push("/crash")
+  },[])
+  
   return (
     <Layout className="bg-linear-to-br from-black via-gray-900 to-gray-800">
-      Hello
+      Main page
     </Layout>
   );
 }

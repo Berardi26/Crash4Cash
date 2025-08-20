@@ -1,9 +1,7 @@
 import { ReactNode } from 'react';
 import Navbar from "./navbar";
 import Sidebar from './sidebar';
-import Link from 'next/link';
-import MemoComponent from '../button/memo';
-
+import AuthDebug from '../auth/AuthDebug';
 type LayoutProps = {
     children: ReactNode;
     className?: string;
@@ -14,9 +12,10 @@ const Layout = ({ children, className }: LayoutProps) => {
         <Navbar />
         <Sidebar />
         <div className={`w-full pl-[300px] flex place-content-center`}>
-            <div className='max-w-7xl w-full px-2 xl:px-4 overflow-auto scrollbar-hide'>
+            <div className='w-full overflow-auto scrollbar-hide'>
                 {children}
             </div>
+            <AuthDebug />
         </div>
     </div>;
 };

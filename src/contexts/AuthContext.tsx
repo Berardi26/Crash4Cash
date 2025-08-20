@@ -56,16 +56,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   // API base URL
   const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-  useEffect(() => {
-    console.log("Hey your mistake")
-  },[])
   // Initialize auth state from localStorage and validate with backend
   useEffect(() => {
     const initializeAuth = async () => {
       const token = await getAccessToken()
       try {
         // Validate token with backend
-        const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+        const response = await fetch(`/api/auth/profile`, {
           method: 'GET',
           headers: {
             'Authorization': `Bearer ${token}`,

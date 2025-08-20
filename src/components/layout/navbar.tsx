@@ -44,10 +44,19 @@ const Navbar = () => {
             </div>
             <div className="flex items-center h-[60px] justify-end md:justify-between w-full px-6 grow bg-black/80">
                 <div className="flex items-center gap-4">
-                    <Link href={`/leaderboard`} >
+                    <Link href={`/crash`} >
                         <div className="flex items-center gap-2">
-                            <CoinIcon />
-                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Leaderboard</span>
+                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Crash</span>
+                        </div>
+                    </Link>
+                    <Link href={`/coinflip`} >
+                        <div className="flex items-center gap-2">
+                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Coinflip</span>
+                        </div>
+                    </Link>
+                    <Link href={`/fomo`} >
+                        <div className="flex items-center gap-2">
+                            <span className="uppercase bg-linear-to-r from-primary-500 via-primary-200 to-primary-700 bg-clip-text text-transparent text-clip text-xl font-bold shadow-sm">Fomo</span>
                         </div>
                     </Link>
                     {/* {isAuthenticated && user && (

@@ -20,26 +20,24 @@ export interface IInput {
   onSave?: () => void | Promise<void>;
 }
 
+
+export interface BaseUser {
+  _id: string;
+  username: string;
+  avatar: string;
+  created_at?: Date;
+}
+
 export interface IChatItem {
   _id: string;
-  userId: {
-    _id: string;
-    username: string;
-    avatar: string;
-    created_at: Date;
-  };
+  userId: BaseUser
   message: string;
   timestamp: Date;
 }
 
 export interface IPlayer {
   _id: string;
-  user_id: {
-    _id: string;
-    username: string;
-    avatar: string;
-    created_at: Date;
-  };
+  user_id: BaseUser
   price: number;
 }
 
@@ -55,12 +53,7 @@ export interface IWaiting {
   round: number;
   won: number;
   chance: number;
-  user_id: {
-    _id: string;
-    username: string;
-    avatar: string;
-    created_at: Date;
-  };
+  user_id: BaseUser
   create_at: Date;
 }
 
@@ -98,13 +91,18 @@ export interface IWalletItem {
 // Define the shape of a chat message
 export interface ChatMessage {
   _id: string;
-  userId: {
-    _id: string
-    username: string;
-    avatar: string;
-  };
+  userId: BaseUser;
   message: string;
   createdAt: string;
   type?: string;
   level?: number;
+}
+
+export interface GameMessage {
+  _id: string;
+  userId: BaseUser;
+  createdAt: string;
+  type?: string;
+  action: string;
+  category?: string; // e.g., "crash"
 }

@@ -21,7 +21,7 @@ const ProfilePage = () => {
     const [selected, setSelected] = useState("options")
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false)
 
-    const { 
+    const {
         logout,
     } = usePrivy()
     const options = [
@@ -59,29 +59,31 @@ const ProfilePage = () => {
     return (
         <>
             <Layout className="bg-crash bg-cover bg-center">
-                <div className="flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm sm:h-[70vh] overflow-auto">
-                    <div className="flex items-center justify-between">
-                        <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
-                        {userProfile && (
-                            <div className="text-right">
-                                <p className="text-white text-sm">Welcome, {userProfile.username}!</p>
-                                <p className="text-gray-400 text-xs">{userProfile.walletAddress?.slice(0, 4)}...{userProfile?.walletAddress?.slice(-4)}</p>
-                            </div>
-                        )}
-                    </div>
-                    <div className="flex gap-8 w-full">
-                        <div className="flex flex-col gap-2">
-                            {options.map((option, idx) => (
-                                <MenuButton key={idx} onPress={option.action} className={`w-full ${selected === option.title.toLocaleLowerCase() ? "bg-white/10 text-white" : ""}`} >
-                                    {option.icon}
-                                    {option.title}
-                                </MenuButton>
-                            ))}
+                <div className="w-full items-center flex py-12 justify-center">
+                    <div className="max-w-5xl mx-auto flex flex-col gap-4 w-full bg-black/70 p-4 rounded-lg backdrop-blur-sm  overflow-auto">
+                        <div className="flex items-center justify-between">
+                            <p className="text-3xl uppercase font-bold italic text-white">Profile</p>
+                            {userProfile && (
+                                <div className="text-right">
+                                    <p className="text-white text-sm">Welcome, {userProfile.username}!</p>
+                                    <p className="text-gray-400 text-xs">{userProfile.walletAddress?.slice(0, 4)}...{userProfile?.walletAddress?.slice(-4)}</p>
+                                </div>
+                            )}
                         </div>
-                        <div className="flex flex-col w-full">
-                            {selected === "options" && <OptionPanel />}
-                            {selected === "statistics" && <StatisticsPanel />}
-                            {selected === "transactions" && <TransactionsPanel />}
+                        <div className="flex gap-8 w-full">
+                            <div className="flex flex-col gap-2">
+                                {options.map((option, idx) => (
+                                    <MenuButton key={idx} onPress={option.action} className={`w-full ${selected === option.title.toLocaleLowerCase() ? "bg-white/10 text-white" : ""}`} >
+                                        {option.icon}
+                                        {option.title}
+                                    </MenuButton>
+                                ))}
+                            </div>
+                            <div className="flex flex-col w-full">
+                                {selected === "options" && <OptionPanel />}
+                                {selected === "statistics" && <StatisticsPanel />}
+                                {selected === "transactions" && <TransactionsPanel />}
+                            </div>
                         </div>
                     </div>
                 </div>

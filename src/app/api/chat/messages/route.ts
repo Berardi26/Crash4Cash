@@ -5,7 +5,7 @@ export async function GET() {
     const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
     console.log("NEXT_PUBLIC_API_URL",process.env.NEXT_PUBLIC_API_URL)
 
-    const res = await fetch(`${API_URL}/chat/messages?limit=50`, {
+    const res = await fetch(`${API_URL}/chat/messages`, {
       cache: 'no-store', // disable caching for fresh data
     });
 

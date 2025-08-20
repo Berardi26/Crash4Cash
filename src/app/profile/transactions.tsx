@@ -71,7 +71,7 @@ const TransactionsPanel = () => {
     }
 
     return (
-        <div className="w-full max-w-4xl">
+        <div className="w-full max-w-4xl flex flex-col gap-6">
             <div className="flex items-center justify-between mb-6">
                 <h2 className="text-2xl font-bold">Transaction History</h2>
                 <Button 
@@ -97,7 +97,7 @@ const TransactionsPanel = () => {
                 </Card>
             ) : (
                 <>
-                    <div className="space-y-4">
+                    <div className="flex flex-col gap-4">
                         {transactions.map((transaction) => (
                             <Card key={transaction.id} className="w-full">
                                 <CardBody className="p-4">

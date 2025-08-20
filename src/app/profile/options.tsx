@@ -162,7 +162,7 @@ const OptionPanel = () => {
                 </div>
             </div>
 
-            <div className="flex flex-col gap-6 justify-end">
+            <div className="flex flex-col gap-8 justify-end pt-8">
                 <EditName />
                 <EditEmail />
                 <div className="flex gap-3 items-end">

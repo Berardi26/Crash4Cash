@@ -9,10 +9,11 @@ import {
     ModalFooter,
     useDisclosure
 } from "@heroui/modal";
-import { Button, Image, Link, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
+import { Button, Image, Popover, PopoverContent, PopoverTrigger } from '@heroui/react';
 import PrimaryButton from '../button/primary';
 import { BellIcon, CaretRightIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
 import { useAuth } from '@/contexts/AuthContext';
+import Link from 'next/link';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },

@@ -1,17 +1,19 @@
 import { WSMessage } from '@/types/socket';
-import { ChatMessage } from '@/types/types';
+import { BaseUser, ChatMessage, GameMessage } from '@/types/types';
 import { usePrivy } from '@privy-io/react-auth';
 import { createContext, useContext, useEffect, useRef, ReactNode, useState, useMemo } from 'react';
 
 interface WSContextType {
   ws: WebSocket | null;
   chatMessage: any;
+  newEnteredUsers:BaseUser[];
   sendMessage: (data: any) => void;
 }
 
 const WSContext = createContext<WSContextType>({
   ws: null,
   chatMessage: [],
+  newEnteredUsers: [],
   sendMessage: () => { },
 });
 
@@ -24,6 +26,7 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
   const { authenticated, getAccessToken } = usePrivy()
   const intentionalClose = useRef(false);
 
+  const [newEnteredUsers, setNewEnteredUsers] = useState<BaseUser[]>([]);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -37,6 +40,19 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     };
     fetchHistory();
   }, []);
+
+  const getCrashEnteredUser = async () => {
+    try {
+      const res = await fetch(`/api/game/crash`);
+      const data = await res.json();
+      if (data && data.enteredUsers) {
+        return data.enteredUsers;
+      }
+    } catch (e) {
+      console.error("Error fetching crash entered users:", e);
+    }
+    return [];
+  }
 
   const connect = async () => {
 
@@ -70,8 +86,17 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     ws.current.onmessage = (event) => {
       const msg: WSMessage = JSON.parse(event.data);
       console.log('📩 Incoming:', msg);
-      if(msg.type === 'chat') {
+      if (msg.type === 'chat') {
         setChatMessage((prev) => [...(prev), msg.data as ChatMessage]);
+      }
+      else if (msg.type === "game") {
+        const data = msg.data as GameMessage
+        if (data.category === "crash") {
+          if (data.action === "enter")
+          {
+            setNewEnteredUsers((prev) => [...(prev), data.userId as BaseUser]);
+          }
+        }
       }
     };
 
@@ -126,8 +151,8 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
 
 
   const value = useMemo(() => (
-      { ws: socket, chatMessage, sendMessage }
-    ), [socket, chatMessage, sendMessage]);
+    { ws: socket, chatMessage, newEnteredUsers, sendMessage }
+  ), [socket, chatMessage, sendMessage]);
 
   return (
     <WSContext.Provider value={value}>
