@@ -92,9 +92,9 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
       else if (msg.type === "game") {
         const data = msg.data as GameMessage
         if (data.category === "crash") {
-          if (data.action === "enter")
+          if (data.action === "join")
           {
-            setNewEnteredUsers((prev) => [...(prev), data.userId as BaseUser]);
+            setNewEnteredUsers((prev) => [...(prev), data.user as BaseUser]);
           }
         }
       }

@@ -100,7 +100,7 @@ export interface ChatMessage {
 
 export interface GameMessage {
   _id: string;
-  userId: BaseUser;
+  user: BaseUser;
   createdAt: string;
   type?: string;
   action: string;

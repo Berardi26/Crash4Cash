@@ -2,6 +2,7 @@
 import React, { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import { addToast } from '@heroui/react';
+import api from '@/utils/axios';
 
 interface User {
   id: string;
@@ -60,33 +61,36 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   useEffect(() => {
     const initializeAuth = async () => {
       const token = await getAccessToken()
+
+      if (token) {
+        api.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+        api.defaults.headers.common["address"] = user?.wallet?.address || '';
+      } else {
+        delete api.defaults.headers.common["Authorization"];
+        delete api.defaults.headers.common["address"];
+      }
+      
       try {
         // Validate token with backend
-        const response = await fetch(`/api/auth/profile`, {
-          method: 'GET',
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'address': user?.wallet?.address || '',
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await api.get(`/auth/profile`);
+        console.log("User profile response:", response);
 
-        if (response.ok) {
-          const data = await response.json();
-          setUserProfile(data.user);
-          addToast({
-            title: 'Get User profile success.',
-            color: 'success',
-            timeout: 3000,
-          })
-        } else {
-          // Token is invalid, clear storage
-          addToast({
-            title: 'Get User profile failed.',
-            color: 'danger',
-            timeout: 3000,
-          })
-        }
+        // if (response.ok) {
+        //   const data = await response.json();
+        //   setUserProfile(data.user);
+        //   addToast({
+        //     title: 'Get User profile success.',
+        //     color: 'success',
+        //     timeout: 3000,
+        //   })
+        // } else {
+        //   // Token is invalid, clear storage
+        //   addToast({
+        //     title: 'Get User profile failed.',
+        //     color: 'danger',
+        //     timeout: 3000,
+        //   })
+        // }
       } catch (error) {
         console.error('Error validating token:', error);
         addToast({
@@ -113,7 +117,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     userProfile,
     updateUser
   };
-  
+
 
   return (
     <AuthContext.Provider value={value}>

@@ -30,11 +30,12 @@ export async function POST(req: Request) {
   try {
     const body = await req.json(); // { username, betAmount, ... }
     const token = req.headers.get("Authorization");
+    console.log("token-", token )
     const res = await fetch(`${API_URL}/game/crash/join`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Authorization": token || "", // forward token to backend
+        "Authorization": `Bearer ${token}` || "", // forward token to backend
       },
       body: JSON.stringify(body),
     });
