@@ -74,30 +74,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         // Validate token with backend
         const response = await api.get(`/auth/profile`);
         console.log("User profile response:", response);
-
-        // if (response.ok) {
-        //   const data = await response.json();
-        //   setUserProfile(data.user);
-        //   addToast({
-        //     title: 'Get User profile success.',
-        //     color: 'success',
-        //     timeout: 3000,
-        //   })
-        // } else {
-        //   // Token is invalid, clear storage
-        //   addToast({
-        //     title: 'Get User profile failed.',
-        //     color: 'danger',
-        //     timeout: 3000,
-        //   })
-        // }
+        if (response.status === 200) {
+          setUserProfile(response.data.user);
+        } 
       } catch (error) {
         console.error('Error validating token:', error);
-        addToast({
-          title: 'Get User profile failed.',
-          color: 'danger',
-          timeout: 3000,
-        })
       }
     };
     if (authenticated) {
