@@ -41,19 +41,6 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     fetchHistory();
   }, []);
 
-  const getCrashEnteredUser = async () => {
-    try {
-      const res = await fetch(`/api/game/crash`);
-      const data = await res.json();
-      if (data && data.enteredUsers) {
-        return data.enteredUsers;
-      }
-    } catch (e) {
-      console.error("Error fetching crash entered users:", e);
-    }
-    return [];
-  }
-
   const connect = async () => {
 
     if (ws.current &&

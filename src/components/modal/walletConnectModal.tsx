@@ -23,8 +23,6 @@ const walletsList = [
 
 const WalletConnectModal = () => {
 
-    const { isOpen, onOpen, onOpenChange, onClose } = useDisclosure();
-
     const { userProfile } = useAuth();
     const {
         user,
@@ -55,10 +53,6 @@ const WalletConnectModal = () => {
             path: "/transactions"
         },
     ]
-
-    useEffect(()=>{
-        console.log("User Profile:", userProfile);
-    },[userProfile])
 
     return (
         <>

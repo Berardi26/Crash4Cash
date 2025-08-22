@@ -47,15 +47,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [userProfile, setUserProfile] = useState<User | null>(null);
 
   const {
+    ready,
     authenticated,
     user,
     getAccessToken,
   } = usePrivy();
 
-
-
-  // API base URL
-  const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
   // Initialize auth state from localStorage and validate with backend
   useEffect(() => {

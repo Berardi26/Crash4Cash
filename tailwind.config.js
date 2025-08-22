@@ -1,5 +1,5 @@
 /** @type {import('tailwindcss').Config} */
-const {heroui} = require("@heroui/react");
+const { heroui } = require("@heroui/react");
 module.exports = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -30,15 +30,32 @@ module.exports = {
           '900': '#250000',
           '950': '#120000',
         }
-      }
+      },
+      keyframes: {
+        rotateXForever: {
+          '0%': { transform: 'rotateY(0deg)' },
+          '100%': { transform: 'rotateY(360deg)' },
+        },
+        flipCoin: {
+          '0%': { transform: 'rotateY(0deg) scaleX(1)' },
+          '25%': { transform: 'rotateY(90deg) scaleX(0)' },
+          '50%': { transform: 'rotateY(180deg) scaleX(1)' },
+          '75%': { transform: 'rotateY(270deg) scaleX(0)' },
+          '100%': { transform: 'rotateY(360deg) scaleX(1)' },
+        },
+      },
+      animation: {
+        'rotate-x-forever': 'rotateXForever 4s linear infinite',
+        'flip-coin': 'flipCoin 4s linear infinite',
+      },
     },
   },
   darkMode: "class",
   plugins: [
     require("tailwindcss-animation-delay"),
     heroui({
-      defaultTheme:"dark",
-      defaultExtendTheme:"dark"
+      defaultTheme: "dark",
+      defaultExtendTheme: "dark"
     })
   ],
 }

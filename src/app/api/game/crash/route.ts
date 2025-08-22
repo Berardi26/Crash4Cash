@@ -2,25 +2,26 @@ import axios from 'axios';
 import { NextResponse } from 'next/server';
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api';
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     console.log("NEXT_PUBLIC_API_URL", process.env.NEXT_PUBLIC_API_URL)
+    const cookie = req.headers.get("cookie");
+    const res = await axios.get(`${API_URL}/game/crash/getgame`, {
+      headers: {
+        cookie, // forward cookies to backend
+      },
+      withCredentials: true
+    })
 
-    const res = await fetch(`${API_URL}/game/crash`, {
-      cache: 'no-store', // disable caching for fresh data
-    });
-
-    if (!res.ok) {
+    if (res.status !== 200) {
       throw new Error(`API request failed with status ${res.status}`);
     }
 
-    const data = await res.json();
-
-    return NextResponse.json(data);
+    return NextResponse.json(res.data);
   } catch (error) {
-    console.error("Error fetching chat history:", error);
+    console.error("Failed to fetch crash game:", error);
     return NextResponse.json(
-      { error: "Failed to fetch chat history" },
+      { error: "Failed to fetch crash game" },
       { status: 500 }
     );
   }

@@ -105,4 +105,6 @@ export interface GameMessage {
   type?: string;
   action: string;
   category?: string; // e.g., "crash"
+  launchAt?: number; // For crash game, when the game will launch
+  now?: number; // Current time for crash game
 }

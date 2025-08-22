@@ -51,9 +51,9 @@ const Chat = () => {
             {/* Scrollable content area */}
             <div className="flex-1 overflow-y-auto px-6 pt-[40px] pb-[40px] max-h-[calc(100vh-280px)]">
                 <div className="flex flex-col w-full gap-2.5">
-                    {/* {loading && new Array(5).fill(null).map((_, index) => (
+                    {!chatMessage && new Array(5).fill(null).map((_, index) => (
                         <ChatSkeleton key={index} />
-                    ))}*/}
+                    ))}
                     {chatMessage?.map((chat: ChatMessage) => (
                         <ChatItem key={`${chat._id}`} {...chat} />
                     ))}
