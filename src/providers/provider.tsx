@@ -19,7 +19,7 @@ const Provider = ({ children }: any) => {
             clientId={clientId}
             config={{
                 "appearance": {
-                    "accentColor": "#6A6FF5",
+                    "accentColor": "#8A0000",
                     "theme": "#FFFFFF",
                     "showWalletLoginFirst": true,
                     logo: "https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreifjiniza7k2btq5jzpu355k6qvpgqhpspmgvc5tm44couwo3ngiru",

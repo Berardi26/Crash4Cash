@@ -13,7 +13,7 @@ import { addToast, Button, Image, Skeleton } from '@heroui/react';
 import { WSMessage } from '@/types/socket';
 import { BaseUser, GameMessage } from '@/types/types';
 import TileCard from '@/components/card/tile';
-import { FaUser } from 'react-icons/fa6';
+import { FaParachuteBox, FaScreenpal, FaUser } from 'react-icons/fa6';
 import Countdown from '@/components/countdown/CountdownTimer';
 import Loader from '@/components/loading/Loader';
 
@@ -29,9 +29,27 @@ declare global {
     }
 }
 
+interface Game {
+    betAmount: number,
+    crashAt: Date,
+    createdAt: Date,
+    feeRate: number,
+    launchAt: Date,
+    round: number,
+    status: string,
+    ticket: number,
+    players: [
+        {
+            status: string,
+            user: BaseUser
+        }
+    ]
+}
+
 const Crash = () => {
     const [loading, setLoading] = useState(false);
     const [loadingUser, setLoadinguser] = useState(false);
+    const [loadingGame, setLoadingGame] = useState(false);
     const [launchAt, setLaunchAt] = useState<number>()
     const {
         setGameInstance,
@@ -47,8 +65,10 @@ const Crash = () => {
         authenticated,
         getAccessToken
     } = usePrivy()
+
     const [joinedUser, setJoinedUser] = useState<{ user: BaseUser }[]>([]);
-    const [game, setGame] = useState()
+    const [games, setGames] = useState<Game[]>([])
+    const [game, setGame] = useState<Game>()
     const { sendTransaction } = useSendTransaction();
     const { wallets } = useSolanaWallets();
     const transaction = new Transaction();
@@ -84,7 +104,7 @@ const Crash = () => {
 
 
             // Test logic
-            const response = await fetch(`/api/game/crash`, {
+            const response = await fetch(`/api/game/crash/join`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -118,21 +138,52 @@ const Crash = () => {
     const getCrashEnteredUser = async () => {
         try {
             setLoadinguser(true)
-            const res = await fetch(`/api/game/crash`);
+            const res = await fetch(`/api/game/crash/get`);
             const data = await res.json();
-            console.log("data", data)
+            console.log("load single game data", data)
             if (data.game) {
                 setGame(data.game)
+                if (data.launchAt && data.now) {
+                    const offsetMs = new Date(data.launchAt).getTime() - new Date(data.now).getTime();
+                    setLaunchAt(offsetMs / 1000); // Convert to seconds
+                }
                 setJoinedUser(data.game.players || []);
             }
         } catch (e) {
             console.error("Error fetching crash entered users:", e);
         }
         setLoadinguser(false)
-        return [];
     }
 
+    const getAllGames = async () => {
+        try {
+            setLoadingGame(true)
+            const res = await fetch(`/api/game/crash`);
+            const data = await res.json();
+            if (data.game) {
+                setGames(data.game || []);
+
+            }
+        } catch (e) {
+            console.error("Error fetching crash entered users:", e);
+        }
+        setLoadingGame(false)
+    }
+
+    const launchRocket = () => {
+        if (!game) {
+            console.error("No game instance found");
+            return;
+        }
+        if (game.status !== "PENDING") {
+            console.error("Game is not in PENDING state");
+            return;
+        }
+    }
+
+
     useEffect(() => {
+        getAllGames()
         getCrashEnteredUser()
     }, [])
 
@@ -147,10 +198,19 @@ const Crash = () => {
                     console.log("Crash Game Message::::", data);
                 if (data.action === "join") {
                     setJoinedUser((prev) => [...prev, { user: data.user as BaseUser }]);
+                    if (data.launchAt && data.now) {
+                        console.log("launch", data.launchAt, data.now)
+                        console.log("launch At", data.launchAt - data.now)
+                        const offsetMs = new Date(data.launchAt).getTime() - new Date(data.now).getTime();
+                        setLaunchAt(offsetMs / 1000); // Convert to seconds
+                    }
                 }
                 else if (data.action === "launch" && data.launchAt && data.now) {
-
-                    setLaunchAt(data?.launchAt - data?.now);
+                    setGame((prev) => (prev ? { ...prev, status: 'STARTED' } : undefined));
+                    triggerLaunch()
+                }
+                else if(data.action === "settled"){
+                    triggerCrash()
                 }
             }
         };
@@ -162,50 +222,71 @@ const Crash = () => {
         };
     }, [ws]);
 
+    useEffect(() => {
+        console.log("launch at changed", launchAt)
+    }, [launchAt])
+
     return (
         <Layout className="bg-crash bg-cover bg-center">
             <div className='flex flex-col'>
-                <div className='flex gap-2'>
-                    <div
-                        className="group w-40 rounded-lg bg-primary p-2 transition relative duration-300 cursor-pointer hover:translate-y-[3px] "
-                    >
-                        <p className="text-white text-2xl">2000</p>
-                        <p className="text-white text-sm">lorem</p>
-                        <svg
-                            viewBox="0 0 512 512"
-                            y="0"
-                            x="0"
-                            height="36"
-                            width="36"
-                            version="1.1"
-                            xmlns="http://www.w3.org/2000/svg"
-                            className="group-hover:opacity-100 absolute right-[10%] top-[50%] translate-y-[-50%] opacity-20 transition group-hover:scale-110 duration-300"
+                <div className='flex gap-2 horizontal-scrollbar scrollbar-hide overflow-x-auto w-full py-4 px-2'>
+                    {loadingGame && new Array(10).fill(null).map((_, index) => (
+                        <div className="">
+                            <div className="w-full flex rounded-lg">
+                                <div className="relative bg-gradient-to-b from-[#241c1c] to-[#221a1a] p-3 pl-4 rounded-lg cursor-pointer transition-colors duration-200 w-full flex gap-2">
+                                    <div className="relative z-3 flex flex-col gap-1 justify-center ">
+                                        <div className="flex items-center gap-1.5">
+                                            <Skeleton className="w-20 rounded-lg">
+                                                <div className="text-sm font-bold max-w-[150px] truncate text-white w-10 h-3"></div>
+                                            </Skeleton>
+                                        </div>
+                                        <div className="flex items-center gap-1.5">
+                                            <Skeleton className="w-8 rounded-lg">
+                                                <div className="text-sm font-bold max-w-[150px] truncate text-white w-10 h-3"></div>
+                                            </Skeleton>
+                                        </div>
+                                    </div>
+                                    <Skeleton className=" bg-[#2a3c58] w-12 h-12 rounded-lg" >
+                                        <div className="text-[11px] leading-[16px] text-[#cecece] w-8 h-3"></div>
+                                    </Skeleton>
+                                </div>
+                            </div>
+                        </div>
+                    ))}
+
+                    {games.map((game, idx) => (
+                        <div
+                            className={`group flex items-center justify-between shrink-0 w-50 rounded-lg border-1 relative
+                                    ${game.status === "PENDING" ? "bg-primary" : "border border-p"}
+                                border-primary p-2 pt-3 transition relative duration-300 cursor-pointer hover:translate-y-[3px] `}
+                            key={idx}
                         >
-                            <g>
-                                <path
-                                    className=""
-                                    data-original="#000000"
-                                    opacity="1"
-                                    fill="#ffffff"
-                                    d="M135.169 91.902c16.83 0 30.474-13.649 30.474-30.485 0-11.22-13.533-36.418-22.563-51.981-3.524-6.075-12.297-6.075-15.822 0-9.029 15.563-22.563 40.761-22.563 51.981 0 16.836 13.644 30.485 30.474 30.485zM256 91.902c16.83 0 30.474-13.649 30.474-30.485 0-11.22-13.533-36.418-22.563-51.981-3.524-6.075-12.297-6.075-15.822 0-9.029 15.563-22.563 40.761-22.563 51.981 0 16.836 13.643 30.485 30.474 30.485zM376.83 91.902c16.83 0 30.474-13.649 30.474-30.485 0-11.22-13.533-36.418-22.563-51.981-3.525-6.075-12.297-6.075-15.822 0-9.029 15.563-22.563 40.761-22.563 51.981 0 16.836 13.644 30.485 30.474 30.485zM118.391 116.951c-7.454 0-13.497 6.045-13.497 13.502v108.924h60.55V130.454c0-7.457-6.042-13.502-13.497-13.502h-33.556zM239.221 116.951c-7.454 0-13.497 6.045-13.497 13.502v108.924h60.55V130.454c0-7.457-6.043-13.502-13.497-13.502h-33.556zM360.052 116.951c-7.454 0-13.497 6.045-13.497 13.502v108.924h60.55V130.454c0-7.457-6.043-13.502-13.497-13.502h-33.556zM66.25 356.095a26.11 26.11 0 0 0 7.425-1.08l37.866-11.209c12.377-3.664 25.284-5.496 38.19-5.496s25.813 1.832 38.19 5.496l29.888 8.848c12.377 3.664 25.284 5.496 38.19 5.496s25.813-1.832 38.19-5.496l29.888-8.848c12.377-3.664 25.284-5.496 38.19-5.496s25.813 1.832 38.19 5.496l37.866 11.209a26.146 26.146 0 0 0 7.425 1.08c12.118 0 22.787-8.481 22.787-19.746v-38.672c0-12.82-12.02-23.213-26.848-23.213H70.312c-14.828 0-26.848 10.393-26.848 23.213v38.672c0 11.265 10.67 19.746 22.786 19.746zM497 477.12h-40.946v-91.989a56.002 56.002 0 0 1-10.305.964 56.132 56.132 0 0 1-15.941-2.313l-37.866-11.209c-9.553-2.828-19.537-4.262-29.674-4.262s-20.121 1.434-29.674 4.262l-29.888 8.848c-15.086 4.466-30.799 6.73-46.705 6.73s-31.62-2.264-46.706-6.73l-29.888-8.848c-9.553-2.828-19.537-4.262-29.674-4.262s-20.121 1.434-29.674 4.262l-37.866 11.209a56.138 56.138 0 0 1-15.941 2.314c-3.487 0-6.935-.333-10.305-.964v91.989H15c-8.284 0-15 6.716-15 15s6.716 15 15 15h482c8.284 0 15-6.716 15-15s-6.716-15.001-15-15.001z"
-                                ></path>
-                            </g>
-                        </svg>
-                    </div>
+                            <p className='absolute left-1/2 top-0 -translate-x-1/2 text-xs text-whtie/20 px-4 rounded-b-lg bg-linear-to-b from-primary to-primary-700'>{game.status}</p>
+                            <div className=''>
+                                <p className="text-white text-2xl">{game.betAmount * game.players.length} <span className='text-sm'> SOL</span></p>
+                                <p className="text-white/50 text-sm">Joined <span>{game.players.length}</span> Players</p>
+                            </div>
+                            {game.status === "PENDING" ? <FaScreenpal size={30} className='text-white/30 animate-spin' />
+                                : <FaParachuteBox size={30} className='text-primary ' />}
+                        </div>
+                    )
+                    )}
+
                 </div>
                 <div className="flex flex-col w-full bg-opacity-15 flex-1 md:flex-row">
                     <div className='relative w-[600px]'>
                         <div className="relative">
-                            {/* <PhaserGame onReady={setGameInstance} /> */}
+                            <PhaserGame onReady={setGameInstance} />
                         </div>
                     </div>
                     <div className='flex-1 flex-col gap-2 '>
                         <div className='max-w-[400px] flex flex-col gap-2 px-4 py-2 '>
-                            <div className='h-[240px] bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-lg'>
+                            <div className='h-[240px] relative bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-xl'>
                                 {launchAt ? <Countdown time={launchAt} />
                                     :
                                     <Loader />
                                 }
+                                <p className='absolute left-1/2 -translate-x-1/2 top-1 animate-bounce'>{game?.status}</p>
                             </div>
 
                             <div>
@@ -218,6 +299,10 @@ const Crash = () => {
                                 <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
                                 <PrimaryButton onClick={() => triggerCrash()}>crash</PrimaryButton>
                                 <PrimaryButton onClick={() => triggerEscape()}>Escape</PrimaryButton>
+                                <PrimaryButton onClick={() => {
+                                    setJoinedUser([]);
+                                    getAllGames();
+                                }}>Refresh</PrimaryButton>
                             </div>
                             {/* Entered User List */}
                             <div className='pt-4'>
@@ -257,7 +342,7 @@ const Crash = () => {
                                     ))}
                                     {!loadingUser && joinedUser.map((user, idx) => (
                                         <TileCard key={idx} className="w-full">
-                                            <div className="flex items-center gap-2" style={{ color: "rgb(145, 118, 255);" }}>
+                                            <div className="flex items-center gap-2" >
                                                 <div className="flex items-center">
                                                     <div className="rounded-[8px] overflow-hidden border-[1px] aspect-square hover:brightness-125 duration-300 cursor-pointer w-12 h-12 transition-[filter] will-change-[filter] group-hover:brightness-125 shrink-0 shadow-[0px_1.48px_0px_0px_#FFFFFF1A_inset] bg-[#303045] p-[1px] border-none">
                                                         <div className="w-full h-full p-0.5 border-[1px] border-[#222222] relative overflow-hidden rounded-[10px]">

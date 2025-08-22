@@ -31,7 +31,7 @@ export default function Countdown(props: { time: number }) {
   const timeLabel = `${minutes}:${seconds.toString().padStart(2, "0")}`;
 
   return (
-    <Card className="w-full h-[240px] border-none ">
+    <Card className="w-full h-[240px] border-none bg-transparent">
       <CardBody className="justify-center items-center pb-0">
         {value > 0 ? <CircularProgress
           classNames={{

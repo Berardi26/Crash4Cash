@@ -96,7 +96,7 @@ export const WSProvider = ({ children }: { children: ReactNode }) => {
     };
 
     ws.current.onerror = (err) => {
-      console.error('⚠️ WebSocket error:', err);
+      console.log('⚠️ WebSocket error:', err);
       ws.current?.close(); // will trigger onclose
     };
   };
