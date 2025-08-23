@@ -98,6 +98,23 @@ export interface ChatMessage {
   level?: number;
 }
 
+export interface Game {
+    betAmount: number,
+    crashAt: Date,
+    createdAt: Date,
+    feeRate: number,
+    launchAt: Date,
+    round: number,
+    status: string,
+    ticket: number,
+    players: [
+        {
+            status: string,
+            user: BaseUser
+        }
+    ]
+}
+
 export interface GameMessage {
   _id: string;
   user: BaseUser;
@@ -107,4 +124,5 @@ export interface GameMessage {
   category?: string; // e.g., "crash"
   launchAt?: number; // For crash game, when the game will launch
   now?: number; // Current time for crash game
+  game?:Game
 }

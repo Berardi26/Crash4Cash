@@ -93,7 +93,7 @@ const WalletConnectModal = () => {
                         <PopoverTrigger>
                             <Button className='flex items-center min-w-0 bg-transparent px-1'>
                                 <div className='bg-white/10 rounded-md p-px flex items-center justify-center flex-col'>
-                                    <Image src={"/assets/images/avatar/ada.jpg"} alt='avatar' className='rounded-md w-10 h-10' />
+                                    <Image src={userProfile.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
                                 </div>
                                 <div className='min-w-0 rounded-md bg-transparent w-12 h-12 items-center justify-center flex'>
                                     <TextAlignJustifyIcon className=' scale-150' />
@@ -106,7 +106,7 @@ const WalletConnectModal = () => {
                                     <div className='flex items-center w-full rounded-lg justify-between bg-black'>
                                         <div className='flex items-center gap-2 bg-transparent min-w-0 '>
                                             <div className='bg-white/10 rounded-md p-px flex items-center justify-center flex-col'>
-                                                <Image src={"/assets/images/avatar/ada.jpg"} alt='avatar' className='rounded-md w-10 h-10' />
+                                                <Image src={userProfile.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
                                             </div>
                                             <div>
                                                 <div className='flex flex-col'>
@@ -152,7 +152,7 @@ const WalletConnectModal = () => {
                                     if (user?.wallet) {
                                         linkWallet()
                                     }
-                                    else{
+                                    else {
                                         console.log("login?")
                                         login()
                                     }

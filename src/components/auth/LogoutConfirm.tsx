@@ -1,7 +1,8 @@
 'use client'
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useWallet } from '@solana/wallet-adapter-react';
+import { usePrivy } from '@privy-io/react-auth';
 
 interface LogoutConfirmProps {
   onConfirm: () => void;
@@ -9,21 +10,22 @@ interface LogoutConfirmProps {
   isOpen: boolean;
 }
 
-const LogoutConfirm: React.FC<LogoutConfirmProps> = ({ 
-  onConfirm, 
-  onCancel, 
-  isOpen 
+const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
+  onConfirm,
+  onCancel,
+  isOpen
 }) => {
   const { userProfile } = useAuth();
-  const { disconnect } = useWallet();
+  const {
+    authenticated,
+    logout
+  } = usePrivy();
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
-    
     // Disconnect wallet first
-    disconnect();
-    
+    logout();
     // Small delay to show loading state
     setTimeout(() => {
       onConfirm();
@@ -31,17 +33,20 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
     }, 500);
   };
 
+  useEffect(()=>{
+    console.log("LogoutConfirm authenticated changed", authenticated);
+  },[authenticated])
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-black/90 p-6 rounded-lg backdrop-blur-sm max-w-md w-full mx-4">
         <h3 className="text-xl font-bold text-white mb-4">Confirm Logout</h3>
-        
+
         <p className="text-gray-300 mb-6">
           Are you sure you want to logout? You'll need to reconnect your wallet to access your profile.
         </p>
-        
+
         {userProfile && (
           <div className="bg-white/10 p-3 rounded-lg mb-6">
             <p className="text-white text-sm">
@@ -55,7 +60,7 @@ const LogoutConfirm: React.FC<LogoutConfirmProps> = ({
             </p>
           </div>
         )}
-        
+
         <div className="flex gap-3">
           <button
             onClick={onCancel}

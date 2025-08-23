@@ -43,10 +43,18 @@ module.exports = {
           '75%': { transform: 'rotateY(270deg) scaleX(0)' },
           '100%': { transform: 'rotateY(360deg) scaleX(1)' },
         },
+        floatCloud: {
+          '0%': { transform: 'translate(0, 0)' },
+          '25%': { transform: 'translate(-10px, -5px)' },
+          '50%': { transform: 'translate(10px, -10px)' },
+          '75%': { transform: 'translate(-10px, -15px)' },
+          '100%': { transform: 'translate(0, 0)' },
+        },
       },
       animation: {
         'rotate-x-forever': 'rotateXForever 4s linear infinite',
         'flip-coin': 'flipCoin 4s linear infinite',
+        'float-cloud': 'floatCloud 12s ease-in-out infinite',
       },
     },
   },

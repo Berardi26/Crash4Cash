@@ -15,7 +15,7 @@ export default function Countdown(props: { time: number }) {
           clearInterval(interval);
           return 0;
         }
-        return v - 1;
+        return parseInt((v - 1).toString());
       });
     }, 1000);
 
@@ -23,7 +23,7 @@ export default function Countdown(props: { time: number }) {
   }, [time]);
 
   // Percentage for CircularProgress
-  const percentage = (value / time) * 100;
+  const percentage = Number((value / time) * 100);
 
   // Format time as mm:ss
   const minutes = Math.floor(value / 60);

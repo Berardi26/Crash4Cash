@@ -25,53 +25,53 @@ export function useProfile() {
   const {getAccessToken} = usePrivy();
   
   // Update profile API call
-  const updateProfile = useCallback(async (profileData: {
-    username?: string;
-    email?: string | null;
-    discordName?: string;
-    discordAvatar?: string;
-    xUsername?: string;
-  }) => {
-    const token = await getAccessToken();
-    if (!token) {
-      setError('Not authenticated');
-      setSuccess(false);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    setSuccess(false);
-    try {
-      const response = await fetch(`${API_URL}/auth/profile`, {
-        method: 'PATCH',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(profileData),
-      });
-      if (!response.ok) {
-        const data = await response.json();
-        setError(data.error || 'Failed to update profile');
-        setSuccess(false);
-        setLoading(false);
-        return false;
-      }
-      const data = await response.json();
-      updateUser(data.user);
-      setSuccess(true);
-      return true
-    } catch (err: any) {
-      setError(err.message || 'Failed to update profile');
-      setSuccess(false);
-      return false
-    } finally {
-      setLoading(false);
-    }
-  }, [updateUser]);
+  // const updateProfile = useCallback(async (profileData: {
+  //   username?: string;
+  //   email?: string | null;
+  //   discordName?: string;
+  //   discordAvatar?: string;
+  //   xUsername?: string;
+  // }) => {
+  //   const token = await getAccessToken();
+  //   if (!token) {
+  //     setError('Not authenticated');
+  //     setSuccess(false);
+  //     return;
+  //   }
+  //   setLoading(true);
+  //   setError(null);
+  //   setSuccess(false);
+  //   try {
+  //     // const response = await fetch(`${API_URL}/auth/profile`, {
+  //     //   method: 'PATCH',
+  //     //   headers: {
+  //     //     'Authorization': `Bearer ${token}`,
+  //     //     'Content-Type': 'application/json',
+  //     //   },
+  //     //   body: JSON.stringify(profileData),
+  //     // });
+  //     // if (!response.ok) {
+  //     //   const data = await response.json();
+  //     //   setError(data.error || 'Failed to update profile');
+  //     //   setSuccess(false);
+  //     //   setLoading(false);
+  //     //   return false;
+  //     // }
+  //     // const data = await response.json();
+  //     updateUser(profileData);
+  //     setSuccess(true);
+  //     return true
+  //   } catch (err: any) {
+  //     setError(err.message || 'Failed to update profile');
+  //     setSuccess(false);
+  //     return false
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, [updateUser]);
 
   return {
-    updateProfile,
+    updateUser,
     loading,
     error,
     success,

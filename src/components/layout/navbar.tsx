@@ -4,8 +4,12 @@ import { CoinIcon, XIcon } from "../icos/svg";
 import { DiscordLogoIcon } from "@radix-ui/react-icons";
 import WalletConnectModal from "../modal/walletConnectModal";
 import { Image } from "@heroui/react";
+import { useEffect } from "react";
 
 const Navbar = () => {
+    useEffect(()=>{
+        console.log("Navbar mounted")
+    },[])
 
     return <div className="flex w-full fixed top-0 left-0 z-50">
         <div className="w-20 sm:w-32 lg:w-52 min-w-[320px] bg-black/80 flex items-center justify-center flex-col">

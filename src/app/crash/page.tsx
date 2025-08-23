@@ -11,7 +11,7 @@ import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.
 import { useEffect, useState } from 'react';
 import { addToast, Button, Image, Skeleton } from '@heroui/react';
 import { WSMessage } from '@/types/socket';
-import { BaseUser, GameMessage } from '@/types/types';
+import { BaseUser, Game, GameMessage } from '@/types/types';
 import TileCard from '@/components/card/tile';
 import { FaParachuteBox, FaScreenpal, FaUser } from 'react-icons/fa6';
 import Countdown from '@/components/countdown/CountdownTimer';
@@ -27,23 +27,6 @@ declare global {
         game: Phaser.Game;
         sizeChanged: () => void;
     }
-}
-
-interface Game {
-    betAmount: number,
-    crashAt: Date,
-    createdAt: Date,
-    feeRate: number,
-    launchAt: Date,
-    round: number,
-    status: string,
-    ticket: number,
-    players: [
-        {
-            status: string,
-            user: BaseUser
-        }
-    ]
 }
 
 const Crash = () => {
@@ -162,8 +145,16 @@ const Crash = () => {
             const data = await res.json();
             if (data.game) {
                 setGames(data.game || []);
-
+                if (data.game[0].status !== "SETTLED") {
+                    setGame(data.game[0])
+                    setJoinedUser(data.game[0].players || []);
+                }
+                if (data.game[0].launchAt && data.game[0].now) {
+                    const offsetMs = new Date(data.game[0].launchAt).getTime() - new Date(data.game[0].now).getTime();
+                    setLaunchAt(parseInt((offsetMs / 1000).toString())); // Convert to seconds
+                }
             }
+
         } catch (e) {
             console.error("Error fetching crash entered users:", e);
         }
@@ -184,7 +175,7 @@ const Crash = () => {
 
     useEffect(() => {
         getAllGames()
-        getCrashEnteredUser()
+        // getCrashEnteredUser()
     }, [])
 
     useEffect(() => {
@@ -199,18 +190,41 @@ const Crash = () => {
                 if (data.action === "join") {
                     setJoinedUser((prev) => [...prev, { user: data.user as BaseUser }]);
                     if (data.launchAt && data.now) {
-                        console.log("launch", data.launchAt, data.now)
-                        console.log("launch At", data.launchAt - data.now)
                         const offsetMs = new Date(data.launchAt).getTime() - new Date(data.now).getTime();
-                        setLaunchAt(offsetMs / 1000); // Convert to seconds
+                        setLaunchAt(parseInt((offsetMs / 1000).toString())); // Convert to seconds
                     }
+                }
+                else if (data.action === "create") {
+                    setGames(prevGames => [data?.game as Game, ...prevGames]);
+                    setJoinedUser((prev) => [...prev, { user: data.user as BaseUser }]);
                 }
                 else if (data.action === "launch" && data.launchAt && data.now) {
                     setGame((prev) => (prev ? { ...prev, status: 'STARTED' } : undefined));
+                    setGames(prevGames => {
+                        if (prevGames.length === 0) return prevGames;
+                        const updatedGames = [...prevGames];
+                        updatedGames[0] = {
+                            ...updatedGames[0],
+                            status: "STARTED",
+                        };
+                        return updatedGames;
+                    });
                     triggerLaunch()
                 }
-                else if(data.action === "settled"){
+                else if (data.action === "settled") {
                     triggerCrash()
+                    setGames(prevGames => {
+                        if (prevGames.length === 0) return prevGames;
+                        const updatedGames = [...prevGames];
+                        updatedGames[0] = {
+                            ...updatedGames[0],
+                            status: "SETTLED",
+                        };
+                        return updatedGames;
+                    });
+                    setGame(undefined)
+                    setJoinedUser([]);
+                    setLaunchAt(undefined);
                 }
             }
         };
@@ -231,7 +245,7 @@ const Crash = () => {
             <div className='flex flex-col'>
                 <div className='flex gap-2 horizontal-scrollbar scrollbar-hide overflow-x-auto w-full py-4 px-2'>
                     {loadingGame && new Array(10).fill(null).map((_, index) => (
-                        <div className="">
+                        <div className="" key={index}>
                             <div className="w-full flex rounded-lg">
                                 <div className="relative bg-gradient-to-b from-[#241c1c] to-[#221a1a] p-3 pl-4 rounded-lg cursor-pointer transition-colors duration-200 w-full flex gap-2">
                                     <div className="relative z-3 flex flex-col gap-1 justify-center ">
@@ -257,7 +271,7 @@ const Crash = () => {
                     {games.map((game, idx) => (
                         <div
                             className={`group flex items-center justify-between shrink-0 w-50 rounded-lg border-1 relative
-                                    ${game.status === "PENDING" ? "bg-primary" : "border border-p"}
+                                    ${game.status === "PENDING" || game.status === "STARTED" ? "bg-primary" : "border border-p"}
                                 border-primary p-2 pt-3 transition relative duration-300 cursor-pointer hover:translate-y-[3px] `}
                             key={idx}
                         >
@@ -266,7 +280,7 @@ const Crash = () => {
                                 <p className="text-white text-2xl">{game.betAmount * game.players.length} <span className='text-sm'> SOL</span></p>
                                 <p className="text-white/50 text-sm">Joined <span>{game.players.length}</span> Players</p>
                             </div>
-                            {game.status === "PENDING" ? <FaScreenpal size={30} className='text-white/30 animate-spin' />
+                            {game.status === "PENDING" || game.status === "STARTED" ? <FaScreenpal size={30} className='text-white/30 animate-spin' />
                                 : <FaParachuteBox size={30} className='text-primary ' />}
                         </div>
                     )
@@ -276,15 +290,16 @@ const Crash = () => {
                 <div className="flex flex-col w-full bg-opacity-15 flex-1 md:flex-row">
                     <div className='relative w-[600px]'>
                         <div className="relative">
-                            <PhaserGame onReady={setGameInstance} />
+                            {/* <PhaserGame onReady={setGameInstance} /> */}
                         </div>
                     </div>
                     <div className='flex-1 flex-col gap-2 '>
                         <div className='max-w-[400px] flex flex-col gap-2 px-4 py-2 '>
-                            <div className='h-[240px] relative bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-xl'>
+                            <div className='h-[240px] relative bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-xl content-center flex items-center justify-center'>
                                 {launchAt ? <Countdown time={launchAt} />
                                     :
-                                    <Loader />
+                                    game?.status === "PENDING" ? <Image src="/assets/images/pending.png" alt='cloud' className='w-40 h-40 m-auto  animate-float-cloud' /> :
+                                        <Loader />
                                 }
                                 <p className='absolute left-1/2 -translate-x-1/2 top-1 animate-bounce'>{game?.status}</p>
                             </div>
@@ -293,7 +308,7 @@ const Crash = () => {
                                 Ticket : 0.05 SOL
                             </div>
                             <div className='flex'>
-                                <PrimaryButton onClick={() => handleBuyTicket()} className='w-full' loading={loading} disabled={loading}>Buy Ticket</PrimaryButton>
+                                <PrimaryButton onClick={() => handleBuyTicket()} className='w-full' loading={loading} disabled={loading}>Join</PrimaryButton>
                             </div>
                             <div>
                                 <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
@@ -318,7 +333,7 @@ const Crash = () => {
                                 <div className='flex flex-col gap-2'>
                                     {/* loadingUser && List of users who entered the game */}
                                     {loadingUser && new Array(5).fill(null).map((_, index) => (
-                                        <div className="">
+                                        <div className="" key={index}>
                                             <div className="w-full flex rounded-lg">
                                                 <div className="relative bg-gradient-to-b from-[#241c1c] to-[#221a1a] p-3 pl-4 rounded-lg cursor-pointer transition-colors duration-200 w-full flex gap-2">
                                                     <Skeleton className=" bg-[#2a3c58] w-12 h-12 rounded-lg" >

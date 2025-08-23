@@ -6,13 +6,17 @@ import { useEffect, useRef, useState } from "react"
 import React from "react"
 import { useProfile } from "@/hooks/useProfile"
 import LoadingSpinner from "@/components/auth/LoadingSpinner";
+import { FaEdit } from "react-icons/fa"
+import { FaCheck, FaScreenpal } from "react-icons/fa6"
+import axios from "axios"
 
 const EditName = () => {
     const [focused, setFocused] = useState(false);
+    const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const { userProfile } = useAuth();
     const [userName, setUserName] = useState(userProfile?.username || "");
-    const { updateProfile, loading, error, success } = useProfile();
+    const { updateUser, } = useProfile();
 
     // Sync input with user changes
     useEffect(() => {
@@ -27,21 +31,11 @@ const EditName = () => {
     }, [loading]);
 
     const handleEdit = async () => {
-        console.log("A")
         if (userName && userName !== userProfile?.username) {
-            console.log("B")
-            const result = await updateProfile({ username: userName });
-            addToast({
-                title: result ? "Success" : "Failed",
-                description: result ? "User name updated successfully" : "Updating username failed",
-                color: result ? "success" : "danger",
-                variant:"bordered",
-                classNames:{
-                    base:"text-white",
-                    title:"text-white",
-                    description:"text-white"
-                }
-            })
+            setLoading(true);
+            const result = await updateUserProfile({ username: userName })
+            updateUser(result);
+            setLoading(false);
             setFocused(false)
         }
         // Spinner will show while loading, then useEffect will reset focus
@@ -65,7 +59,7 @@ const EditName = () => {
                     base: ""
                 }}
             />
-            <PrimaryButton onMouseDown={handleEdit} className="min-w-0" disabled={loading}>
+            <PrimaryButton onClick={handleEdit} className="min-w-0" disabled={loading}>
                 {loading ? <Spinner size="sm" color="white" /> : (focused ? <CheckIcon className="scale-150" /> : "Edit")}
             </PrimaryButton>
         </div>
@@ -74,10 +68,11 @@ const EditName = () => {
 
 const EditEmail = () => {
     const [focused, setFocused] = useState(false);
+    const [loading, setLoading] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
     const { userProfile } = useAuth();
     const [email, setEmail] = useState(userProfile?.email || "");
-    const { updateProfile, loading, error, success } = useProfile();
+    const { updateUser, } = useProfile();
 
     // Sync input with userProfile changes
     useEffect(() => {
@@ -93,21 +88,12 @@ const EditEmail = () => {
 
 
     const handleEdit = async () => {
-        console.log("A")
-        if (email !== userProfile?.email) {
-            console.log("B")
-            const result = await updateProfile({ email: email || null });
-            addToast({
-                title: result ? "Success" : "Failed",
-                description: result ? "Email updated successfully. Verify now" : "Updating Email failed",
-                color: result ? "success" : "danger",
-                variant:"bordered",
-                classNames:{
-                    base:"text-white",
-                    title:"text-white",
-                    description:"text-white"
-                }
-            })
+        if (email && email !== userProfile?.email) {
+            setLoading(true);
+            const result = await updateUserProfile({ email: email })
+            updateUser(result);
+
+            setLoading(false);
             setFocused(false)
         }
         // Spinner will show while loading, then useEffect will reset focus
@@ -139,13 +125,76 @@ const EditEmail = () => {
 };
 
 const OptionPanel = () => {
-    const { userProfile } = useAuth()
+    const { userProfile, updateUser } = useAuth()
+    const [file, setFile] = useState<File | null>(null);
+    const [preview, setPreview] = useState<string>(userProfile?.avatar ?? "/assets/images/avatar/default.webp");
+    const [loading, setLoading] = useState(false);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const selectedFile = e.target.files?.[0];
+        if (selectedFile) {
+            setFile(selectedFile);
+            setPreview(URL.createObjectURL(selectedFile));
+        }
+    };
+
+    const uploadFile = async () => {
+        try {
+            if (!file) {
+                alert("No file selected");
+                return;
+            }
+            setLoading(true);
+            const data = new FormData();
+            data.set("file", file);
+            const uploadRequest = await fetch("/api/profile/avatar", {
+                method: "POST",
+                body: data,
+            });
+            const userData = await uploadRequest.json();
+            if (userData)
+                updateUser(userData)
+            setFile(null)
+            setLoading(false);
+        } catch (e) {
+            console.log(e);
+            setLoading(false);
+            alert("Trouble uploading file");
+        }
+    };
+
+    useEffect(() => {
+        setPreview(userProfile?.avatar ?? "/assets/images/avatar/default.webp");
+    }, [userProfile?.avatar])
+
+
     return (
         <div className="flex flex-col gap-4 ">
             <div className="flex gap-8">
                 <div className="flex flex-col gap-2">
-                    <div className="p-1 border border-white/10 rounded-xl">
-                        <Image src={"/assets/images/avatar/default.webp"} alt="Avatar" className="w-24 h-24 rounded-lg" />
+                    <div className="p-1 border border-white/10 rounded-xl relative">
+                        <Image src={preview} alt="Avatar" className="w-24 h-24 rounded-lg" />
+                        {/* Upload button (styled label) */}
+                        <div className="absolute right-0 top-0 bg-black/50 z-10 p-1 rounded-md cursor-pointer hover:scale-105 active:scale-100 hover:bg-black/60 transition"
+                            onClick={() => inputRef.current?.click()} >
+                            <FaEdit className="text-primary" />
+                            <input
+                                ref={inputRef}
+                                type="file"
+                                accept="image/*"
+                                className="hidden"
+                                onChange={handleFileChange}
+                            />
+                        </div>
+                        {file !== null && <div className="absolute bottom-0 left-1/2 z-10 hover:scale-105 active:scale-100 cursor-pointer -translate-x-1/2 bg-success/80 hover:bg-success px-2  rounded-sm w-full content-center items-center flex justify-center text-center text-xs text-white/50 rounded-b-lg py-0.5"
+                            onClick={() => uploadFile()}>
+                            <FaCheck className="text-xl font-bold text-white" />
+                        </div>}
+                        {
+                            loading && <div className="z-20 absolute inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center rounded-md">
+                                <FaScreenpal size={30} className='text-white/30 animate-spin' />
+                            </div>
+                        }
                     </div>
                 </div>
                 <div className="flex flex-col gap-2 justify-between">
@@ -206,6 +255,31 @@ const OptionPanel = () => {
             </div>
         </div>
     )
+}
+
+const updateUserProfile = async (data: { username?: string, email?: string }) => {
+    try {
+        const uploadRequest = await fetch("/api/profile/info", {
+            method: "POST",
+            body: JSON.stringify(data),
+        });
+        const userData = await uploadRequest.json();
+        addToast({
+            title: userData ? "Success" : "Failed",
+            description: userData ? "User data updated successfully" : "Profile updating failed",
+            color: userData ? "success" : "danger",
+            variant: "bordered",
+            classNames: {
+                base: "text-white",
+                title: "text-white",
+                description: "text-white"
+            }
+        })
+        return userData
+    } catch (error) {
+        console.error('Error updating profile:', error);
+        return null;
+    }
 }
 
 
