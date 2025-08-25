@@ -16,6 +16,7 @@ export async function GET(req: Request) {
       },
       withCredentials: true
     })
+    console.log("Error joining game:",res.data)
     if (res.status !== 200) {
       throw new Error(`API request failed with status ${res.status}`);
     }

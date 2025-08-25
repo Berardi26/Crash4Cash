@@ -14,6 +14,7 @@ import PrimaryButton from '../button/primary';
 import { BellIcon, CaretRightIcon, DrawingPinIcon, EnterIcon, EnvelopeClosedIcon, GroupIcon, LightningBoltIcon, MixerHorizontalIcon, ReaderIcon, TextAlignJustifyIcon } from '@radix-ui/react-icons';
 import { useAuth } from '@/contexts/AuthContext';
 import Link from 'next/link';
+import { FaScreenpal, FaSolarPanel } from 'react-icons/fa6';
 
 const walletsList = [
     { name: 'Phantom', icon: '/assets/images/icons/phantom.svg', adapterName: 'Phantom' },
@@ -23,7 +24,7 @@ const walletsList = [
 
 const WalletConnectModal = () => {
 
-    const { userProfile } = useAuth();
+    const { userProfile, loading, fetchingBalance, balance } = useAuth();
     const {
         user,
         authenticated,
@@ -54,17 +55,39 @@ const WalletConnectModal = () => {
         },
     ]
 
+    useEffect(() => {
+        console.log("wallet", user?.wallet)
+    }, [user?.wallet])
+
     return (
         <>
             <div className='flex'>
                 {userProfile?.walletAddress ? <div className='flex items-center gap-2 '>
-
                     <Popover classNames={{
                         content: "bg-black/60 backdrop-blur-sm"
                     }} placement={"bottom"}>
                         <PopoverTrigger>
-                            <Button className='bg-transparent'>
+                            <Button className='bg-white/10 rounded-md relative'>
+                                <Image src={`/assets/images/solana.png`} alt='solana' className='w-5 h-5' />
+                                <p>{balance.toFixed(3)}</p>
+                                <div className='bg-primary w-12 rounded-t-xl h-[2px] bottom-0 absolute left-1/2 -translate-x-1/2'> </div>
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className='border rounded-md border-white/20 w-20'>
+                            <div className='flex flex-col w-full divide-y-1 divide-white/20 gap-1'>
+                                <div className='min-h-32'>
+
+                                </div>
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                    <Popover classNames={{
+                        content: "bg-black/60 backdrop-blur-sm"
+                    }} placement={"bottom"}>
+                        <PopoverTrigger>
+                            <Button className='bg-white/10 rounded-md relative'>
                                 <EnvelopeClosedIcon className='scale-150' />
+                                <div className='bg-primary w-12 rounded-t-xl h-[2px] bottom-0 absolute left-1/2 -translate-x-1/2'> </div>
                             </Button>
                         </PopoverTrigger>
                         <PopoverContent className='border rounded-md border-white/20 w-56'>
@@ -93,7 +116,7 @@ const WalletConnectModal = () => {
                         <PopoverTrigger>
                             <Button className='flex items-center min-w-0 bg-transparent px-1'>
                                 <div className='bg-white/10 rounded-md p-px flex items-center justify-center flex-col'>
-                                    <Image src={userProfile.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
+                                    <Image src={userProfile?.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
                                 </div>
                                 <div className='min-w-0 rounded-md bg-transparent w-12 h-12 items-center justify-center flex'>
                                     <TextAlignJustifyIcon className=' scale-150' />
@@ -106,7 +129,7 @@ const WalletConnectModal = () => {
                                     <div className='flex items-center w-full rounded-lg justify-between bg-black'>
                                         <div className='flex items-center gap-2 bg-transparent min-w-0 '>
                                             <div className='bg-white/10 rounded-md p-px flex items-center justify-center flex-col'>
-                                                <Image src={userProfile.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
+                                                <Image src={userProfile?.avatar ?? '/assets/images/avatar/default.webp'} alt='avatar' className='rounded-md w-10 h-10' />
                                             </div>
                                             <div>
                                                 <div className='flex flex-col'>
@@ -140,28 +163,32 @@ const WalletConnectModal = () => {
                     </Popover>
 
                 </div>
-                    : <PrimaryButton
-                        className=""
-                        onClick={
-                            () => {
-                                console.log(user)
-                                if (authenticated) {
-                                    logout()
-                                }
-                                else {
-                                    if (user?.wallet) {
-                                        linkWallet()
+                    :
+                    loading ?
+                        <div className=''>
+                            <FaScreenpal className="animate-spin mx-auto" />
+                        </div> :
+                        <PrimaryButton
+                            className=""
+                            onClick={
+                                () => {
+                                    console.log(user)
+                                    if (authenticated) {
+                                        logout()
                                     }
                                     else {
-                                        console.log("login?")
-                                        login()
+                                        if (user?.wallet) {
+                                            linkWallet()
+                                        }
+                                        else {
+                                            login()
+                                        }
                                     }
                                 }
                             }
-                        }
-                    >
-                        {user?.wallet?.address ? user?.wallet?.address.slice(0, 5) + "..." + user?.wallet?.address.slice(-4) : "Sign in"}
-                    </PrimaryButton>
+                        >
+                            {user?.wallet?.address ? user?.wallet?.address.slice(0, 5) + "..." + user?.wallet?.address.slice(-4) : "Sign in"}
+                        </PrimaryButton>
                 }
             </div>
         </>

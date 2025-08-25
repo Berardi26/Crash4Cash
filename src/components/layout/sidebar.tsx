@@ -78,7 +78,7 @@ const Sidebar = () => {
                 </div>
               </div>
             </button>
-            <button className="flex w-fit bg-gradient-border-btn p-px rounded-lg" onClick={() => setSidebarOpen(false)}>
+            <button className="flex hidden w-fit bg-gradient-border-btn p-px rounded-lg" onClick={() => setSidebarOpen(false)}>
               <div
                 className="group flex items-center justify-center h-9 px-4 transition duration-300 bg-[#37445C] hover:bg-[#37445C]/75 rounded-lg cursor-pointer"
               >

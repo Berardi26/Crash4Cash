@@ -26,6 +26,7 @@ export interface BaseUser {
   username: string;
   avatar: string;
   created_at?: Date;
+  status?: string;
 }
 
 export interface IChatItem {
@@ -99,30 +100,30 @@ export interface ChatMessage {
 }
 
 export interface Game {
-    betAmount: number,
-    crashAt: Date,
-    createdAt: Date,
-    feeRate: number,
-    launchAt: Date,
-    round: number,
-    status: string,
-    ticket: number,
-    players: [
-        {
-            status: string,
-            user: BaseUser
-        }
-    ]
+  betAmount: number,
+  crashAt: Date,
+  createdAt: Date,
+  feeRate: number,
+  launchAt: Date,
+  round: number,
+  status: string,
+  ticket: number,
+  players: [
+    {
+      status: string,
+      user: BaseUser
+    }
+  ]
 }
 
 export interface GameMessage {
   _id: string;
-  user: BaseUser;
+  user: BaseUser | BaseUser[];
   createdAt: string;
   type?: string;
   action: string;
   category?: string; // e.g., "crash"
   launchAt?: number; // For crash game, when the game will launch
   now?: number; // Current time for crash game
-  game?:Game
+  game?: Game
 }

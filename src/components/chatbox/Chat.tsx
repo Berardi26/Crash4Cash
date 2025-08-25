@@ -18,6 +18,7 @@ const Chat = () => {
 
     // Scroll to bottom when chatMessage updates
     useEffect(() => {
+        console.log("chatMessage", chatMessage)
         if (messagesEndRef.current) {
             messagesEndRef.current.scrollIntoView({
                 behavior: "smooth",
@@ -75,7 +76,7 @@ const Chat = () => {
                         </div>
                     </div>
                     <div className="flex flex-col justify-between p-4 pt-3 shrink-0 gap-2">
-                        <Form className="relative flex-row w-full bg-layer2 p-px font-inter rounded-lg flex gap-2"
+                        {userProfile && <Form className="relative flex-row w-full bg-layer2 p-px font-inter rounded-lg flex gap-2"
                             onSubmit={(e) => {
                                 e.preventDefault();
                                 if (!userProfile || input.trim().length === 0) return;
@@ -108,7 +109,7 @@ const Chat = () => {
                             >
                                 <FaPaperPlane />
                             </Button>
-                        </Form>
+                        </Form>}
                         <div className="flex justify-between">
                             <div className="flex items-center gap-1.5 cursor-pointer text-[#A2A2A2] hover:text-white transition-colors">
                                 {/* <Icon icon="icon-park-solid:info" width="12" height="12" style={{ color: "#A2A2A2" }} /> */}
