@@ -91,50 +91,51 @@ FutureSea.fun is a Web3 casino game where players bet on a rocket that continuou
 ## 🎮 How to Play
 
 ### 1. Connect Your Wallet
-![Wallet Connection](https://github.com/user-attachments/assets/1239a495-a17f-47a6-9a56-bec255bee557)
+![Wallet Connection](https://github.com/user-attachments/assets/a9bcb6a3-8168-4d50-824b-8afa147e8614)
 
 - Click "Connect Wallet" in the top right
 - Choose your Solana wallet (Phantom, Solflare, etc.)
 - Approve the connection
 
 ### 2. Set Up Your Profile
-![Profile Setup](https://github.com/user-attachments/assets/a3636fbd-0f87-42f8-839e-e5b75a22f59f)
+![Profile Setup](https://github.com/user-attachments/assets/47c82c15-99d9-4fd4-913f-32eab811010d)
+
 
 - Customize your avatar and username
 - Set your email preferences
 - View your game statistics
 
 ### 3. Join a Game
-![Join Game](https://github.com/user-attachments/assets/eb7e8b53-23bb-4765-9e3f-ef8c04b6a172)
-<img width="1094" height="774" alt="Screenshot_19" src="https://github.com/user-attachments/assets/0f9a72cc-639d-403e-ac30-6ebb4cdac160" />
+![Join Game](https://github.com/user-attachments/assets/59e7ef6d-dcfc-4a6a-b0d8-ac26271eb6db)
+<img width="1094" height="774" alt="Screenshot_19" src="https://github.com/user-attachments/assets/af95e30a-be10-48b7-93d3-c70119ede1ca" />
 
 - Enter your bet amount in SOL
 - Click "Join Game" to enter the round
 - Wait for other players to join
 
 ### 4. Game Countdown
-![Game Countdown](https://github.com/user-attachments/assets/0bece2fa-bbd3-4f3a-a35f-04d898fe8314)
+![Game Countdown](https://github.com/user-attachments/assets/57607be3-7234-41ce-98a2-0959081bd8f9)
 
 - 60-second countdown starts when 2+ players join
 - More players can join during this time
 - Watch the countdown timer
 
 ### 5. Rocket Launch
-![Rocket Launch](https://github.com/user-attachments/assets/23ffed4c-0709-42f2-8059-d6cadd6478d5)
+![Rocket Launch](https://github.com/user-attachments/assets/6202cab6-d8f3-4a43-9321-85174ae4094c)
 
 - The rocket launches and starts multiplying bets
 - Watch the multiplier increase in real-time
 - Decide when to cash out!
 
 ### 6. Cash Out Strategy
-![Cash Out](https://github.com/user-attachments/assets/6fc4a564-def3-4263-a637-9a68da752bfb)
+![Cash Out](https://github.com/user-attachments/assets/22800e2a-f76d-4292-88a2-113c8aaa993c)
 
 - Click "Cash Out" when you want to secure your winnings
 - The longer you wait, the higher your potential payout
 - But be careful - wait too long and the rocket crashes!
 
 ### 7. Game Results
-![Winner Selection](https://github.com/user-attachments/assets/a0480ebd-2d43-4c6f-9f22-fd3b7b80b218)
+![Winner Selection](https://github.com/user-attachments/assets/62ae7ccc-e70b-46c6-b18f-89f72f12c378)
 
 - Last player to cash out before crash wins
 - Winners are highlighted and celebrated
@@ -181,7 +182,8 @@ src/
 
 ## 🎯 Game Interface Overview
 
-![Game Interface](https://github.com/user-attachments/assets/534528bf-9d65-41cf-b3ac-3718dc706688)
+![Game Interface](https://github.com/user-attachments/assets/c2f57745-cb53-4c7e-8958-1e6b6f9aa616)
+
 
 1. **Game Panel** - Main game controls and betting interface
 2. **Joined Players** - List of players in current game
@@ -205,14 +207,15 @@ src/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 🆘 Support
-
-- **Discord**: Join our community for support
-
 ## ⚠️ Disclaimer
 
 This is a gambling game. Please gamble responsibly and only bet what you can afford to lose. The game is for entertainment purposes only.
 
 ---
 
-**Ready to launch? 🚀 Connect your wallet and start playing FutureSea.fun!**
+## 🆘 Support
+
+- **E-Mail**: [hyperbuildx@adamglab.dev](mailto:hyperbuildx@adamglab.dev)  
+- **Telegram**: [@bettyjk_0915](https://t.me/bettyjk_0915)
+- **Discord**: Join our community for support
+
