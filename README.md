@@ -1,4 +1,4 @@
-<img width="1056" height="782" alt="Screenshot_23" src="https://github.com/user-attachments/assets/efed2017-8098-4334-a06e-601c4df1e6d3" /># 🚀 FutureSea.fun - Web3 Casino Game
+# 🚀 FutureSea.fun - Web3 Casino Game
 
 A modern, decentralized casino game built on Solana blockchain featuring an exciting rocket crash game with real-time multiplayer functionality.
 
