@@ -2,7 +2,7 @@
 
 A modern, decentralized casino game built on Solana blockchain featuring an exciting rocket crash game with real-time multiplayer functionality.
 
-![FutureSea.fun Game Interface](https://github.com/user-attachments/assets/775b6bdf-b450-4b2f-97fb-7e367d15b5aa)
+![FutureSea.fun Game Interface](https://github.com/user-attachments/assets/dae48e58-ab91-4ed4-87b9-25cd1a22f97a)
 
 ## 🎮 About the Game
 
@@ -205,14 +205,9 @@ src/
 4. Push to the branch (`git push origin feature/amazing-feature`)
 5. Open a Pull Request
 
-## 📝 License
-
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
 ## 🆘 Support
 
 - **Discord**: Join our community for support
-- **Documentation**: Check our [docs](https://docs.futuresea.fun)
 
 ## ⚠️ Disclaimer
 
