@@ -35,19 +35,18 @@ Edit user Avatar, username, email settings.
 <img width="689" height="663" alt="Screenshot_17" src="https://github.com/user-attachments/assets/0bece2fa-bbd3-4f3a-a35f-04d898fe8314" />
 
 
-## Rocket launched and escape active
 <img width="1011" height="684" alt="Screenshot_20" src="https://github.com/user-attachments/assets/9db2a058-9c7f-40d0-88e2-8d37eefc06bd" />
 
 
-## Escape before rocket is crashed, but try stay long as possible as you can than other players
+## Rocket launched and escape active
 <img width="1105" height="810" alt="Screenshot_18" src="https://github.com/user-attachments/assets/23ffed4c-0709-42f2-8059-d6cadd6478d5" />
 
 
-## Last escaper is marked as Winner.
+## Escape before rocket is crashed, but try stay long as possible as you can than other players
 <img width="1019" height="736" alt="Screenshot_22" src="https://github.com/user-attachments/assets/d45634b9-199d-4e46-8b6a-8f485c108dd6" />
 
 
-## 
+## Last escaper is marked as Winner.
 <img width="1007" height="669" alt="Screenshot_111" src="https://github.com/user-attachments/assets/6fc4a564-def3-4263-a637-9a68da752bfb" />
 
 
