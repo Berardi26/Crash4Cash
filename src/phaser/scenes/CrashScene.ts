@@ -36,7 +36,7 @@ export default class MainScene extends Phaser.Scene {
         this.load.atlas('rocket', 'animations/rocket.png', 'animations/rocket.json');
         this.load.atlas('flares', 'particles/flares.png', 'particles/flares.json');
         this.load.spritesheet('boom', 'sprites/explosion.png', { frameWidth: 64, frameHeight: 64, endFrame: 23 });
-        this.load.image('avatar', 'https://lavender-necessary-trout-238.mypinata.cloud/ipfs/bafkreid4ll2lcgjtqokssv3robexiscbo52jjljshutb3bbpwfmrmogz74');
+        this.load.image('avatar', 'image/astro.png');
         this.load.start();
     }
 
@@ -104,7 +104,7 @@ export default class MainScene extends Phaser.Scene {
         this.scale.on('resize', (gameSize: Phaser.Structs.Size) => {
             // clearTimeout(resizeTimeout);
             // resizeTimeout = setTimeout(() => {
-                this.resizeHandler();
+            this.resizeHandler();
             // }, 100);
         })
         this.resizeHandler();
@@ -115,7 +115,7 @@ export default class MainScene extends Phaser.Scene {
         const width = parent.clientWidth;
         const height = parent.clientHeight;
         console.log("resize", width)
-        // Re-center sky           
+        // Re-center sky 
         this.sky.setSize(width, height);
         this.sky.setPosition(width / 2, height / 2);
         // Reposition rocket (e.g. center bottom)
@@ -179,7 +179,7 @@ export default class MainScene extends Phaser.Scene {
         // });
     }
 
-    triggerEscape() {
+    triggerEscape(avatar: any) {
         if (!this.launched) return;
         if (this.crashed) return;
 
@@ -188,7 +188,7 @@ export default class MainScene extends Phaser.Scene {
 
         // Alternate direction for fun (left or right)
         const direction = Phaser.Math.Between(0, 1) === 0 ? 'left' : 'right';
-
+        this.load.image('avatar', avatar);
         this.escapeAstronaut(worldPos.translateX, worldPos.translateY, direction as 'left' | 'right', "avatar");
     }
 

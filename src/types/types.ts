@@ -118,12 +118,14 @@ export interface Game {
 
 export interface GameMessage {
   _id: string;
-  user: BaseUser | BaseUser[];
+  user: BaseUser;
+  users: BaseUser | BaseUser[];
   createdAt: string;
   type?: string;
   action: string;
   category?: string; // e.g., "crash"
   launchAt?: number; // For crash game, when the game will launch
   now?: number; // Current time for crash game
-  game?: Game
+  game?: Game;
+  summary:any;
 }

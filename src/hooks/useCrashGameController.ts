@@ -27,9 +27,9 @@ export function useGameController() {
     gameRef.current?.scene.getScene('MainScene').events.emit('launch');
   }, []);
 
-  const triggerEscape = useCallback(() => {
+  const triggerEscape = useCallback((avatar: string) => {
     console.log("escape triggered");
-    gameRef.current?.scene.getScene('MainScene').events.emit('escape');
+    gameRef.current?.scene.getScene('MainScene').events.emit('escape', avatar);
   }, []);
 
   return {

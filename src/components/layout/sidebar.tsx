@@ -50,7 +50,7 @@ const Sidebar = () => {
   // };
 
   return (
-    <div className="absolute left-0 top-[100px] z-100 flex h-[calc(100%-100px)] w-[300px] flex-col gap-0.5">
+    <div className="absolute left-0 top-[100px] flex h-[calc(100%-100px)] w-[300px] flex-col gap-0.5">
       <div
         className={`
              ${sidebarOpen ? "w-[300px]" : "w-0"} xl:bg-opacity-0 

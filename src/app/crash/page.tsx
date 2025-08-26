@@ -9,7 +9,7 @@ import { usePrivy, useSolanaWallets, useWallets } from '@privy-io/react-auth';
 import { useSendTransaction } from '@privy-io/react-auth/solana';
 import { Connection, PublicKey, SystemProgram, Transaction } from '@solana/web3.js';
 import { useEffect, useState } from 'react';
-import { addToast, Button, Image, Skeleton } from '@heroui/react';
+import { addToast, Button, Image, Modal, ModalBody, ModalContent, ModalFooter, ModalHeader, Skeleton, useDisclosure } from '@heroui/react';
 import { WSMessage } from '@/types/socket';
 import { BaseUser, Game, GameMessage } from '@/types/types';
 import TileCard from '@/components/card/tile';
@@ -17,6 +17,8 @@ import { FaCrown, FaParachuteBox, FaScreenpal, FaUser } from 'react-icons/fa6';
 import Countdown from '@/components/countdown/CountdownTimer';
 import Loader from '@/components/loading/Loader';
 import { useAuth } from '@/contexts/AuthContext';
+import CrashGameModal from '@/components/modal/crashGameModal';
+import CrashRewardModal from '@/components/modal/crashRewardModa';
 
 // ✅ dynamically import PhaserGame with SSR disabled
 const PhaserGame = dynamic(() => import('../engine/CrashGame'), {
@@ -35,7 +37,11 @@ const Crash = () => {
     const [joined, setJoined] = useState(false)
     const [loadingUser, setLoadinguser] = useState(false);
     const [loadingGame, setLoadingGame] = useState(false);
+    const [gameModalOpen, setGameModalOpen] = useState(false)
+    const [rewardModalOpen, setRewardModalOpen] = useState(false)
+    const [selectedGame, setSelectedGame] = useState<Game>()
     const [launchAt, setLaunchAt] = useState<number>()
+    const [rewardSummary, setRewardSummary] = useState<any>()
     const {
         setGameInstance,
         startGame,
@@ -58,7 +64,6 @@ const Crash = () => {
     const { sendTransaction } = useSendTransaction();
     const { wallets } = useSolanaWallets();
     const transaction = new Transaction();
-
     const TREASURY = process.env.NEXT_PUBLIC_TREASURY || "DGtbRfRTqAxYomc2BjCU4FXYPTc2jZbDqQhpfKa1xBpJ"
     const RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com'
     // Join game
@@ -152,33 +157,36 @@ const Crash = () => {
 
     const handleEscape = async () => {
         setLoading(true);
-        try {
-            const body = {
-                action: "escape",
-                game: "crash",
-            };
+        sendMessage({
+            type: "game",
+            action: "escape",
+        })
+        // try {
+        //     const body = {
+        //         action: "escape",
+        //         game: "crash",
+        //     };
 
-            const response = await fetch(`/api/game/crash/escape`, {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(body),
-            });
+        //     const response = await fetch(`/api/game/crash/escape`, {
+        //         method: "POST",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify(body),
+        //     });
 
-            if (!response.ok) {
-                throw new Error("Failed to escape game");
-            }
+        //     if (!response.ok) {
+        //         throw new Error("Failed to escape game");
+        //     }
 
-        }
-        catch (error) {
-            console.error("Error escaping game:", error);
-        }
+        // }
+        // catch (error) {
+        //     console.error("Error escaping game:", error);
+        // }
         setLoading(false);
-
     }
 
-    const { ws, newEnteredUsers } = useWebSocket()
+    const { ws, newEnteredUsers, sendMessage } = useWebSocket()
 
     const getCrashEnteredUser = async () => {
         try {
@@ -250,22 +258,32 @@ const Crash = () => {
                 if (data.category === "crash")
                     console.log("Crash Game Message::::", data);
                 if (data.action === "join") {
-                    setJoinedUser((prev) => [...prev, { user: data.user as BaseUser }]);
+                    console.log("data.user", data.user)
+                    setJoinedUser((prev) => [...prev, data.user as any]);
                     if (data.launchAt && data.now) {
                         const offsetMs = new Date(data.launchAt).getTime() - new Date(data.now).getTime();
                         setLaunchAt(parseInt((offsetMs / 1000).toString())); // Convert to seconds
                     }
+                    setGames(prevGames => {
+                        if (prevGames.length === 0) return [data?.game as Game]; // if empty, just add
+                        const updatedGames = [...prevGames]; 
+                        updatedGames[0] = data?.game as Game; // replace first item
+                        return updatedGames;
+                      });
                 }
                 else if (data.action === "escape") {
-                    console.log("data.user", data.user)
-                    setJoinedUser(data.user as any);
+                    console.log("data.user", data.users)
+                    setJoinedUser(data.users as any);
+                    triggerEscape(data.user.avatar)
                 }
                 else if (data.action === "create") {
+                    console.log("data.user", data.user)
+                    setGame(data.game);
                     setGames(prevGames => [data?.game as Game, ...prevGames]);
-                    setJoinedUser((prev) => [...prev, { user: data.user as BaseUser }]);
+                    setJoinedUser((prev) => [...prev, data.user as any]);
                 }
                 else if (data.action === "launch" && data.launchAt && data.now) {
-                    setGame((prev) => (prev ? { ...prev, status: 'STARTED' } : undefined));
+                    setGame(data.game);
                     setGames(prevGames => {
                         if (prevGames.length === 0) return prevGames;
                         const updatedGames = [...prevGames];
@@ -293,6 +311,11 @@ const Crash = () => {
                     setJoined(false)
                     setLaunchAt(undefined);
                 }
+                else if (data.action === "reward") {
+                    console.log("Reward", data?.summary)
+                    setRewardSummary(data?.summary)
+                    setRewardModalOpen(true)
+                }
             }
         };
 
@@ -304,8 +327,8 @@ const Crash = () => {
     }, [ws]);
 
     useEffect(() => {
-        console.log("launch at changed", launchAt)
-    }, [launchAt])
+        console.log("Current Game", game, userProfile)
+    }, [game, userProfile])
 
     return (
         <Layout className="bg-crash bg-cover bg-center">
@@ -340,11 +363,11 @@ const Crash = () => {
                             className={`group flex items-center justify-between shrink-0 w-50 rounded-lg border-1 relative
                                     ${game.status === "PENDING" || game.status === "STARTED" ? "bg-primary" : "border border-p"}
                                 border-primary p-2 pt-3 transition relative duration-300 cursor-pointer hover:translate-y-[3px] `}
-                            key={idx}
+                            key={idx} onClick={() => { setGameModalOpen(true); setSelectedGame(game) }}
                         >
                             <p className='absolute left-1/2 top-0 -translate-x-1/2 text-xs text-whtie/20 px-4 rounded-b-lg bg-linear-to-b from-primary to-primary-700'>{game.status}</p>
                             <div className=''>
-                                <p className="text-white text-2xl">{game.betAmount * game.players.length} <span className='text-sm'> SOL</span></p>
+                                <p className="text-white text-2xl">{ Math.round(game.betAmount * game.players.length * 10000) / 10000} <span className='text-sm'> SOL</span></p>
                                 <p className="text-white/50 text-sm">Joined <span>{game.players.length}</span> Players</p>
                             </div>
                             {game.status === "PENDING" || game.status === "STARTED" ? <FaScreenpal size={30} className='text-white/30 animate-spin' />
@@ -375,15 +398,13 @@ const Crash = () => {
                                 Ticket : 0.05 SOL
                             </div>
                             <div className='flex'>
-                                <PrimaryButton onClick={() => handleEscape()} className='w-full' loading={loading} disabled={!userProfile}>Escape</PrimaryButton>
-                                {
-                                    !joined && <PrimaryButton onClick={() => handleBuyTicket()} className='w-full' loading={loading} disabled={!userProfile}>Join</PrimaryButton>
-                                }
+                                {game?.status === "LAUNCHED" && <PrimaryButton onClick={() => handleEscape()} className='w-full' loading={loading} disabled={!userProfile}>Escape</PrimaryButton>}
+                                {(!game || game.status === "PENDING" || game.status === "STARTED") && (!game?.players.some(p => p.user._id === userProfile?._id)) && <PrimaryButton onClick={() => handleBuyTicket()} className='w-full' loading={loading} disabled={!userProfile}>Join</PrimaryButton>}
                             </div>
                             <div>
                                 <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
                                 <PrimaryButton onClick={() => triggerCrash()}>crash</PrimaryButton>
-                                <PrimaryButton onClick={() => triggerEscape()}>Escape</PrimaryButton>
+                                {/* <PrimaryButton onClick={() => triggerEscape()}>Escape</PrimaryButton> */}
                                 <PrimaryButton onClick={() => {
                                     setJoinedUser([]);
                                     getAllGames();
@@ -454,6 +475,8 @@ const Crash = () => {
                     </div>
                 </div>
             </div>
+            <CrashGameModal game={selectedGame} open={gameModalOpen} setOpen={setGameModalOpen} />
+            <CrashRewardModal summary={rewardSummary} open={rewardModalOpen} setOpen={setRewardModalOpen} />
         </Layout>
     );
 };

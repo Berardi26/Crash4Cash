@@ -6,7 +6,7 @@ import api from '@/utils/axios';
 import { Cluster, clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 
 interface User {
-  id: string;
+  _id: string;
   walletAddress: string | undefined;
   username: string;
   email?: string | undefined;

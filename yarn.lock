@@ -1768,6 +1768,11 @@
     "@jridgewell/resolve-uri" "^3.1.0"
     "@jridgewell/sourcemap-codec" "^1.4.14"
 
+"@juggle/resize-observer@^3.4.0":
+  version "3.4.0"
+  resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
+  integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
+
 "@keystonehq/alias-sampling@^0.1.1":
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/@keystonehq/alias-sampling/-/alias-sampling-0.1.2.tgz#63af931ffe6500aef4c0d87775a5b279189abf8d"
@@ -9085,6 +9090,13 @@ react-qr-reader@^2.2.1:
     jsqr "^1.2.0"
     prop-types "^15.7.2"
     webrtc-adapter "^7.2.1"
+
+react-sparkle@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-sparkle/-/react-sparkle-2.0.0.tgz#1db8cff4113ef33ac4de63a5df1ff64d454522ea"
+  integrity sha512-Gy0us35SH25HeDa4t6Gu8oM4raAH4EKBzArENOoysgVl+jB5XCjsYRJhRF8Bfi8fdsVPjkNLNh1R6VYgGsInoA==
+  dependencies:
+    "@juggle/resize-observer" "^3.4.0"
 
 react-textarea-autosize@^8.5.3:
   version "8.5.9"
