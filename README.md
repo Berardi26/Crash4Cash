@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<img width="1911" height="904" alt="Screenshot_11" src="https://github.com/user-attachments/assets/534528bf-9d65-41cf-b3ac-3718dc706688" />
 
-## Getting Started
 
-First, run the development server:
+<img width="364" height="450" alt="Screenshot_13" src="https://github.com/user-attachments/assets/9d41a23d-9f59-4bbb-ac6b-ae889eb03311" />
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+<img width="1631" height="915" alt="Screenshot_14" src="https://github.com/user-attachments/assets/a3636fbd-0f87-42f8-839e-e5b75a22f59f" />
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+<img width="665" height="619" alt="Screenshot_15" src="https://github.com/user-attachments/assets/eb7e8b53-23bb-4765-9e3f-ef8c04b6a172" />
 
-## Learn More
 
-To learn more about Next.js, take a look at the following resources:
+<img width="1094" height="774" alt="Screenshot_19" src="https://github.com/user-attachments/assets/eab6f84e-8860-4796-abdf-e0255d89ea4c" />
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+<img width="689" height="663" alt="Screenshot_17" src="https://github.com/user-attachments/assets/0bece2fa-bbd3-4f3a-a35f-04d898fe8314" />
 
-## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+<img width="1011" height="684" alt="Screenshot_20" src="https://github.com/user-attachments/assets/9db2a058-9c7f-40d0-88e2-8d37eefc06bd" />
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+<img width="1105" height="810" alt="Screenshot_18" src="https://github.com/user-attachments/assets/23ffed4c-0709-42f2-8059-d6cadd6478d5" />
+
+
+<img width="1019" height="736" alt="Screenshot_22" src="https://github.com/user-attachments/assets/d45634b9-199d-4e46-8b6a-8f485c108dd6" />
+
+
+<img width="1007" height="669" alt="Screenshot_111" src="https://github.com/user-attachments/assets/6fc4a564-def3-4263-a637-9a68da752bfb" />
+
+
+<img width="1010" height="701" alt="Screenshot_131" src="https://github.com/user-attachments/assets/1b04f82a-775f-4458-bbce-179aa70fa211" />
+
+
+<img width="1056" height="782" alt="Screenshot_23" src="https://github.com/user-attachments/assets/0940e84c-699d-480a-b876-76ee83ef1da2" />
