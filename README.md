@@ -212,7 +212,6 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 🆘 Support
 
 - **Discord**: Join our community for support
-- **Email**: support@futuresea.fun
 - **Documentation**: Check our [docs](https://docs.futuresea.fun)
 
 ## ⚠️ Disclaimer
