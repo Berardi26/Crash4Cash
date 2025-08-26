@@ -15,7 +15,6 @@ const Layout = ({ children, className }: LayoutProps) => {
             <div className='w-full overflow-auto scrollbar-hide'>
                 {children}
             </div>
-            <AuthDebug />
         </div>
     </div>;
 };

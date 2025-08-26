@@ -19,6 +19,7 @@ import Loader from '@/components/loading/Loader';
 import { useAuth } from '@/contexts/AuthContext';
 import CrashGameModal from '@/components/modal/crashGameModal';
 import CrashRewardModal from '@/components/modal/crashRewardModa';
+import { formatDate } from '@/utils/util';
 
 // ✅ dynamically import PhaserGame with SSR disabled
 const PhaserGame = dynamic(() => import('../engine/CrashGame'), {
@@ -42,6 +43,18 @@ const Crash = () => {
     const [selectedGame, setSelectedGame] = useState<Game>()
     const [launchAt, setLaunchAt] = useState<number>()
     const [rewardSummary, setRewardSummary] = useState<any>()
+    const [joinedUser, setJoinedUser] = useState<{ status?: String, user: BaseUser }[]>([]);
+    const [games, setGames] = useState<Game[]>([])
+    const [game, setGame] = useState<Game>()
+    const [recentGames, setRecentGames] = useState<Game[]>([])
+    const [recentGamesLoading, setRecentGamesLoading] = useState(false)
+    const { userProfile } = useAuth()
+    const { sendTransaction } = useSendTransaction();
+    const { wallets } = useSolanaWallets();
+    const transaction = new Transaction();
+    const TREASURY = process.env.NEXT_PUBLIC_TREASURY || "DGtbRfRTqAxYomc2BjCU4FXYPTc2jZbDqQhpfKa1xBpJ"
+    const RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com'
+
     const {
         setGameInstance,
         startGame,
@@ -57,15 +70,7 @@ const Crash = () => {
         getAccessToken
     } = usePrivy()
 
-    const [joinedUser, setJoinedUser] = useState<{ status?: String, user: BaseUser }[]>([]);
-    const [games, setGames] = useState<Game[]>([])
-    const [game, setGame] = useState<Game>()
-    const { userProfile } = useAuth()
-    const { sendTransaction } = useSendTransaction();
-    const { wallets } = useSolanaWallets();
-    const transaction = new Transaction();
-    const TREASURY = process.env.NEXT_PUBLIC_TREASURY || "DGtbRfRTqAxYomc2BjCU4FXYPTc2jZbDqQhpfKa1xBpJ"
-    const RPC = process.env.NEXT_PUBLIC_SOLANA_RPC || 'https://api.devnet.solana.com'
+
     // Join game
     const handleBuyTicket = async () => {
         setLoading(true);
@@ -98,7 +103,7 @@ const Crash = () => {
             const transferInstruction = SystemProgram.transfer({
                 fromPubkey: new PublicKey(wallets[0].address), // Replace with the sender's address
                 toPubkey: new PublicKey(TREASURY), // Replace with the recipient's address
-                lamports: 1000000 // Amount in lamports (1 SOL = 1,000,000,000 lamports)
+                lamports: 50000000 // Amount in lamports (1 SOL = 1,000,000,000 lamports)
             });
             transaction.add(transferInstruction);
             const connection = new Connection(RPC); // Replace with your Solana RPC endpoint
@@ -188,24 +193,17 @@ const Crash = () => {
 
     const { ws, newEnteredUsers, sendMessage } = useWebSocket()
 
-    const getCrashEnteredUser = async () => {
+    const getRecentGames = async () => {
+        setRecentGamesLoading(true)
         try {
-            setLoadinguser(true)
-            const res = await fetch(`/api/game/crash/get`);
+            const res = await fetch(`/api/game/crash/recent`);
             const data = await res.json();
-            console.log("load single game data", data)
-            if (data.game) {
-                setGame(data.game)
-                if (data.launchAt && data.now) {
-                    const offsetMs = new Date(data.launchAt).getTime() - new Date(data.now).getTime();
-                    setLaunchAt(offsetMs / 1000); // Convert to seconds
-                }
-                setJoinedUser(data.game.players || []);
-            }
+            console.log("Recent Games", data)
+            setRecentGames(data.game)
         } catch (e) {
             console.error("Error fetching crash entered users:", e);
         }
-        setLoadinguser(false)
+        setRecentGamesLoading(false)
     }
 
     const getAllGames = async () => {
@@ -245,7 +243,7 @@ const Crash = () => {
 
     useEffect(() => {
         getAllGames()
-        // getCrashEnteredUser()
+        getRecentGames()
     }, [])
 
     useEffect(() => {
@@ -266,10 +264,10 @@ const Crash = () => {
                     }
                     setGames(prevGames => {
                         if (prevGames.length === 0) return [data?.game as Game]; // if empty, just add
-                        const updatedGames = [...prevGames]; 
+                        const updatedGames = [...prevGames];
                         updatedGames[0] = data?.game as Game; // replace first item
                         return updatedGames;
-                      });
+                    });
                 }
                 else if (data.action === "escape") {
                     console.log("data.user", data.users)
@@ -298,12 +296,9 @@ const Crash = () => {
                 else if (data.action === "settled") {
                     triggerCrash()
                     setGames(prevGames => {
-                        if (prevGames.length === 0) return prevGames;
+                        if (prevGames.length === 0) return [data?.game as Game]; // if empty, just add
                         const updatedGames = [...prevGames];
-                        updatedGames[0] = {
-                            ...updatedGames[0],
-                            status: "SETTLED",
-                        };
+                        updatedGames[0] = data?.game as Game; // replace first item
                         return updatedGames;
                     });
                     setGame(undefined)
@@ -367,7 +362,7 @@ const Crash = () => {
                         >
                             <p className='absolute left-1/2 top-0 -translate-x-1/2 text-xs text-whtie/20 px-4 rounded-b-lg bg-linear-to-b from-primary to-primary-700'>{game.status}</p>
                             <div className=''>
-                                <p className="text-white text-2xl">{ Math.round(game.betAmount * game.players.length * 10000) / 10000} <span className='text-sm'> SOL</span></p>
+                                <p className="text-white text-2xl">{Math.round(game.betAmount * game.players.length * 10000) / 10000} <span className='text-sm'> SOL</span></p>
                                 <p className="text-white/50 text-sm">Joined <span>{game.players.length}</span> Players</p>
                             </div>
                             {game.status === "PENDING" || game.status === "STARTED" ? <FaScreenpal size={30} className='text-white/30 animate-spin' />
@@ -383,8 +378,8 @@ const Crash = () => {
                             <PhaserGame onReady={setGameInstance} />
                         </div>
                     </div>
-                    <div className='flex-1 flex-col gap-2 '>
-                        <div className='max-w-[400px] flex flex-col gap-2 px-4 py-2 '>
+                    <div className='flex-1 flex gap-2 '>
+                        <div className='max-w-[400px] shrink-0 w-full flex flex-col gap-2 px-4 py-2 '>
                             <div className='h-[240px] relative bg-linear-to-br from-violet-500 to-fuchsia-500 rounded-xl content-center flex items-center justify-center'>
                                 {launchAt ? <Countdown time={launchAt} />
                                     :
@@ -401,7 +396,7 @@ const Crash = () => {
                                 {game?.status === "LAUNCHED" && <PrimaryButton onClick={() => handleEscape()} className='w-full' loading={loading} disabled={!userProfile}>Escape</PrimaryButton>}
                                 {(!game || game.status === "PENDING" || game.status === "STARTED") && (!game?.players.some(p => p.user._id === userProfile?._id)) && <PrimaryButton onClick={() => handleBuyTicket()} className='w-full' loading={loading} disabled={!userProfile}>Join</PrimaryButton>}
                             </div>
-                            <div>
+                            <div className='hidden'>
                                 <PrimaryButton onClick={() => triggerLaunch()}>Launch</PrimaryButton>
                                 <PrimaryButton onClick={() => triggerCrash()}>crash</PrimaryButton>
                                 {/* <PrimaryButton onClick={() => triggerEscape()}>Escape</PrimaryButton> */}
@@ -418,7 +413,7 @@ const Crash = () => {
                                         <p className='text-white'>{joinedUser.length} Playsers</p>
                                     </div>
                                     <p>
-                                        Round <span className='text-xl text-primary'>#</span><span>{1}</span>
+                                        Round <span className='text-xl text-primary'>#</span><span>{game?.round}</span>
                                     </p>
                                 </div>
                                 <div className='flex flex-col gap-2'>
@@ -470,6 +465,50 @@ const Crash = () => {
                                         </TileCard>
                                     ))}
                                 </div>
+                            </div>
+                        </div>
+                        <div className='2xl:flex flex-1 pr-4 flex-col gap-2 overflow-auto hidden pl-8'>
+                            <p>Recent Games</p>
+                            <div className='flex flex-col gap-2 max-h-[calc(100vh-350px)] h-full'>
+                                {recentGamesLoading && new Array(10).fill(null).map((_, index) => (
+                                    <div className="max-w-[400px]" key={index}>
+                                        <div className="w-full flex rounded-lg">
+                                            <div className="relative bg-gradient-to-b from-[#241c1c] to-[#221a1a] p-2 pl-4 rounded-lg cursor-pointer transition-colors duration-200 w-full flex gap-2">
+                                                <div className='flex items-center gap-2'>
+                                                    <Skeleton className=" bg-[#2a3c58] w-12 h-12 rounded-lg" >
+                                                        <div className="text-[11px] leading-[16px] text-[#cecece] w-8 h-3"></div>
+                                                    </Skeleton>
+                                                    <div className="relative z-3 flex flex-col gap-1 justify-center ">
+                                                        <div className="flex items-center gap-1.5">
+                                                            <Skeleton className="w-20 rounded-lg">
+                                                                <div className="text-sm font-bold max-w-[150px] truncate text-white w-10 h-3"></div>
+                                                            </Skeleton>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ))}
+                                {!recentGamesLoading && recentGames?.map((game, idx) => {
+                                    const win = game.players.filter(p => p.user._id === userProfile?._id)[0]?.status === "WIN"
+                                    return (
+                                        <div key={idx} className="max-w-[400px]">
+                                            <TileCard className='w-full justify-between max-w-xl'>
+                                                <div className='flex items-center gap-2 justify-between w-full'>
+                                                    <div className='flex items-center gap-2'>
+                                                        <Image src={`/assets/game/image/${win ? "umbrella" : "explosion"}.png`} alt='umbrella' className='w-10 h-10' />
+                                                        <p className='text-white/50 text-xs'>{formatDate(game?.createdAt?.toString() ?? "")}</p>
+                                                    </div>
+                                                    <div className='flex items-center gap-2'>
+                                                        {win && <FaCrown className='text-xl text-success' />}
+                                                        <p>{win ? "WIN" : "LOSE"}</p>
+                                                    </div>
+                                                </div>
+                                            </TileCard>
+                                        </div>
+                                    )
+                                })}
                             </div>
                         </div>
                     </div>
