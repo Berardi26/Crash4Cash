@@ -1,8 +1,8 @@
-# 🚀 FutureSea.fun - Web3 Casino Game
+<img width="1056" height="782" alt="Screenshot_23" src="https://github.com/user-attachments/assets/efed2017-8098-4334-a06e-601c4df1e6d3" /># 🚀 FutureSea.fun - Web3 Casino Game
 
 A modern, decentralized casino game built on Solana blockchain featuring an exciting rocket crash game with real-time multiplayer functionality.
 
-![FutureSea.fun Game Interface](https://github.com/user-attachments/assets/534528bf-9d65-41cf-b3ac-3718dc706688)
+![FutureSea.fun Game Interface](https://github.com/user-attachments/assets/775b6bdf-b450-4b2f-97fb-7e367d15b5aa)
 
 ## 🎮 About the Game
 
@@ -91,7 +91,7 @@ FutureSea.fun is a Web3 casino game where players bet on a rocket that continuou
 ## 🎮 How to Play
 
 ### 1. Connect Your Wallet
-![Wallet Connection](https://github.com/user-attachments/assets/9d41a23d-9f59-4bbb-ac6b-ae889eb03311)
+![Wallet Connection](https://github.com/user-attachments/assets/1239a495-a17f-47a6-9a56-bec255bee557)
 
 - Click "Connect Wallet" in the top right
 - Choose your Solana wallet (Phantom, Solflare, etc.)
@@ -106,34 +106,35 @@ FutureSea.fun is a Web3 casino game where players bet on a rocket that continuou
 
 ### 3. Join a Game
 ![Join Game](https://github.com/user-attachments/assets/eb7e8b53-23bb-4765-9e3f-ef8c04b6a172)
+<img width="1094" height="774" alt="Screenshot_19" src="https://github.com/user-attachments/assets/0f9a72cc-639d-403e-ac30-6ebb4cdac160" />
 
 - Enter your bet amount in SOL
 - Click "Join Game" to enter the round
 - Wait for other players to join
 
 ### 4. Game Countdown
-![Game Countdown](https://github.com/user-attachments/assets/eab6f84e-8860-4796-abdf-e0255d89ea4c)
+![Game Countdown](https://github.com/user-attachments/assets/0bece2fa-bbd3-4f3a-a35f-04d898fe8314)
 
 - 60-second countdown starts when 2+ players join
 - More players can join during this time
 - Watch the countdown timer
 
 ### 5. Rocket Launch
-![Rocket Launch](https://github.com/user-attachments/assets/0bece2fa-bbd3-4f3a-a35f-04d898fe8314)
+![Rocket Launch](https://github.com/user-attachments/assets/23ffed4c-0709-42f2-8059-d6cadd6478d5)
 
 - The rocket launches and starts multiplying bets
 - Watch the multiplier increase in real-time
 - Decide when to cash out!
 
 ### 6. Cash Out Strategy
-![Cash Out](https://github.com/user-attachments/assets/23ffed4c-0709-42f2-8059-d6cadd6478d5)
+![Cash Out](https://github.com/user-attachments/assets/6fc4a564-def3-4263-a637-9a68da752bfb)
 
 - Click "Cash Out" when you want to secure your winnings
 - The longer you wait, the higher your potential payout
 - But be careful - wait too long and the rocket crashes!
 
 ### 7. Game Results
-![Winner Selection](https://github.com/user-attachments/assets/6fc4a564-def3-4263-a637-9a68da752bfb)
+![Winner Selection](https://github.com/user-attachments/assets/a0480ebd-2d43-4c6f-9f22-fd3b7b80b218)
 
 - Last player to cash out before crash wins
 - Winners are highlighted and celebrated
