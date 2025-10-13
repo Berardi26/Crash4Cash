@@ -215,7 +215,7 @@ This is a gambling game. Please gamble responsibly and only bet what you can aff
 
 ## 🆘 Support
 
-- **E-Mail**: [hyperbuildx@adamglab.dev](mailto:hyperbuildx@adamglab.dev)  
+- **E-Mail**: [admin@hyperbuildx.com](mailto:admin@hyperbuildx.com)  
 - **Telegram**: [@bettyjk_0915](https://t.me/bettyjk_0915)
 - **Discord**: Join our community for support
 
