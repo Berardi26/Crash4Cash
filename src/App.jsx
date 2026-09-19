@@ -1,241 +1,156 @@
 import React, { useState, useEffect, useRef } from 'react';
 
 export default function App() {
-  const [gameState, setGameState] = useState('IDLE');
-  const [balance, setBalance] = useState(1000.00);
-  const [betAmount, setBetAmount] = useState(10.00);
+  const [balance, setBalance] = useState(1000);
+  const [bet, setBet] = useState(10);
+  const [gameState, setGameState] = useState('idle'); // idle, countdown, running, crashed, cashed
   const [multiplier, setMultiplier] = useState(1.00);
-  const [crashPoint, setCrashPoint] = useState(1.00);
-  const [countdown, setCountdown] = useState(3);
-  const [profit, setProfit] = useState(0);
-  const [history, setHistory] = useState([]);
+  const [payout, setPayout] = useState(0);
   
-  const [houseBankroll, setHouseBankroll] = useState(50000.00);
-  const houseWalletAddress = "0xB365eA5663cd62094E25d34671bF433C5e4334b8";
-  const solanaWalletAddress = "5EHy7Xoz7prA9nMje4qvxgGxh6ez2hchTu8jQR3PdPTG";
-  
-  const requestRef = useRef();
-  const startTimeRef = useRef();
-  const actualCrashRef = useRef(1.00);
+  const startTimeRef = useRef(null);
+  const animFrameRef = useRef(null);
+  const crashPointRef = useRef(0);
 
-  const generateCrashPoint = () => {
-    const r = Math.random();
-    if (r < 0.03) return 1.00;
-    const crash = 0.97 / (1 - Math.random());
-    return Math.max(1.01, parseFloat(crash.toFixed(2)));
-  };
+  // House Vault Wallets
+  const ethWallet = "0xB365eA5663cd62094E25d34671bF433C5e4334b8";
+  const solWallet = "5EHy7Xoz7prA9nMje4qvxgGxh6ez2hchTu8jQR3PdPTG";
 
-  const startRound = () => {
-    if (betAmount <= 0 || betAmount > balance) return;
-    setBalance(prev => parseFloat((prev - betAmount).toFixed(2)));
-    setHouseBankroll(prev => parseFloat((prev + betAmount).toFixed(2)));
-    setGameState('STARTING');
-    setCountdown(3);
-    setProfit(0);
-
-    let count = 3;
-    const timer = setInterval(() => {
-      count--;
-      if (count > 0) {
-        setCountdown(count);
-      } else {
-        clearInterval(timer);
-        launchFlight();
-      }
-    }, 1000);
-  };
-
-  const launchFlight = () => {
-    const targetCrash = generateCrashPoint();
-    actualCrashRef.current = targetCrash;
-    setCrashPoint(targetCrash);
-    setGameState('RUNNING');
+  const startCountdown = () => {
+    if (bet <= 0 || bet > balance) return;
+    setBalance(prev => prev - bet);
+    setGameState('countdown');
     setMultiplier(1.00);
-    startTimeRef.current = performance.now();
+    
+    // Brief pre-flight countdown delay
+    setTimeout(() => {
+      startCashRocket();
+    }, 2000);
+  };
 
-    const animate = (time) => {
-      const elapsed = (time - startTimeRef.current) / 1000;
-      const currentMult = Math.max(1.00, 1.00 + Math.pow(elapsed, 1.4) * 0.35);
+  const startCashRocket = () => {
+    setGameState('running');
+    startTimeRef.current = Date.now();
+    
+    // 3% house edge random crash point calculation
+    const randomVal = Math.random();
+    const rawCrash = 0.97 / (1 - randomVal);
+    crashPointRef.current = Math.max(1.01, parseFloat(rawCrash.toFixed(2)));
 
-      if (currentMult >= actualCrashRef.current) {
-        setMultiplier(actualCrashRef.current);
-        handleCrash(actualCrashRef.current);
+    const updateMultiplier = () => {
+      const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000;
+      
+      // Growth rate: ~5 seconds to reach 2.0x, accelerating naturally as it climbs
+      const growthRate = 0.1386; 
+      const currentMult = Math.exp(growthRate * elapsedSeconds);
+
+      if (currentMult >= crashPointRef.current) {
+        setMultiplier(crashPointRef.current);
+        setGameState('crashed');
+        cancelAnimationFrame(animFrameRef.current);
       } else {
-        setMultiplier(parseFloat(currentMult.toFixed(2)));
-        requestRef.current = requestAnimationFrame(animate);
+        setMultiplier(currentMult);
+        animFrameRef.current = requestAnimationFrame(updateMultiplier);
       }
     };
 
-    requestRef.current = requestAnimationFrame(animate);
+    animFrameRef.current = requestAnimationFrame(updateMultiplier);
   };
 
   const cashOut = () => {
-    if (gameState !== 'RUNNING') return;
-    cancelAnimationFrame(requestRef.current);
-    const wonAmount = parseFloat((betAmount * multiplier).toFixed(2));
-    setBalance(prev => parseFloat((prev + wonAmount).toFixed(2)));
-    setHouseBankroll(prev => parseFloat((prev - wonAmount).toFixed(2)));
-    setProfit(wonAmount);
-    setGameState('CASHED_OUT');
-    setHistory(prev => [{ mult: multiplier, won: true, amount: wonAmount }, ...prev.slice(0, 9)]);
+    if (gameState !== 'running') return;
+    cancelAnimationFrame(animFrameRef.current);
+    const won = bet * multiplier;
+    setPayout(won);
+    setBalance(prev => prev + won);
+    setGameState('cashed');
   };
-
-  const handleCrash = (finalMult) => {
-    cancelAnimationFrame(requestRef.current);
-    setGameState('CRASHED');
-    setHistory(prev => [{ mult: finalMult, won: false, amount: betAmount }, ...prev.slice(0, 9)]);
-  };
-
-  useEffect(() => {
-    return () => cancelAnimationFrame(requestRef.current);
-  }, []);
 
   return (
-    <div style={styles.container}>
-      <header style={styles.header}>
-        <div style={styles.brandGroup}>
-          <h1 style={styles.logo}>CRASH<span style={styles.accent}>4</span>CASH</h1>
-          <span style={styles.subBadge}>3% House Edge Active</span>
-        </div>
-        <div style={styles.walletHeaderContainer}>
-          <div style={styles.balanceBox}>
-            <span style={styles.balanceLabel}>Player Balance:</span>
-            <span style={styles.balanceValue}>${balance.toFixed(2)}</span>
-          </div>
+    <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-between p-4">
+      <header className="w-full max-w-2xl flex justify-between items-center py-4 border-b border-gray-800">
+        <h1 className="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-emerald-500">
+          Crash4Cash
+        </h1>
+        <div className="text-right">
+          <span className="text-sm text-gray-400">Balance: </span>
+          <span className="font-bold text-green-400">${balance.toFixed(2)}</span>
         </div>
       </header>
 
-      <div style={styles.houseWalletPanel}>
-        <div style={styles.houseWalletInfo}>
-          <span style={styles.houseTitle}>🏛️ House Bankroll Wallet (Owner: Nicholas Berardi)</span>
-          <span style={styles.walletAddressText}>ETH: {houseWalletAddress}</span>
-          <span style={styles.walletAddressText}>SOL: {solanaWalletAddress}</span>
-        </div>
-        <div style={styles.houseBalanceBox}>
-          <span style={styles.balanceLabel}>House Vault:</span>
-          <span style={styles.houseBalanceValue}>${houseBankroll.toFixed(2)}</span>
-        </div>
-      </div>
+      <main className="w-full max-w-2xl flex flex-col items-center my-auto py-8">
+        <div className="w-full h-80 bg-gray-950 rounded-2xl border border-gray-800 flex flex-col items-center justify-center relative overflow-hidden shadow-2xl">
+          {gameState === 'idle' && (
+            <div className="text-center px-4">
+              <h2 className="text-3xl font-extrabold text-gray-300">CashRocket</h2>
+              <p className="text-sm text-gray-500 mt-2">Ready for launch. Place your bet!</p>
+            </div>
+          )}
 
-      <div style={styles.historyBar}>
-        {history.map((h, i) => (
-          <span key={i} style={{ ...styles.historyBadge, color: h.won ? '#22c55e' : '#ef4444' }}>
-            {h.mult.toFixed(2)}x
-          </span>
-        ))}
-      </div>
+          {gameState === 'countdown' && (
+            <div className="text-center px-4 animate-pulse">
+              <h2 className="text-xl sm:text-2xl font-bold text-yellow-400">CashRocket is preparing for liftoff...</h2>
+            </div>
+          )}
 
-      <div style={styles.gameContainer}>
-        <div style={styles.stage}>
-          {gameState === 'IDLE' && (
-            <div style={styles.stageCenter}>
-              <h2 style={styles.stageTitle}>CRASH4CASH READY</h2>
-              <p style={styles.stageSub}>Place your bet to launch the multiplier</p>
+          {gameState === 'running' && (
+            <div className="text-center">
+              <div className="text-6xl font-black tracking-wider text-green-400">
+                {multiplier.toFixed(2)}x
+              </div>
+              <p className="text-xs text-gray-400 mt-2">CashRocket climbing...</p>
             </div>
           )}
-          {gameState === 'STARTING' && (
-            <div style={styles.stageCenter}>
-              <div style={styles.countdownNumber}>{countdown}</div>
-              <p style={styles.stageSub}>Preparing Crash4Cash Takeoff...</p>
+
+          {gameState === 'crashed' && (
+            <div className="text-center">
+              <div className="text-5xl font-black text-red-500">CRASHED</div>
+              <div className="text-2xl font-bold text-gray-400 mt-2">@ {multiplier.toFixed(2)}x</div>
             </div>
           )}
-          {gameState === 'RUNNING' && (
-            <div style={styles.stageCenter}>
-              <div style={styles.multiplierText}>{multiplier.toFixed(2)}x</div>
-              <div style={styles.rocketIcon}>🚀</div>
-            </div>
-          )}
-          {gameState === 'CASHED_OUT' && (
-            <div style={styles.stageCenter}>
-              <div style={{ ...styles.multiplierText, color: '#22c55e' }}>{multiplier.toFixed(2)}x</div>
-              <h3 style={styles.winText}>CRASH4CASH SUCCESS!</h3>
-              <p style={styles.profitText}>Won +${profit.toFixed(2)}</p>
-            </div>
-          )}
-          {gameState === 'CRASHED' && (
-            <div style={styles.stageCenter}>
-              <div style={{ ...styles.multiplierText, color: '#ef4444' }}>{multiplier.toFixed(2)}x</div>
-              <h3 style={styles.crashText}>CRASH4CASH CRASHED</h3>
+
+          {gameState === 'cashed' && (
+            <div className="text-center">
+              <div className="text-5xl font-black text-emerald-400">CASHED OUT!</div>
+              <div className="text-2xl font-bold text-white mt-2">Won: ${payout.toFixed(2)}</div>
             </div>
           )}
         </div>
 
-        <div style={styles.controlPanel}>
-          <div style={styles.inputGroup}>
-            <label style={styles.label}>Crash4Cash Bet Amount ($)</label>
+        <div className="w-full mt-6 bg-gray-950 p-6 rounded-2xl border border-gray-800 flex flex-col gap-4">
+          <div className="flex justify-between items-center">
+            <label className="text-sm text-gray-400">Bet Amount ($)</label>
             <input 
               type="number" 
-              value={betAmount} 
-              onChange={(e) => setBetAmount(Math.max(1, parseFloat(e.target.value) || 0))}
-              disabled={gameState === 'RUNNING' || gameState === 'STARTING'}
-              style={styles.input}
+              value={bet} 
+              onChange={(e) => setBet(Number(e.target.value))}
+              disabled={gameState === 'running' || gameState === 'countdown'}
+              className="bg-gray-900 border border-gray-700 rounded-lg px-3 py-2 w-32 text-right font-bold text-white focus:outline-none focus:border-green-500"
             />
-            <div style={styles.quickBtns}>
-              <button style={styles.quickBtn} onClick={() => setBetAmount(10)}>10</button>
-              <button style={styles.quickBtn} onClick={() => setBetAmount(50)}>50</button>
-              <button style={styles.quickBtn} onClick={() => setBetAmount(100)}>100</button>
-              <button style={styles.quickBtn} onClick={() => setBetAmount(balance)}>MAX</button>
-            </div>
           </div>
 
-          {gameState === 'RUNNING' ? (
-            <button style={styles.cashoutBtn} onClick={cashOut}>
-              CASH OUT (${(betAmount * multiplier).toFixed(2)})
+          {gameState === 'running' ? (
+            <button 
+              onClick={cashOut}
+              className="w-full py-4 bg-emerald-500 hover:bg-emerald-400 text-gray-950 font-black text-xl rounded-xl transition shadow-lg shadow-emerald-500/20 active:scale-95 cursor-pointer"
+            >
+              CASH OUT (${(bet * multiplier).toFixed(2)})
             </button>
           ) : (
             <button 
-              style={{
-                ...styles.launchBtn,
-                opacity: (gameState === 'STARTING' || balance <= 0) ? 0.5 : 1
-              }} 
-              onClick={startRound}
-              disabled={gameState === 'STARTING' || balance <= 0}
+              onClick={startCountdown}
+              disabled={gameState === 'countdown'}
+              className="w-full py-4 bg-green-600 hover:bg-green-500 disabled:bg-gray-800 text-white font-black text-xl rounded-xl transition shadow-lg shadow-green-600/20 active:scale-95 cursor-pointer"
             >
-              PLACE BET & LAUNCH CRASH4CASH
+              {gameState === 'countdown' ? 'Preparing...' : 'Launch CashRocket'}
             </button>
           )}
         </div>
-      </div>
+      </main>
+
+      <footer className="w-full max-w-2xl text-xs text-gray-500 text-center border-t border-gray-800 pt-4 flex flex-col gap-1">
+        <p>House Edge: 3% | ETH: {ethWallet.slice(0, 6)}...{ethWallet.slice(-4)}</p>
+        <p>SOL: {solWallet.slice(0, 6)}...{solWallet.slice(-4)}</p>
+      </footer>
     </div>
   );
 }
-
-const styles = {
-  container: { minHeight: '100vh', backgroundColor: '#090d16', color: '#fff', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif', display: 'flex', flexDirection: 'column', alignItems: 'center', padding: '20px' },
-  header: { width: '100%', maxWidth: '800px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingBottom: '15px', borderBottom: '1px solid #1e293b' },
-  brandGroup: { display: 'flex', flexDirection: 'column', gap: '2px' },
-  logo: { fontSize: '26px', fontWeight: '900', letterSpacing: '1px', margin: 0 },
-  accent: { color: '#22c55e' },
-  subBadge: { fontSize: '11px', color: '#38bdf8', fontWeight: '600', letterSpacing: '0.5px' },
-  walletHeaderContainer: { display: 'flex', gap: '10px' },
-  balanceBox: { backgroundColor: '#111827', padding: '8px 14px', borderRadius: '8px', border: '1px solid #374151', display: 'flex', flexDirection: 'column', alignItems: 'flex-end' },
-  balanceLabel: { fontSize: '11px', color: '#94a3b8', fontWeight: '600' },
-  balanceValue: { color: '#22c55e', fontSize: '16px', fontWeight: '800' },
-  houseWalletPanel: { width: '100%', maxWidth: '800px', backgroundColor: '#0f172a', border: '1px solid #1e293b', borderRadius: '12px', padding: '12px 16px', margin: '12px 0', display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
-  houseWalletInfo: { display: 'flex', flexDirection: 'column', gap: '2px' },
-  houseTitle: { fontSize: '13px', fontWeight: '700', color: '#e2e8f0' },
-  walletAddressText: { fontSize: '11px', color: '#64748b', fontFamily: 'monospace' },
-  houseBalanceBox: { display: 'flex', flexDirection: 'column', alignItems: 'flex-end' },
-  houseBalanceValue: { color: '#38bdf8', fontSize: '15px', fontWeight: '800' },
-  historyBar: { width: '100%', maxWidth: '800px', display: 'flex', gap: '8px', margin: '10px 0', overflowX: 'auto', paddingBottom: '5px' },
-  historyBadge: { backgroundColor: '#111827', padding: '4px 10px', borderRadius: '6px', fontSize: '13px', fontWeight: '700', border: '1px solid #1f2937', whiteSpace: 'nowrap' },
-  gameContainer: { width: '100%', maxWidth: '800px', display: 'flex', flexDirection: 'column', gap: '16px' },
-  stage: { width: '100%', height: '350px', backgroundColor: '#0f172a', borderRadius: '16px', border: '1px solid #1e293b', display: 'flex', justifyContent: 'center', alignItems: 'center', position: 'relative', overflow: 'hidden', boxShadow: 'inset 0 0 40px rgba(0,0,0,0.6)' },
-  stageCenter: { textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px' },
-  stageTitle: { fontSize: '22px', fontWeight: '800', color: '#94a3b8', margin: 0 },
-  stageSub: { fontSize: '14px', color: '#64748b', margin: 0 },
-  countdownNumber: { fontSize: '72px', fontWeight: '900', color: '#38bdf8' },
-  multiplierText: { fontSize: '64px', fontWeight: '900', color: '#38bdf8', letterSpacing: '2px' },
-  rocketIcon: { fontSize: '32px' },
-  winText: { color: '#22c55e', fontSize: '20px', fontWeight: '800', margin: 0 },
-  profitText: { color: '#38bdf8', fontSize: '16px', fontWeight: '600', margin: 0 },
-  crashText: { color: '#ef4444', fontSize: '20px', fontWeight: '800', margin: 0 },
-  controlPanel: { backgroundColor: '#0f172a', padding: '20px', borderRadius: '16px', border: '1px solid #1e293b', display: 'flex', flexDirection: 'column', gap: '16px' },
-  inputGroup: { display: 'flex', flexDirection: 'column', gap: '8px' },
-  label: { fontSize: '13px', fontWeight: '600', color: '#94a3b8' },
-  input: { backgroundColor: '#020617', border: '1px solid #334155', borderRadius: '8px', padding: '12px', color: '#fff', fontSize: '18px', fontWeight: '700', outline: 'none' },
-  quickBtns: { display: 'flex', gap: '8px' },
-  quickBtn: { flex: 1, backgroundColor: '#1e293b', border: 'none', borderRadius: '6px', color: '#cbd5e1', padding: '6px', fontWeight: '700', cursor: 'pointer' },
-  launchBtn: { backgroundColor: '#22c55e', color: '#052e16', border: 'none', borderRadius: '10px', padding: '16px', fontSize: '18px', fontWeight: '900', cursor: 'pointer', letterSpacing: '1px', boxShadow: '0 4px 14px rgba(34, 197, 94, 0.4)' },
-  cashoutBtn: { backgroundColor: '#eab308', color: '#422006', border: 'none', borderRadius: '10px', padding: '16px', fontSize: '18px', fontWeight: '900', cursor: 'pointer', letterSpacing: '1px', boxShadow: '0 4px 14px rgba(234, 179, 8, 0.4)' }
-};
