@@ -38,7 +38,7 @@ export default function App() {
 
     const updateMultiplier = () => {
       const elapsedSeconds = (Date.now() - startTimeRef.current) / 1000;
-      const growthRate = 0.1386; // ~5 seconds to reach 2.0x
+      const growthRate = 0.0693; // ~10 seconds to reach 2.0x (slower, gradual climb)
       const currentMult = Math.exp(growthRate * elapsedSeconds);
 
       if (currentMult >= crashPointRef.current) {
@@ -102,14 +102,14 @@ export default function App() {
           )}
 
           {gameState === 'crashed' && (
-            <div className="text-center z-10 animate-shake">
+            <div className="text-center z-10">
               <div className="text-5xl font-black text-rose-500 tracking-wider">CRASHED</div>
               <div className="text-2xl font-bold text-slate-400 mt-2">@ {multiplier.toFixed(2)}x</div>
             </div>
           )}
 
           {gameState === 'cashed' && (
-            <div className="text-center z-10 animate-bounce">
+            <div className="text-center z-10">
               <div className="text-5xl font-black text-emerald-400 tracking-wider">CASHED OUT!</div>
               <div className="text-2xl font-bold text-slate-100 mt-2">Won: ${payout.toFixed(2)}</div>
             </div>
@@ -156,7 +156,6 @@ export default function App() {
         <p>RTP: 97% | ETH: {ethWallet.slice(0, 6)}...{ethWallet.slice(-4)} | SOL: {solWallet.slice(0, 6)}...{solWallet.slice(-4)}</p>
       </footer>
 
-      {/* Modals for Terms & Privacy */}
       {modal && (
         <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full max-h-[80vh] flex flex-col shadow-2xl overflow-hidden">
