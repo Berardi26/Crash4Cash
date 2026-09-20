@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { io } from 'socket.io-client';
 
-const SOCKET_URL = 'https://crash4cash.onrender.com';
+const SOCKET_URL = 'https://crash4cash-backend.onrender.com';
 
 export default function App() {
   const [balance, setBalance] = useState({ coins: 5000, cash: 0 });
