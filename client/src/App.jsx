@@ -85,11 +85,23 @@ export default function App() {
     return () => socket.disconnect();
   }, []);
 
-  const placeBet = () => {
-    if (!acceptedTerms) {
-      setModal('terms');
+    const placeBet = () => {
+    const amt = parseFloat(betAmount);
+    if (isNaN(amt) || amt < 0.10 || amt > 100) {
+      alert('Please enter a valid bet between $0.10 and $100');
       return;
     }
+    if (gameState !== 'waiting') {
+      alert('Cannot place bets while round is running');
+      return;
+    }
+    socketRef.current?.emit('place_bet', {
+      mode: betMode,
+      amount: amt
+    });
+    setHasBet(true);
+    setActiveBetAmount(amt);
+  };
     const currentBal = betMode === 'cash' ? balance.cash : balance.coins;
     if (gameState !== 'waiting' || nextBet <= 0 || nextBet > currentBal || hasBet) return;
     socketRef.current?.emit('place_bet', { 
