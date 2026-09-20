@@ -230,11 +230,17 @@ export default function App() {
                 <div className="w-full py-3 bg-emerald-950 border border-emerald-600 text-emerald-400 font-bold text-center rounded-xl">Bet Locked — Waiting...</div>
               ) : (
                 
-              <div className="flex gap-2 my-2">
-                <button onClick={() => setBetAmount(3)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$3 Buy-in</button>
-                <button onClick={() => setBuyAmount?.(5) || setBetAmount(5)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$5 Buy-in</button>
-                <button onClick={() => setBetAmount(100)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$100 Buy-in</button>
+
+
+            {/* Coin Pack Deposit Store */}
+            <div className="bg-slate-900 p-3 rounded-xl border border-slate-800 my-3">
+              <h3 className="text-xs font-bold text-slate-300 mb-2">⚡ Instant Coin Packs</h3>
+              <div className="grid grid-cols-3 gap-2">
+                <button onClick={() => socketRef.current?.emit('deposit', { amount: 3 })} className="py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs font-bold text-amber-400 hover:bg-amber-500/20">$3 Pack</button>
+                <button onClick={() => socketRef.current?.emit('deposit', { amount: 5 })} className="py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs font-bold text-amber-400 hover:bg-amber-500/20">$5 Pack</button>
+                <button onClick={() => socketRef.current?.emit('deposit', { amount: 100 })} className="py-2 bg-amber-500/10 border border-amber-500/30 rounded-lg text-xs font-bold text-amber-400 hover:bg-amber-500/20">$100 Pack</button>
               </div>
+            </div>
 
 <button onClick={placeBet} className={`w-full py-3.5 font-black text-lg rounded-xl cursor-pointer ${betMode === 'cash' ? 'bg-emerald-600 text-slate-950' : 'bg-amber-500 text-slate-950'}`}>Place Bet</button>
               )
