@@ -229,7 +229,14 @@ export default function App() {
               hasBet ? (
                 <div className="w-full py-3 bg-emerald-950 border border-emerald-600 text-emerald-400 font-bold text-center rounded-xl">Bet Locked — Waiting...</div>
               ) : (
-                <button onClick={placeBet} className={`w-full py-3.5 font-black text-lg rounded-xl cursor-pointer ${betMode === 'cash' ? 'bg-emerald-600 text-slate-950' : 'bg-amber-500 text-slate-950'}`}>Place Bet</button>
+                
+              <div className="flex gap-2 my-2">
+                <button onClick={() => setBetAmount(3)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$3 Buy-in</button>
+                <button onClick={() => setBuyAmount?.(5) || setBetAmount(5)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$5 Buy-in</button>
+                <button onClick={() => setBetAmount(100)} className="flex-1 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs font-bold text-slate-300 hover:bg-slate-800">$100 Buy-in</button>
+              </div>
+
+<button onClick={placeBet} className={`w-full py-3.5 font-black text-lg rounded-xl cursor-pointer ${betMode === 'cash' ? 'bg-emerald-600 text-slate-950' : 'bg-amber-500 text-slate-950'}`}>Place Bet</button>
               )
             )}
             {gameState === 'running' && hasBet && !cashedOut && (
