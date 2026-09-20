@@ -62,48 +62,57 @@ setInterval(() => {
 }, 100);
 
 io.on('connection', (socket) => {
-  users[socket.id] = { cash: 100.00, coins: 1000.00, activeBet: null, cashedOut: false };
+  // Initialize user with CC Coins only (no free real cash)
+  users[socket.id] = { coins: 1000.00, activeBet: null, cashedOut: false };
 
-  socket.emit('balance_update', { cash: users[socket.id].cash, coins: users[socket.id].coins });
+  socket.emit('balance_update', { coins: users[socket.id].coins });
   socket.emit('game_update', { gameState, countdown, multiplier, serverSeedHash: roundHash, nonce: 1 });
 
-  socket.on('place_bet', ({ mode, amount }) => {
+  // Handle placing a bet using CC Coins
+  socket.on('place_bet', ({ amount }) => {
     const user = users[socket.id];
     if (!user || gameState !== 'waiting') return;
-    if (mode === 'cash' && user.cash >= amount) {
-      user.cash -= amount;
-    } else if (mode === 'coins' && user.coins >= amount) {
-      user.coins -= amount;
-    } else {
+    
+    if (user.coins < amount) {
+      socket.emit('redemption_error', { message: 'Insufficient CC Coins balance!' });
       return;
     }
-    user.activeBet = { mode, amount };
+
+    user.coins -= amount;
+    user.activeBet = { amount };
     user.cashedOut = false;
-    socket.emit('balance_update', { cash: user.cash, coins: user.coins });
+    
+    socket.emit('balance_update', { coins: user.coins });
     socket.emit('bet_confirmed', { amount });
   });
 
+  // Handle purchasing Coin Packs ($3, $5, $100) -> Grants CC Coins
   socket.on('deposit', ({ amount }) => {
     const user = users[socket.id];
     if (!user) return;
-    user.coins += amount * 100;
-    socket.emit('balance_update', { cash: user.cash, coins: user.coins });
+    
+    // Conversion rate: e.g., $1 = 100 CC Coins (or adjust based on your pack pricing model)
+    const coinReward = amount * 100;
+    user.coins += coinReward;
+
+    socket.emit('balance_update', { coins: user.coins });
+    socket.emit('deposit_success', { amount: coinReward });
   });
 
+  // Handle instant in-game cashout
   socket.on('cashout', () => {
     const user = users[socket.id];
     if (!user || !user.activeBet || user.cashedOut || gameState !== 'running') return;
     
     const payout = parseFloat((user.activeBet.amount * multiplier).toFixed(2));
-    if (user.activeBet.mode === 'cash') user.cash += payout;
-    else user.coins += payout;
+    user.coins += payout;
 
     user.cashedOut = true;
-    socket.emit('balance_update', { cash: user.cash, coins: user.coins });
+    socket.emit('balance_update', { coins: user.coins });
     socket.emit('cashout_success', { payout });
   });
 
-  // Chat listener
+  // Global Chat
   socket.on('send_chat', (message) => {
     if (!message || typeof message !== 'string') return;
     io.emit('chat_message', { user: `User_${socket.id.slice(0, 4)}`, text: message.slice(0, 200) });
