@@ -35,8 +35,8 @@ io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   let userData = {
-    coins: 1000, // CC Gold Coins
-    sweeps: 5.00 // C$ Sweeps Cash
+    coins: 1000, // CC Gold Coins (Free play balance)
+    sweeps: 0.00 // C$ Sweeps Cash strictly starts at 0 (No purchase = 0 C$)
   };
 
   socket.emit('balance_update', userData);
@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
       userData.coins -= amount;
     } else {
       if (userData.sweeps < amount) {
-        socket.emit('notification', 'Insufficient C$ Sweeps Cash!');
+        socket.emit('notification', 'Insufficient C$ Sweeps Cash! Purchase a CC pack to receive free C$ bonus.');
         return;
       }
       userData.sweeps -= amount;
@@ -88,7 +88,7 @@ io.on('connection', (socket) => {
     socket.emit('notification', `Successfully cashed out at ${multiplier.toFixed(2)}x for +${winAmount} ${bet.mode === 'sweeps' ? 'C$' : 'CC'}!`);
   });
 
-  // Sweepstakes model: Buying CC packs grants free promotional C$ bonus
+  // Strict Sweeps Model: C$ is ONLY awarded as a promotional bonus with CC pack purchases
   socket.on('deposit', (data) => {
     const price = Number(data?.amount);
     let addCC = 0;
@@ -131,10 +131,10 @@ io.on('connection', (socket) => {
   });
 
   socket.on('claim_faucet', () => {
+    // Daily bonus rewards CC coins only; C$ requires purchase or AMOE compliance
     userData.coins += 1000;
-    userData.sweeps += 1.00;
     socket.emit('balance_update', userData);
-    socket.emit('notification', 'Daily Bonus Claimed: +1,000 CC & +1.00 C$!');
+    socket.emit('notification', 'Daily Bonus Claimed: +1,000 CC Coins!');
   });
 
   socket.on('send_chat', (text) => {
