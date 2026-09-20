@@ -44,7 +44,7 @@ export default function App() {
   const socketRef = useRef(null);
 
   useEffect(() => {
-    const socket = io(SOCKET_URL);
+    const socket = io('https://crash4cash-backend.onrender.com');
     socketRef.current = socket;
 
     socket.on('balance_update', (newBalances) => setBalance(newBalances));
