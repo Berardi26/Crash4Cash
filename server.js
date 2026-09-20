@@ -20,7 +20,7 @@ const io = new Server(server, {
   }
 });
 
-let gameState = 'waiting'; // lowercase to match frontend condition
+let gameState = 'waiting';
 let countdown = 5;
 let multiplier = 1.00;
 let crashPoint = 1.00;
@@ -34,10 +34,22 @@ function generateCrashPoint() {
   return Math.max(1.00, point);
 }
 
+// Main game loop running every 100ms for smooth multiplier updates
 setInterval(() => {
   if (gameState === 'waiting') {
-    countdown--;
-    
+    // Countdown ticks every 1 second (approx 10 ticks of 100ms)
+    global.waitCounter = (global.waitCounter || 0) + 1;
+    if (global.waitCounter >= 10) {
+      global.waitCounter = 0;
+      countdown--;
+      
+      if (countdown <= 0) {
+        gameState = 'running';
+        multiplier = 1.00;
+        crashPoint = generateCrashPoint();
+      }
+    }
+
     io.emit('game_update', {
       gameState: gameState,
       countdown: countdown,
@@ -46,20 +58,9 @@ setInterval(() => {
       nonce: 1
     });
 
-    if (countdown <= 0) {
-      gameState = 'running';
-      multiplier = 1.00;
-      crashPoint = generateCrashPoint();
-      io.emit('game_update', {
-        gameState: gameState,
-        countdown: 0,
-        multiplier: multiplier,
-        serverSeedHash: roundHash,
-        nonce: 1
-      });
-    }
   } else if (gameState === 'running') {
-    multiplier = parseFloat((multiplier + 0.05).toFixed(2));
+    // Smooth increment every 100ms
+    multiplier = parseFloat((multiplier + 0.01).toFixed(2));
     
     io.emit('game_update', {
       gameState: gameState,
@@ -86,7 +87,7 @@ setInterval(() => {
       }, 3000);
     }
   }
-}, 1000);
+}, 100);
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
