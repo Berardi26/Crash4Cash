@@ -51,7 +51,17 @@ export default function App() {
     const socket = io('https://crash4cash-backend.onrender.com');
     socketRef.current = socket;
 
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('balance_update', (newBalances) => setBalance(newBalances));
+
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
 
     socket.on('game_update', (data) => {
       setGameState(prevState => {
@@ -69,21 +79,56 @@ export default function App() {
       if (data.revealedServerSeed) setRevealedSeed(data.revealedServerSeed);
     });
 
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('round_history', (history) => setRoundHistory(history));
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('bet_confirmed', ({ amount }) => { setActiveBetAmount(amount); setHasBet(true); });
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('cashout_success', ({ payout }) => { setPayout(payout); setCashedOut(true); });
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('deposit_success', ({ amount }) => {
       setStatusMsg(`Package purchased! Received CC + C$${amount} CrashCash.`);
       setTimeout(() => setStatusMsg(''), 5000);
     });
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('redemption_success', ({ requested, fee, payout }) => {
       setStatusMsg(`Redeemed C$${requested} (Fee: C$${fee}). Sent C$${payout} to crypto!`);
       setTimeout(() => setStatusMsg(''), 7000);
     });
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('redemption_error', ({ message }) => {
       setStatusMsg(`Redemption Error: ${message}`);
       setTimeout(() => setStatusMsg(''), 5000);
     });
+    
+    socket.on('chat_message', (msg) => {
+      setMessages((prev) => [...prev, msg]);
+    });
+
     socket.on('receive_chat', (msg) => setMessages(prev => [...prev.slice(-49), msg]));
 
     return () => socket.disconnect();
