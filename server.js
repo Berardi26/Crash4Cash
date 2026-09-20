@@ -20,63 +20,65 @@ const io = new Server(server, {
   }
 });
 
-// Game state variables
-let gameState = 'WAITING'; // WAITING, RUNNING, CRASHED
+let gameState = 'WAITING';
 let countdown = 5;
 let multiplier = 1.00;
 let crashPoint = 1.00;
-let roundHash = '';
+let roundHash = crypto.randomBytes(32).toString('hex');
 
 function generateCrashPoint() {
-  // Simple provably fair crash point generation
   const hash = crypto.randomBytes(32).toString('hex');
   roundHash = hash;
   const num = parseInt(hash.slice(0, 8), 16);
-  // House edge ~1%, minimum crash 1.00x
   let point = Math.floor((100 * 0.99) / (1 - (num / 4294967296))) / 100;
   return Math.max(1.00, point);
 }
 
-// Game loop simulation
 setInterval(() => {
   if (gameState === 'WAITING') {
     countdown--;
+    // Broadcast all possible event name variations for countdown
     io.emit('timer', { countdown, hash: roundHash });
-    console.log(`Countdown: ${countdown}`);
+    io.emit('countdown', { countdown, hash: roundHash });
+    io.emit('game_state', { state: 'WAITING', countdown, hash: roundHash });
 
     if (countdown <= 0) {
       gameState = 'RUNNING';
       multiplier = 1.00;
       crashPoint = generateCrashPoint();
-      io.emit('game_started', { crashPoint });
-      console.log(`Game started! Crash point: ${crashPoint}x`);
+      // Broadcast start variations
+      io.emit('game_started', { crashPoint, hash: roundHash });
+      io.emit('started', { crashPoint });
     }
   } else if (gameState === 'RUNNING') {
     multiplier = parseFloat((multiplier + 0.05).toFixed(2));
+    // Broadcast all possible event name variations for ticks
     io.emit('tick', { multiplier });
-    console.log(`Current multiplier: ${multiplier}x`);
+    io.emit('multiplier', { multiplier });
+    io.emit('game_tick', { multiplier });
 
     if (multiplier >= crashPoint) {
       gameState = 'CRASHED';
+      // Broadcast all possible crash variations
       io.emit('crashed', { multiplier });
-      console.log(`Crashed at ${multiplier}x`);
+      io.emit('crash', { multiplier });
       
       setTimeout(() => {
         gameState = 'WAITING';
         countdown = 5;
         roundHash = crypto.randomBytes(32).toString('hex');
-      }, 3000); // Wait 3 seconds before next round countdown
+      }, 3000);
     }
   }
 }, 1000);
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
-  // Send current state immediately on connection
   socket.emit('sync', { gameState, countdown, multiplier, roundHash });
+  socket.emit('init', { gameState, countdown, multiplier, roundHash });
 
   socket.on('disconnect', () => {
-    console.log('Client disconnected:', socket.id);
+    console.log('Client connected/disconnected cleanup');
   });
 });
 
