@@ -2,123 +2,190 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
-const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
-
-app.get('/', (req, res) => {
-  res.send('Crash4Cash Backend is running!');
-});
+app.use(express.json());
 
 const server = http.createServer(app);
 const io = new Server(server, {
-  cors: { origin: "*", methods: ["GET", "POST"], credentials: true }
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST'],
+    credentials: true
+  }
 });
 
 let gameState = 'waiting';
 let countdown = 5;
 let multiplier = 1.00;
 let crashPoint = 1.00;
-let roundHash = crypto.randomBytes(32).toString('hex');
-const users = {};
+let timerId = null;
 
 function generateCrashPoint() {
-  const hash = crypto.randomBytes(32).toString('hex');
-  roundHash = hash;
-  const num = parseInt(hash.slice(0, 8), 16);
-  let point = Math.floor((100 * 0.99) / (1 - (num / 4294967296))) / 100;
-  return Math.max(1.00, point);
+  const e = 2 ** 32;
+  const h = Math.floor(Math.random() * 4294967296);
+  if (h % 33 === 0) return 1.00;
+  return Math.floor((100 * e - h) / (e - h)) / 100;
+}
+
+const activeBets = new Map();
+
+io.on('connection', (socket) => {
+  console.log('User connected:', socket.id);
+
+  let userData = {
+    coins: 1000, // CC Gold Coins
+    sweeps: 5.00 // C$ Sweeps Cash
+  };
+
+  socket.emit('balance_update', userData);
+  socket.emit('game_update', { gameState, countdown, multiplier });
+
+  socket.on('place_bet', (data) => {
+    if (gameState !== 'waiting') return;
+    if (activeBets.has(socket.id)) return;
+
+    const amount = Number(data?.amount);
+    const mode = data?.mode === 'sweeps' ? 'sweeps' : 'cc';
+
+    if (isNaN(amount) || amount <= 0) return;
+
+    if (mode === 'cc') {
+      if (userData.coins < amount) {
+        socket.emit('notification', 'Insufficient CC Coins!');
+        return;
+      }
+      userData.coins -= amount;
+    } else {
+      if (userData.sweeps < amount) {
+        socket.emit('notification', 'Insufficient C$ Sweeps Cash!');
+        return;
+      }
+      userData.sweeps -= amount;
+    }
+
+    activeBets.set(socket.id, { socket, amount, mode, cashedOut: false });
+    socket.emit('balance_update', userData);
+    io.emit('chat_message', { user: 'System', text: `Player wagered ${amount} ${mode === 'sweeps' ? 'C$' : 'CC'}` });
+  });
+
+  socket.on('cashout', () => {
+    if (gameState !== 'running') return;
+    const bet = activeBets.get(socket.id);
+    if (!bet || bet.cashedOut) return;
+
+    bet.cashedOut = true;
+    const winAmount = Number((bet.amount * multiplier).toFixed(2));
+
+    if (bet.mode === 'cc') {
+      userData.coins += winAmount;
+    } else {
+      userData.sweeps += winAmount;
+    }
+
+    socket.emit('balance_update', userData);
+    socket.emit('notification', `Successfully cashed out at ${multiplier.toFixed(2)}x for +${winAmount} ${bet.mode === 'sweeps' ? 'C$' : 'CC'}!`);
+  });
+
+  // Sweepstakes model: Buying CC packs grants free promotional C$ bonus
+  socket.on('deposit', (data) => {
+    const price = Number(data?.amount);
+    let addCC = 0;
+    let addSweeps = 0;
+
+    if (price === 3) {
+      addCC = 300;
+      addSweeps = 3.00;
+    } else if (price === 5) {
+      addCC = 500;
+      addSweeps = 5.00;
+    } else if (price === 100) {
+      addCC = 10000;
+      addSweeps = 105.00;
+    } else {
+      return;
+    }
+
+    userData.coins += addCC;
+    userData.sweeps += addSweeps;
+
+    socket.emit('balance_update', userData);
+    socket.emit('notification', `Purchased CC Pack! Credited +${addCC} CC and +${addSweeps.toFixed(2)} C$ Promotional Bonus.`);
+  });
+
+  socket.on('request_redemption', (data) => {
+    const amount = Number(data?.amount);
+    if (isNaN(amount) || amount < 50) {
+      socket.emit('notification', 'Minimum redemption threshold is 50.00 C$');
+      return;
+    }
+    if (userData.sweeps < amount) {
+      socket.emit('notification', 'Insufficient C$ balance for redemption.');
+      return;
+    }
+
+    userData.sweeps -= amount;
+    socket.emit('balance_update', userData);
+    socket.emit('notification', `Redemption request of $${amount.toFixed(2)} USD submitted! Processing within 24-48 hours.`);
+  });
+
+  socket.on('claim_faucet', () => {
+    userData.coins += 1000;
+    userData.sweeps += 1.00;
+    socket.emit('balance_update', userData);
+    socket.emit('notification', 'Daily Bonus Claimed: +1,000 CC & +1.00 C$!');
+  });
+
+  socket.on('send_chat', (text) => {
+    if (typeof text !== 'string' || !text.trim()) return;
+    io.emit('chat_message', { user: `Player_${socket.id.substring(0, 4)}`, text: text.trim().substring(0, 200) });
+  });
+
+  socket.on('disconnect', () => {
+    activeBets.delete(socket.id);
+  });
+});
+
+function startGameLoop() {
+  if (gameState === 'waiting') {
+    countdown--;
+    io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00 });
+
+    if (countdown <= 0) {
+      gameState = 'running';
+      multiplier = 1.00;
+      crashPoint = generateCrashPoint();
+      activeBets.clear();
+      
+      timerId = setInterval(() => {
+        multiplier = Number((multiplier * 1.04).toFixed(2));
+        
+        if (multiplier >= crashPoint) {
+          clearInterval(timerId);
+          gameState = 'crashed';
+          io.emit('game_update', { gameState: 'crashed', multiplier });
+
+          setTimeout(() => {
+            gameState = 'waiting';
+            countdown = 5;
+            io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00 });
+          }, 4000);
+        } else {
+          io.emit('game_update', { gameState: 'running', multiplier });
+        }
+      }, 200);
+    }
+  }
 }
 
 setInterval(() => {
   if (gameState === 'waiting') {
-    global.waitCounter = (global.waitCounter || 0) + 1;
-    if (global.waitCounter >= 10) {
-      global.waitCounter = 0;
-      countdown--;
-      if (countdown <= 0) {
-        gameState = 'running';
-        multiplier = 1.00;
-        crashPoint = generateCrashPoint();
-      }
-    }
-    io.emit('game_update', { gameState, countdown, multiplier: 1.00, serverSeedHash: roundHash, nonce: 1 });
-  } else if (gameState === 'running') {
-    multiplier = parseFloat((multiplier + 0.01).toFixed(2));
-    io.emit('game_update', { gameState, countdown: 0, multiplier, serverSeedHash: roundHash, nonce: 1 });
-
-    if (multiplier >= crashPoint) {
-      gameState = 'crashed';
-      io.emit('game_update', { gameState, countdown: 0, multiplier, serverSeedHash: roundHash, nonce: 1 });
-      setTimeout(() => {
-        gameState = 'waiting';
-        countdown = 5;
-        roundHash = crypto.randomBytes(32).toString('hex');
-        Object.values(users).forEach(u => { u.cashedOut = false; u.activeBet = null; });
-      }, 3000);
-    }
+    startGameLoop();
   }
-}, 100);
+}, 1000);
 
-io.on('connection', (socket) => {
-  // Initialize user with CC Coins only (no free real cash)
-  users[socket.id] = { coins: 1000.00, activeBet: null, cashedOut: false };
-
-  socket.emit('balance_update', { coins: users[socket.id].coins });
-  socket.emit('game_update', { gameState, countdown, multiplier, serverSeedHash: roundHash, nonce: 1 });
-
-  // Handle placing a bet using CC Coins
-  socket.on('place_bet', ({ amount }) => {
-    const user = users[socket.id];
-    if (!user || gameState !== 'waiting') return;
-    
-    if (user.coins < amount) {
-      socket.emit('redemption_error', { message: 'Insufficient CC Coins balance!' });
-      return;
-    }
-
-    user.coins -= amount;
-    user.activeBet = { amount };
-    user.cashedOut = false;
-    
-    socket.emit('balance_update', { coins: user.coins });
-    socket.emit('bet_confirmed', { amount });
-  });
-
-  // Handle purchasing Coin Packs ($3, $5, $100) -> Grants CC Coins
-  socket.on('deposit', ({ amount }) => {
-    const user = users[socket.id];
-    if (!user) return;
-    
-    // Conversion rate: e.g., $1 = 100 CC Coins (or adjust based on your pack pricing model)
-    const coinReward = amount * 100;
-    user.coins += coinReward;
-
-    socket.emit('balance_update', { coins: user.coins });
-    socket.emit('deposit_success', { amount: coinReward });
-  });
-
-  // Handle instant in-game cashout
-  socket.on('cashout', () => {
-    const user = users[socket.id];
-    if (!user || !user.activeBet || user.cashedOut || gameState !== 'running') return;
-    
-    const payout = parseFloat((user.activeBet.amount * multiplier).toFixed(2));
-    user.coins += payout;
-
-    user.cashedOut = true;
-    socket.emit('balance_update', { coins: user.coins });
-    socket.emit('cashout_success', { payout });
-  });
-
-  // Global Chat
-  socket.on('send_chat', (message) => {
-    if (!message || typeof message !== 'string') return;
-    io.emit('chat_message', { user: `User_${socket.id.slice(0, 4)}`, text: message.slice(0, 200) });
-  });
-
-  socket.on('disconnect', () => { delete users[socket.id]; });
+const PORT = process.env.PORT || 10000;
+server.listen(PORT, () => {
+  console.log(`Sweepstakes server running on port ${PORT}`);
 });
-
-server.listen(process.env.PORT || 10000, () => console.log('Server running'));
