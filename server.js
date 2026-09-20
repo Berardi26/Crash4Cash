@@ -161,3 +161,12 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => { console.log(`Backend running on port ${PORT}`); startGameLoop(); });
+
+// Uptime health check routes
+app.get('/', (req, res) => {
+  res.status(200).json({ status: 'online', service: 'Crash4Cash' });
+});
+
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
