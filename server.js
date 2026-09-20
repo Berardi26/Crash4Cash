@@ -2,6 +2,7 @@ const express = require('express');
 const http = require('http');
 const { Server } = require('socket.io');
 const cors = require('cors');
+const crypto = require('crypto');
 
 const app = express();
 app.use(cors());
@@ -20,7 +21,10 @@ let gameState = 'waiting';
 let countdown = 5;
 let multiplier = 1.00;
 let crashPoint = 1.00;
+let currentHash = '';
+let currentSalt = '';
 let timerId = null;
+let launchHistory = [];
 
 function generateCrashPoint() {
   const e = 2 ** 32;
@@ -29,18 +33,27 @@ function generateCrashPoint() {
   return Math.floor((100 * e - h) / (e - h)) / 100;
 }
 
+function startNewRound() {
+  crashPoint = generateCrashPoint();
+  currentSalt = crypto.randomBytes(16).toString('hex');
+  currentHash = crypto.createHash('sha256').update(`${crashPoint}-${currentSalt}`).digest('hex');
+  multiplier = 1.00;
+}
+
+startNewRound();
+
 const activeBets = new Map();
 
 io.on('connection', (socket) => {
   console.log('User connected:', socket.id);
 
   let userData = {
-    coins: 1000, // CC Gold Coins (Free play balance)
-    sweeps: 0.00 // C$ Sweeps Cash strictly starts at 0 (No purchase = 0 C$)
+    coins: 1000, // CC Gold Coins
+    sweeps: 0.00 // C$ Sweeps Cash strictly starts at 0
   };
 
   socket.emit('balance_update', userData);
-  socket.emit('game_update', { gameState, countdown, multiplier });
+  socket.emit('game_state', { gameState, countdown, multiplier, currentHash, history: launchHistory });
 
   socket.on('place_bet', (data) => {
     if (gameState !== 'waiting') return;
@@ -88,7 +101,6 @@ io.on('connection', (socket) => {
     socket.emit('notification', `Successfully cashed out at ${multiplier.toFixed(2)}x for +${winAmount} ${bet.mode === 'sweeps' ? 'C$' : 'CC'}!`);
   });
 
-  // Strict Sweeps Model: C$ is ONLY awarded as a promotional bonus with CC pack purchases
   socket.on('deposit', (data) => {
     const price = Number(data?.amount);
     let addCC = 0;
@@ -131,7 +143,6 @@ io.on('connection', (socket) => {
   });
 
   socket.on('claim_faucet', () => {
-    // Daily bonus rewards CC coins only; C$ requires purchase or AMOE compliance
     userData.coins += 1000;
     socket.emit('balance_update', userData);
     socket.emit('notification', 'Daily Bonus Claimed: +1,000 CC Coins!');
@@ -150,12 +161,11 @@ io.on('connection', (socket) => {
 function startGameLoop() {
   if (gameState === 'waiting') {
     countdown--;
-    io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00 });
+    io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00, currentHash, history: launchHistory });
 
     if (countdown <= 0) {
       gameState = 'running';
       multiplier = 1.00;
-      crashPoint = generateCrashPoint();
       activeBets.clear();
       
       timerId = setInterval(() => {
@@ -164,15 +174,20 @@ function startGameLoop() {
         if (multiplier >= crashPoint) {
           clearInterval(timerId);
           gameState = 'crashed';
-          io.emit('game_update', { gameState: 'crashed', multiplier });
+          
+          launchHistory.unshift({ multiplier: crashPoint, hash: currentHash, salt: currentSalt });
+          if (launchHistory.length > 25) launchHistory.pop();
+
+          io.emit('game_update', { gameState: 'crashed', multiplier: crashPoint, currentHash, salt: currentSalt, history: launchHistory });
 
           setTimeout(() => {
             gameState = 'waiting';
             countdown = 5;
-            io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00 });
+            startNewRound();
+            io.emit('game_update', { gameState: 'waiting', countdown, multiplier: 1.00, currentHash, history: launchHistory });
           }, 4000);
         } else {
-          io.emit('game_update', { gameState: 'running', multiplier });
+          io.emit('game_update', { gameState: 'running', multiplier, currentHash, history: launchHistory });
         }
       }, 200);
     }
