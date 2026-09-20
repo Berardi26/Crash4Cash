@@ -20,7 +20,7 @@ const io = new Server(server, {
   }
 });
 
-let gameState = 'WAITING';
+let gameState = 'WAITING'; // WAITING, RUNNING, CRASHED
 let countdown = 5;
 let multiplier = 1.00;
 let crashPoint = 1.00;
@@ -37,31 +37,45 @@ function generateCrashPoint() {
 setInterval(() => {
   if (gameState === 'WAITING') {
     countdown--;
-    // Broadcast all possible event name variations for countdown
-    io.emit('timer', { countdown, hash: roundHash });
-    io.emit('countdown', { countdown, hash: roundHash });
-    io.emit('game_state', { state: 'WAITING', countdown, hash: roundHash });
+    
+    // Broadcast game_update that the frontend expects
+    io.emit('game_update', {
+      state: gameState,
+      countdown: countdown,
+      multiplier: 1.00,
+      hash: roundHash
+    });
 
     if (countdown <= 0) {
       gameState = 'RUNNING';
       multiplier = 1.00;
       crashPoint = generateCrashPoint();
-      // Broadcast start variations
-      io.emit('game_started', { crashPoint, hash: roundHash });
-      io.emit('started', { crashPoint });
+      io.emit('game_update', {
+        state: gameState,
+        countdown: 0,
+        multiplier: multiplier,
+        crashPoint: crashPoint,
+        hash: roundHash
+      });
     }
   } else if (gameState === 'RUNNING') {
     multiplier = parseFloat((multiplier + 0.05).toFixed(2));
-    // Broadcast all possible event name variations for ticks
-    io.emit('tick', { multiplier });
-    io.emit('multiplier', { multiplier });
-    io.emit('game_tick', { multiplier });
+    
+    io.emit('game_update', {
+      state: gameState,
+      countdown: 0,
+      multiplier: multiplier,
+      hash: roundHash
+    });
 
     if (multiplier >= crashPoint) {
       gameState = 'CRASHED';
-      // Broadcast all possible crash variations
-      io.emit('crashed', { multiplier });
-      io.emit('crash', { multiplier });
+      io.emit('game_update', {
+        state: gameState,
+        countdown: 0,
+        multiplier: multiplier,
+        hash: roundHash
+      });
       
       setTimeout(() => {
         gameState = 'WAITING';
@@ -74,11 +88,17 @@ setInterval(() => {
 
 io.on('connection', (socket) => {
   console.log('Client connected:', socket.id);
-  socket.emit('sync', { gameState, countdown, multiplier, roundHash });
-  socket.emit('init', { gameState, countdown, multiplier, roundHash });
+  
+  // Send immediate state on connection
+  socket.emit('game_update', {
+    state: gameState,
+    countdown: countdown,
+    multiplier: multiplier,
+    hash: roundHash
+  });
 
   socket.on('disconnect', () => {
-    console.log('Client connected/disconnected cleanup');
+    console.log('Client disconnected:', socket.id);
   });
 });
 
